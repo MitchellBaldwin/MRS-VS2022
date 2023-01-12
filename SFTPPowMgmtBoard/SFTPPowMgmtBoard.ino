@@ -42,5 +42,5 @@ void loop() {
 
 void ToggleBuiltinLEDCallback()
 {
-
+	digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
 }
