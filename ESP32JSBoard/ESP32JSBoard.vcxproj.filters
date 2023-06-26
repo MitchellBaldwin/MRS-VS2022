@@ -20,11 +20,23 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="__vm\.SFTPPowMgmtBoard.vsarduino.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClCompile Include="ESP32JSBoard.ino" />
+    <ClCompile Include="src\I2CBus.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LocalDisplay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="SFTPPowMgmtBoard.ino" />
+    <ClInclude Include="__vm\.ESP32JSBoard.vsarduino.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\I2CBus.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LocalDisplay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

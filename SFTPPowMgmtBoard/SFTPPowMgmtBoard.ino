@@ -1,10 +1,9 @@
 /*
  Name:		SFTPPowMgmtBoard.ino
  Created:	11/16/2022 1:27:19 PM
- Author:	Mitchell Baldwin copyriht 2002
+ Author:	Mitchell Baldwin copyriht 2022
 */
 
-// the setup function runs once when you press reset or power the board
 #include <TaskSchedulerSleepMethods.h>
 #include <TaskSchedulerDeclarations.h>
 #include <TaskScheduler.h>
@@ -23,13 +22,13 @@
 #define _PLH(a)
 #endif
 
-constexpr auto BuiltinLEDTogglePeriod = 500;
+constexpr auto HeartbeatLEDToggleInterval = 500;
 
 // Scheduler
-Scheduler mainScheduler;
+Scheduler MainScheduler;
 
 void ToggleBuiltinLEDCallback();
-Task taskToggleBuiltinLED(BuiltinLEDTogglePeriod * TASK_MILLISECOND, TASK_FOREVER, &ToggleBuiltinLEDCallback, &mainScheduler, false);
+Task HeartbeatLEDTask(HeartbeatLEDToggleInterval * TASK_MILLISECOND, TASK_FOREVER, &ToggleBuiltinLEDCallback, &MainScheduler, false);
 
 void setup() {
 
