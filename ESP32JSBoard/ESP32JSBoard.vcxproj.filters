@@ -20,11 +20,17 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ESP32JSBoard.ino" />
+    <ClCompile Include="CSSModuleESP32.ino" />
     <ClCompile Include="src\I2CBus.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\LocalDisplay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CSSMSensorData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OSBArray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -36,6 +42,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\LocalDisplay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DEBUG Macros.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CSSMSensorData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CSSMGlobals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OSBArray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

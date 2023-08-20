@@ -6,9 +6,9 @@
 */
 
 #include "LocalDisplay.h"
-//#include "PTSGlobals.h"
+#include "CSSMGlobals.h"
 #include "I2CBus.h"
-//#include "SensorData.h"
+#include "CSSMSensorData.h"
 
 void LocalDisplayClass::DrawPageHeaderAndFooter()
 {
@@ -17,9 +17,9 @@ void LocalDisplayClass::DrawPageHeaderAndFooter()
 	display.cp437();
 	display.setTextSize(1);
 	display.write(PageTitles[currentPage]);
-	//snprintf(buf, 22, "v%d.%d", MajorVersion, MinorVersion);
-	//display.setCursor(0, 8);
-	//display.write(buf);
+	snprintf(buf, 22, "v%d.%d", MajorVersion, MinorVersion);
+	display.setCursor(0, 8);
+	display.write(buf);
 
 	display.setCursor(0, 56);
 	display.write(PageMenus[currentPage]);
@@ -56,7 +56,7 @@ void LocalDisplayClass::DrawSYSPage()
 
 	// Update dynamic displays:
 	display.fillRect(0, 16, 128, 8, SSD1306_BLACK);
-	//snprintf(buf, 22, "C1: %+04d     C2: %+04d", SensorData.C1, SensorData.C2);
+	//snprintf(buf, 22, "C1: %+04d     C2: %+04d", SensorData.GetKBRaw(), SensorData.C2);
 	display.setCursor(0, 16);
 	//display.write(buf);
 	display.fillRect(0, 24, 128, 8, 0x0000);
@@ -65,9 +65,9 @@ void LocalDisplayClass::DrawSYSPage()
 	//display.write(buf);
 
 	display.fillRect(0, 32, 128, 8, SSD1306_BLACK);
-	//snprintf(buf, 22, "KP %05d", JSPkt.VIn);
+	snprintf(buf, 22, "KP %05d", SensorData.GetKBRaw());
 	display.setCursor(0, 32);
-	//display.write(buf);
+	display.write(buf);
 
 	display.display();
 }

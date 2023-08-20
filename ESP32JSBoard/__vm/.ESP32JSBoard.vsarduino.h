@@ -15,6 +15,6 @@
 #define _VSARDUINO_H_
 #include <arduino.h>
 #include <pins_arduino.h> 
-#include "..\ESP32JSBoard.ino"
+#include "..\CSSModuleESP32.ino"
 #endif
 #endif

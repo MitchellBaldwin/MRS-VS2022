@@ -4,9 +4,9 @@
 //#define _TEST_
 
 #ifdef _DEBUG_
-#define _PP(a) Serial.print(a);
-#define _PL(a) Serial.println(a);
-#define _PLH(a) Serial.println(a, HEX);
+#define _PP(a) USBSerial.print(a);
+#define _PL(a) USBSerial.println(a);
+#define _PLH(a) USBSerial.println(a, HEX);
 #else
 #define _PP(a)
 #define _PL(a)

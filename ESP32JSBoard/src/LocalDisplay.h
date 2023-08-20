@@ -1,8 +1,10 @@
-/*	LocalDisplayClass - Base class for implementing paged graphical display interface for
+/*	LocalDisplayClass - Based on template class for implementing paged graphical display interface for
 *	Arduino and ESP32 based embedded control systems.
 *
-*
-*
+*	Extended to serve as local display for the ESP32 based Control Stick Steering (CSS) module
+*	Pages supported:
+*		System (SYS)	Default summary od system, POW, COM and I/O ststus
+*		Power (POW)		Power supply, battery status
 *
 *	Mitchell Baldwin copyright 2023
 *
@@ -35,7 +37,7 @@ constexpr int SCREEN_HEIGHT = 64;	// OLED display height, in pixels
 
 class LocalDisplayClass
 {
- protected:
+protected:
 	 Adafruit_SSD1306 display;
 	 uint8_t I2CAddress = 0x00;
 	 char buf[32];
