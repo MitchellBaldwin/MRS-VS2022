@@ -48,6 +48,8 @@ protected:
 		 POW,
 		 COM,
 		 I2C,
+		 ENV,
+		 IMU,
 
 		 NONE
 	 };
@@ -60,6 +62,8 @@ protected:
 		 "MRS CSS         Power",
 		 "MRS CSS         Comms",
 		 "MRS CSS           I2C",
+		 "MRS CSS           ENV",
+		 "MRS CSS           IMU",
 
 	 };
 
@@ -69,6 +73,8 @@ protected:
 		 "<SYS     POW     COM>",
 		 "<POW     COM     I2C>",
 		 "<COM     I2C     nxt>",
+		 "<I2C     ENV     IMU>",
+		 "<ENV     IMU     nxt>",
 
 	 };
 
@@ -77,6 +83,8 @@ protected:
 	 void DrawPOWPage();
 	 void DrawCOMPage();
 	 void DrawI2CPage();
+	 void DrawENVPage();
+	 void DrawIMUPage();
 
 	 void DrawNONEPage();
 
@@ -90,6 +98,8 @@ public:
 		COMPage,
 		I2CScan,
 		I2CPage,
+		ENVPage,
+		IMUPage,
 		Prev,
 		Next,
 

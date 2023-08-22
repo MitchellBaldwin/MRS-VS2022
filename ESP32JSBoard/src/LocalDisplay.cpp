@@ -6,7 +6,8 @@
 */
 
 #include "LocalDisplay.h"
-#include "CSSMGlobals.h"
+//#include "CSSMGlobals.h"
+#include "CSSMStatus.h"
 #include "I2CBus.h"
 #include "CSSMSensorData.h"
 
@@ -17,7 +18,7 @@ void LocalDisplayClass::DrawPageHeaderAndFooter()
 	display.cp437();
 	display.setTextSize(1);
 	display.write(PageTitles[currentPage]);
-	snprintf(buf, 22, "v%d.%d", MajorVersion, MinorVersion);
+	snprintf(buf, 22, "v%d.%d", CSSMStatus.MajorVersion, CSSMStatus.MinorVersion);
 	display.setCursor(0, 8);
 	display.write(buf);
 
@@ -35,11 +36,18 @@ void LocalDisplayClass::DrawSYSPage()
 		DrawPageHeaderAndFooter();
 
 		char upArrow[1] = { 0x18 };
-		sprintf(buf, "U0 %s", upArrow);
+		char downArrow[1] = { 0x19 };
+		sprintf(buf, "U0 %s", CSSMStatus.UART0Status ? upArrow : downArrow);
 		display.setCursor(0, 40);
 		display.write(buf, 4);
-		sprintf(buf, "U2 %s", upArrow);
+		sprintf(buf, "U2 %s", CSSMStatus.UART2Status ? upArrow : downArrow);
+		display.setCursor(32, 40);
+		display.write(buf, 4);
+		sprintf(buf, "ENV%s", CSSMStatus.BME280Status ? upArrow : downArrow);
 		display.setCursor(64, 40);
+		display.write(buf, 4);
+		sprintf(buf, "IMU%s", CSSMStatus.IMUStatus ? upArrow : downArrow);
+		display.setCursor(92, 40);
 		display.write(buf, 4);
 		display.setCursor(0, 48);
 		snprintf(buf, 22, "I2C %02X %02X %02X %02X %02X %02X",
@@ -65,7 +73,7 @@ void LocalDisplayClass::DrawSYSPage()
 	//display.write(buf);
 
 	display.fillRect(0, 32, 128, 8, SSD1306_BLACK);
-	snprintf(buf, 22, "KP %05d", SensorData.GetKBRaw());
+	snprintf(buf, 22, "KP %04d %#5.2f %s", SensorData.GetKBRaw(), SensorData.KPVoltage.GetRealValue(), SensorData.KPVoltage.Units);
 	display.setCursor(0, 32);
 	display.write(buf);
 
@@ -90,6 +98,10 @@ void LocalDisplayClass::DrawPOWPage()
 	}
 
 	// Update dynamic displays:
+	display.fillRect(0, 32, 128, 8, SSD1306_BLACK);
+	snprintf(buf, 22, "VIN %#5.2f %s", SensorData.ESP32VIN.GetRealValue(), SensorData.ESP32VIN.Units);
+	display.setCursor(0, 32);
+	display.write(buf);
 
 	display.display();
 }
@@ -147,6 +159,50 @@ void LocalDisplayClass::DrawI2CPage()
 	display.display();
 }
 
+void LocalDisplayClass::DrawENVPage()
+{
+	currentPage = ENV;
+
+	if (lastPage != currentPage)
+	{
+		DrawPageHeaderAndFooter();
+
+		display.setCursor(0, 40);
+
+		display.setCursor(64, 40);
+
+		display.setCursor(0, 48);
+
+		lastPage = currentPage;
+	}
+
+	// Update dynamic displays:
+
+	display.display();
+}
+
+void LocalDisplayClass::DrawIMUPage()
+{
+	currentPage = IMU;
+
+	if (lastPage != currentPage)
+	{
+		DrawPageHeaderAndFooter();
+
+		display.setCursor(0, 40);
+
+		display.setCursor(64, 40);
+
+		display.setCursor(0, 48);
+
+		lastPage = currentPage;
+	}
+
+	// Update dynamic displays:
+
+	display.display();
+}
+
 void LocalDisplayClass::DrawNONEPage()
 {
 	currentPage = NONE;
@@ -166,8 +222,8 @@ bool LocalDisplayClass::Init(uint8_t address)
 	if (!display.begin(SSD1306_SWITCHCAPVCC, address))
 	{
 		#if defined(_DEBUG_)
-		_P(F("\nSSD1306 initialization failed; "));
-		snprintf(buf, 31, "Firmware version: %02d.%02d", MajorVersion, MinorVersion);
+		_PP(F("\nSSD1306 initialization failed; "));
+		snprintf(buf, 31, "Firmware version: %02d.%02d", CSSMStatus.MajorVersion, CSSMStatus.MinorVersion);
 		_PL(buf);
 		#endif
 		return false;
@@ -227,6 +283,12 @@ void LocalDisplayClass::Update()
 	case I2C:
 		DrawI2CPage();
 		break;
+	case ENV:
+		DrawENVPage();
+		break;
+	case IMU:
+		DrawIMUPage();
+		break;
 
 	default:
 		DrawNONEPage();
@@ -259,6 +321,12 @@ void LocalDisplayClass::Control(uint8_t command)
 		DrawI2CPage();
 		break;
 	case I2CPage:
+		DrawI2CPage();
+		break;
+	case ENVPage:
+		DrawI2CPage();
+		break;
+	case IMUPage:
 		DrawI2CPage();
 		break;
 	case Commands::Prev:

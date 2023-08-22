@@ -1,5 +1,5 @@
 /*	OSBArray.h
-*	OSBArray - Base class for Option Select Buttons on the MRS Control Stick Steering Module
+*	OSBArrayClass - Base class for Option Select Buttons on the MRS Control Stick Steering Module
 *
 *
 *
@@ -34,15 +34,18 @@ public:
 		OSB1 = 1,
 		OSB2,
 		OSB3,
-		OSB4
+		OSB4,
+		OSB5,
+		OSB6,
+		OSB7,
+		OSB8
 	};
 	
 	OSBArrayClass(byte sensePin);
-	void Init(byte sensePin);
+	~OSBArrayClass();
+	void Init(uint8_t numLevels, const uint16_t levels[]);
 	byte GetOSBPress();
 };
-
-//extern OSBArrayClass OSBArray;
 
 #endif
 

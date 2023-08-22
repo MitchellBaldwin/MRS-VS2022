@@ -30,7 +30,13 @@
     <ClCompile Include="src\CSSMSensorData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="OSBArray.cpp">
+    <ClCompile Include="src\OSBArray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Measurement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CSSMStatus.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -50,10 +56,13 @@
     <ClInclude Include="src\CSSMSensorData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\CSSMGlobals.h">
+    <ClInclude Include="src\OSBArray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="OSBArray.h">
+    <ClInclude Include="src\Measurement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CSSMStatus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

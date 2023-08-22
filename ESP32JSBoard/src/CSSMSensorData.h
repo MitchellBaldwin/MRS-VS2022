@@ -20,14 +20,22 @@
 	#include "WProgram.h"
 #endif
 
+#include "Measurement.h"
+#include <BME280I2C.h>
+
 class CSSMSensorData
 {
 protected:
 	byte KBSensePin;
-	uint16_t KBRaw;
+	byte ESP32VINSensePin;
+	BME280I2C* bme280;
 
 public:
-	void Init(byte kbSensePin);
+	MeasurementClass KPVoltage;
+	MeasurementClass ESP32VIN;
+
+	CSSMSensorData();
+	bool Init(byte kbSensePin, byte esp32VINSensePin);
 	void Update();
 	uint16_t GetKBRaw();
 };

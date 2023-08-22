@@ -10,6 +10,8 @@
 
 */
 
+
+#include "src/CSSMStatus.h"
 #include "src/DEBUG Macros.h"
 
 constexpr byte DebugLED = 0x04;
@@ -31,89 +33,54 @@ constexpr byte DebugLED = 0x04;
 #include <TaskSchedulerSleepMethods.h>
 
 #include <HardwareSerial.h>
-HardwareSerial USBSerial(0);	// Represents the same port as "Serial"
-
-#include "src/CSSMSensorData.h"
-constexpr byte KBAnalogPin = 36;
-
-#include "OSBArray.h"
-OSBArrayClass LOSBArray(KBAnalogPin);
-
-//#include <AceButton.h>
-//using ace_button::AceButton;
-//using ace_button::ButtonConfig;
-//using ace_button::LadderButtonConfig;
-//
-//static const uint8_t NUM_BUTTONS = 4;
-//static AceButton LOSB1(nullptr, 0);
-//static AceButton LOSB2(nullptr, 1);
-//static AceButton LOSB3(nullptr, 2);
-//static AceButton LOSB4(nullptr, 3);
-//
-//// button 4 cannot be used because it represents "no button pressed"
-//static AceButton* const BUTTONS[NUM_BUTTONS] = {
-//	&LOSB1, &LOSB2, &LOSB3, &LOSB4,
-//};
-//
-//static const uint8_t NUM_LEVELS = NUM_BUTTONS + 1;
-//static const uint16_t LEVELS[NUM_LEVELS] = {
-//  0,		/* 0%, short to ground */
-//  1165,
-//  1770,
-//  2400,
-//  3160
-//};
-//
-//// The LadderButtonConfig constructor binds the AceButton objects in the BUTTONS array to the LadderButtonConfig.
-//static LadderButtonConfig buttonConfig(KBAnalogPin, NUM_LEVELS, LEVELS, NUM_BUTTONS, BUTTONS);
-//
-//// The event handler for the buttons.
-//void handleEvent(AceButton* button, uint8_t eventType, uint8_t buttonState) {
-//
-//	// Print out a message for all events.
-//	Serial.print(F("handleEvent(): "));
-//	Serial.print(F("virtualPin: "));
-//	Serial.print(button->getPin());
-//	Serial.print(F("; eventType: "));
-//	Serial.print(AceButton::eventName(eventType));
-//	Serial.print(F("; buttonState: "));
-//	Serial.println(buttonState);
-//
-//	// Control the LED only for the Pressed and Released events.
-//	// Notice that if the MCU is rebooted while the button is pressed down, no
-//	// event is triggered and the LED remains off.
-//	switch (eventType) {
-//	case AceButton::kEventPressed:
-//		digitalWrite(DebugLED, 1);
-//		break;
-//	case AceButton::kEventReleased:
-//		digitalWrite(DebugLED, 0);
-//		break;
-//	}
-//}
+HardwareSerial USBSerial(0);	// Uses the same UART device as "Serial" but does not allow use of "Serial"?
+HardwareSerial IDCSerial(2);	// UART for inter-device communication & control
 
 #include "src/I2CBus.h"
 #include "src/LocalDisplay.h"
 constexpr byte LocalDisplayI2CAddress = 0x3C;
 
+#include "src/CSSMSensorData.h"
+// TODO: If OSB arrays are powered from ESP 32 3.3 V supply then consider running signals directly to the ADC ports
+// Scale and buffer VIN signal and use the VP pin (pin 36) for measurement
+constexpr byte LOSBAnalogPin = 36;
+constexpr byte ESP32VINAnalogPin = 35;
+
+#include "src/OSBArray.h"
+OSBArrayClass LOSBArray(LOSBAnalogPin);
+//OSBArrayClass ROSBArray(ROSBAnalogPin);
+
+static const uint8_t LOBS_NUM_BUTTONS = 4;
+static const uint8_t LOSB_NUM_LEVELS = LOBS_NUM_BUTTONS + 1;
+static const uint16_t LOSB_LEVELS[LOSB_NUM_LEVELS] = 
+{
+  0,		/* 0%, short to ground */
+  1165,
+  1770,
+  2400,
+  3160
+};
+
 // Scheduler
 Scheduler MainScheduler;
 
-constexpr long HeartbeatLEDToggleInterval = 1000;
-constexpr long NoSerialHeartbeatLEDToggleInterval = 500;
+constexpr long NormalHeartbeatLEDToggleInterval = 1000;
+constexpr long NoSerialHeartbeatLEDToggleInterval = 250;
+constexpr long NoLocalDisplayHeartbeatLEDToggleInterval = 100;
 
-long HeartbeatLEDTogglePeriod = HeartbeatLEDToggleInterval;
-
+long HeartbeatLEDTogglePeriod = NormalHeartbeatLEDToggleInterval;
 void ToggleBuiltinLEDCallback();
 Task HeartbeatLEDTask(HeartbeatLEDTogglePeriod* TASK_MILLISECOND, TASK_FOREVER, &ToggleBuiltinLEDCallback, &MainScheduler, false);
 
 constexpr long ReadSensorsInterval = 50;
-
 void ReadSensorDataCallback();
 Task ReadSensorsTask(ReadSensorsInterval* TASK_MILLISECOND, TASK_FOREVER, &ReadSensorDataCallback, &MainScheduler, false);
 
-constexpr long UpdateLocalDisplayInterval = 100;
+constexpr long ReadControlsInterval = 50;
+void ReadControlsCallback();
+Task ReadControlsTask(ReadControlsInterval* TASK_MILLISECOND, TASK_FOREVER, &ReadControlsCallback, &MainScheduler, false);
 
+constexpr long UpdateLocalDisplayInterval = 100;
 void UpdateLocalDisplayCallback();
 Task UpdateLocalDisplayTask(UpdateLocalDisplayInterval* TASK_MILLISECOND, TASK_FOREVER, &UpdateLocalDisplayCallback, &MainScheduler, false);
 
@@ -122,49 +89,61 @@ void setup()
 	USBSerial.begin(115200);
 	if (!USBSerial)
 	{
+		CSSMStatus.UART0Status = false;
 		HeartbeatLEDTogglePeriod = NoSerialHeartbeatLEDToggleInterval;
 	}
 	else
 	{
-		HeartbeatLEDTogglePeriod = HeartbeatLEDToggleInterval;
+		CSSMStatus.UART0Status = true;
+		HeartbeatLEDTogglePeriod = NormalHeartbeatLEDToggleInterval;
+	}
+
+	IDCSerial.begin(115200);
+	if (!IDCSerial)
+	{
+		CSSMStatus.UART2Status = false;
+		//HeartbeatLEDTogglePeriod = NoSerialHeartbeatLEDToggleInterval;
+	}
+	else
+	{
+		CSSMStatus.UART2Status = true;
+		//HeartbeatLEDTogglePeriod = NormalHeartbeatLEDToggleInterval;
 	}
 
 	char buf[32];
-	snprintf(buf, 32, "Heartbeat LED pin 0x%02X", LED_BUILTIN);
+	snprintf(buf, 31, "Heartbeat LED pin 0x%02X", LED_BUILTIN);
 	pinMode(LED_BUILTIN, OUTPUT);
 	_PL();
 	_PL(buf);
 	pinMode(DebugLED, OUTPUT);
-	snprintf(buf, 32, "Debug LED pin 0x%02X", DebugLED);
+	snprintf(buf, 31, "Debug LED pin 0x%02X", DebugLED);
 	_PL(buf);
 
 	I2CBus.Init();
 	I2CBus.Scan();
 
+	HeartbeatLEDTask.setInterval(HeartbeatLEDTogglePeriod * TASK_MILLISECOND);
+	HeartbeatLEDTask.enable();
+
+	SensorData.Init(LOSBAnalogPin, ESP32VINAnalogPin);
+	ReadSensorsTask.enable();
+	ReadControlsTask.enable();
+	UpdateLocalDisplayTask.enable();
+
+	LOSBArray.Init(LOSB_NUM_LEVELS, LOSB_LEVELS);
+	//ROSBArray.Init(NUM_LEVELS, LEVELS);
+
 	if (!LocalDisplay.Init(LocalDisplayI2CAddress))
 	{
-		HeartbeatLEDTogglePeriod = 250;
+		CSSMStatus.LocalDisplayStatus = false;
+		HeartbeatLEDTogglePeriod = NoLocalDisplayHeartbeatLEDToggleInterval;
 	}
 	else
 	{
+		CSSMStatus.LocalDisplayStatus = true;
 		LocalDisplay.Control(LocalDisplayClass::SYSPage);
 	}
 
-	HeartbeatLEDTask.setInterval(HeartbeatLEDTogglePeriod);
-	HeartbeatLEDTask.enable();
-
-	SensorData.Init(KBAnalogPin);
-	ReadSensorsTask.enable();
-	UpdateLocalDisplayTask.enable();
-
-	//LOSBArray.Init(KBAnalogPin);
-
-	//// Configure the ButtonConfig with the event handler, and enable all higher level events.
-	//buttonConfig.setEventHandler(handleEvent);
-	//buttonConfig.setFeature(ButtonConfig::kFeatureClick);
-	////buttonConfig.setFeature(ButtonConfig::kFeatureDoubleClick);
-	////buttonConfig.setFeature(ButtonConfig::kFeatureLongPress);
-	////buttonConfig.setFeature(ButtonConfig::kFeatureRepeatPress);
 
 }
 
@@ -182,6 +161,10 @@ void ReadSensorDataCallback()
 {
 	SensorData.Update();
 	
+}
+
+void ReadControlsCallback()
+{
 	byte OSBPressed = LOSBArray.GetOSBPress();
 	if (OSBPressed)
 	{
