@@ -22,6 +22,7 @@
 
 #include "Measurement.h"
 #include <BME280I2C.h>
+#include "BME280Data.h"
 
 class CSSMSensorData
 {
@@ -33,11 +34,13 @@ protected:
 public:
 	MeasurementClass KPVoltage;
 	MeasurementClass ESP32VIN;
+	BME280DataClass ENVData;
 
 	CSSMSensorData();
 	bool Init(byte kbSensePin, byte esp32VINSensePin);
 	void Update();
 	uint16_t GetKBRaw();
+	void ReadENVData();
 };
 
 extern CSSMSensorData SensorData;

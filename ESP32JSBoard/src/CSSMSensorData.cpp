@@ -5,6 +5,7 @@
 
 #include "CSSMSensorData.h"
 #include "CSSMStatus.h"
+#include "DEBUG Macros.h"
 
 CSSMSensorData::CSSMSensorData()
 {
@@ -30,12 +31,12 @@ bool CSSMSensorData::Init(byte kbSensePin, byte esp32VINSensePin)
 
 	CSSMStatus.BME280Status = bme280->begin();
 
-#if defined(_DEBUG_)
+#ifdef _DEBUG_
 	if (!CSSMStatus.BME280Status)
 	{
 		char buf[32];
-		_PP("\BME280 initialization failed; ");
-		snprintf(buf, 31, "Firmware version: %02d.%02d", MajorVersion, MinorVersion);
+		_PP(F("\BME280 initialization failed; "));
+		snprintf(buf, 31, "Firmware version: %02d.%02d", CSSMStatus.MajorVersion, CSSMStatus.MinorVersion);
 		_PL(buf);
 	}
 	else
@@ -43,18 +44,23 @@ bool CSSMSensorData::Init(byte kbSensePin, byte esp32VINSensePin)
 		switch (bme280->chipModel())
 		{
 		case BME280::ChipModel_BME280:
-			_PL("Found BME280 sensor! Success.");
+			_PL(F("BME280 sensor fully initialized"));
 			break;
 		case BME280::ChipModel_BMP280:
-			_PL("Found BMP280 sensor! No Humidity available.");
+			_PL(F("BMP280 sensor initialized; no RH measurement available"));
 			break;
 		default:
-			_PL("Found UNKNOWN sensor! Error!");
+			_PL(F("BMx280 chip not recognized"));
 			CSSMStatus.BME280Status = false;
 		}
 	}
 #endif
 	
+	if (CSSMStatus.BME280Status)
+	{
+		ReadENVData();
+	}
+
 	return CSSMStatus.BME280Status;
 }
 
@@ -67,6 +73,15 @@ void CSSMSensorData::Update()
 uint16_t CSSMSensorData::GetKBRaw()
 {
 	return KPVoltage.RawValue;
+}
+
+void CSSMSensorData::ReadENVData()
+{
+	BME280::TempUnit tempUnit(BME280::TempUnit_Celsius);
+	BME280::PresUnit presUnit(BME280::PresUnit_hPa);
+
+	bme280->read(BME280Data.Pbaro, BME280Data.Tchip, BME280Data.RH, tempUnit, presUnit);
+
 }
 
 

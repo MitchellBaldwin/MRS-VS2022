@@ -64,7 +64,7 @@ void LocalDisplayClass::DrawSYSPage()
 
 	// Update dynamic displays:
 	display.fillRect(0, 16, 128, 8, SSD1306_BLACK);
-	//snprintf(buf, 22, "C1: %+04d     C2: %+04d", SensorData.GetKBRaw(), SensorData.C2);
+	//snprintf(buf, 22, "U/D %+04d     F/R %+04d", JSPkt.PTJSY, JSPkt.DrvJSY);
 	display.setCursor(0, 16);
 	//display.write(buf);
 	display.fillRect(0, 24, 128, 8, 0x0000);
@@ -177,6 +177,10 @@ void LocalDisplayClass::DrawENVPage()
 	}
 
 	// Update dynamic displays:
+	display.fillRect(0, 32, 128, 8, SSD1306_BLACK);
+	//snprintf(buf, 22, BME280Data.GetTchipString().c_str());
+	display.setCursor(0, 32);
+	display.write(BME280Data.GetTchipString().c_str());
 
 	display.display();
 }
@@ -221,7 +225,7 @@ bool LocalDisplayClass::Init(uint8_t address)
 	// SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
 	if (!display.begin(SSD1306_SWITCHCAPVCC, address))
 	{
-		#if defined(_DEBUG_)
+		#ifdef _DEBUG_
 		_PP(F("\nSSD1306 initialization failed; "));
 		snprintf(buf, 31, "Firmware version: %02d.%02d", CSSMStatus.MajorVersion, CSSMStatus.MinorVersion);
 		_PL(buf);

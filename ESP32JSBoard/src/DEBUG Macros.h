@@ -4,6 +4,7 @@
 //#define _TEST_
 
 #ifdef _DEBUG_
+extern HardwareSerial USBSerial;
 #define _PP(a) USBSerial.print(a);
 #define _PL(a) USBSerial.println(a);
 #define _PLH(a) USBSerial.println(a, HEX);

@@ -11,6 +11,7 @@
 */
 
 
+#include "src/BME280Data.h"
 #include "src/CSSMStatus.h"
 #include "src/DEBUG Macros.h"
 
@@ -125,11 +126,6 @@ void setup()
 	HeartbeatLEDTask.setInterval(HeartbeatLEDTogglePeriod * TASK_MILLISECOND);
 	HeartbeatLEDTask.enable();
 
-	SensorData.Init(LOSBAnalogPin, ESP32VINAnalogPin);
-	ReadSensorsTask.enable();
-	ReadControlsTask.enable();
-	UpdateLocalDisplayTask.enable();
-
 	LOSBArray.Init(LOSB_NUM_LEVELS, LOSB_LEVELS);
 	//ROSBArray.Init(NUM_LEVELS, LEVELS);
 
@@ -143,6 +139,11 @@ void setup()
 		CSSMStatus.LocalDisplayStatus = true;
 		LocalDisplay.Control(LocalDisplayClass::SYSPage);
 	}
+
+	SensorData.Init(LOSBAnalogPin, ESP32VINAnalogPin);
+	ReadSensorsTask.enable();
+	ReadControlsTask.enable();
+	UpdateLocalDisplayTask.enable();
 
 
 }

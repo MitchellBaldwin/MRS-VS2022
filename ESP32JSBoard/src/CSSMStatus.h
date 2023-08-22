@@ -1,4 +1,15 @@
-// CSSMStatus.h
+/*	CSSMStatus.h
+*	CSSMStatusClass - Base class for module level status and parameters
+*
+*
+*
+*
+*	Mitchell Baldwin copyright 2023
+*
+*	v 0.0:	Initial commit
+*	v 0.1:
+*
+*/
 
 #ifndef _CSSMSTATUS_h
 #define _CSSMSTATUS_h

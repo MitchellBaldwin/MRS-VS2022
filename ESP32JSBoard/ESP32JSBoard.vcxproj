@@ -80,6 +80,7 @@
     <TargetOSAndVersion>Arduino</TargetOSAndVersion>
   </PropertyGroup>
   <ItemGroup>
+    <ClCompile Include="src\BME280Data.cpp" />
     <ClCompile Include="CSSModuleESP32.ino">
       <FileType>CppCode</FileType>
       <DeploymentContent>true</DeploymentContent>
@@ -105,6 +106,7 @@
     <ProjectCapability Include="VisualMicro" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\BME280Data.h" />
     <ClInclude Include="src\CSSMStatus.h" />
     <ClInclude Include="src\DEBUG Macros.h" />
     <ClInclude Include="src\I2CBus.h" />
