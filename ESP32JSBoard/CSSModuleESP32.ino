@@ -38,8 +38,10 @@ HardwareSerial USBSerial(0);	// Uses the same UART device as "Serial" but does n
 HardwareSerial IDCSerial(2);	// UART for inter-device communication & control
 
 #include "src/I2CBus.h"
+
 #include "src/LocalDisplay.h"
 constexpr byte LocalDisplayI2CAddress = 0x3C;
+#include "src/DebugDisplay.h"
 constexpr byte DebugDisplayI2CAddress = 0x3D;
 
 #include "src/CSSMSensorData.h"
@@ -128,17 +130,16 @@ void setup()
 
 	I2CBus.Init();
 	I2CBus.Scan();
-	snprintf(buf, 22, "I2C %02X %02X %02X %02X %02X %02X",
+	snprintf(buf, 31, "I2C %02X %02X %02X %02X %02X %02X %02X %02X",
 		I2CBus.ActiveI2CDeviceAddresses[0],
 		I2CBus.ActiveI2CDeviceAddresses[1],
 		I2CBus.ActiveI2CDeviceAddresses[2],
 		I2CBus.ActiveI2CDeviceAddresses[3],
 		I2CBus.ActiveI2CDeviceAddresses[4],
-		I2CBus.ActiveI2CDeviceAddresses[5]);
+		I2CBus.ActiveI2CDeviceAddresses[5],
+		I2CBus.ActiveI2CDeviceAddresses[6],
+		I2CBus.ActiveI2CDeviceAddresses[7]);
 	_PL(buf);
-
-	HeartbeatLEDTask.setInterval(HeartbeatLEDTogglePeriod * TASK_MILLISECOND);
-	HeartbeatLEDTask.enable();
 
 	LOSBArray.Init(LOSB_NUM_LEVELS, LOSB_LEVELS);
 	//ROSBArray.Init(NUM_LEVELS, LEVELS);
@@ -147,11 +148,30 @@ void setup()
 	{
 		CSSMStatus.LocalDisplayStatus = false;
 		HeartbeatLEDTogglePeriod = NoLocalDisplayHeartbeatLEDToggleInterval;
+		snprintf(buf, 31, "Local Display not found at I2C 0x%02X", LocalDisplayI2CAddress);
+		_PL(buf)
 	}
 	else
 	{
 		CSSMStatus.LocalDisplayStatus = true;
 		LocalDisplay.Control(LocalDisplayClass::SYSPage);
+		snprintf(buf, 31, "Local Display at I2C 0x%02X", LocalDisplayI2CAddress);
+		_PL(buf)
+	}
+
+	if (!DebugDisplay.Init(DebugDisplayI2CAddress))
+	{
+		CSSMStatus.DebugDisplayStatus = false;
+		//HeartbeatLEDTogglePeriod = NoDebugDisplayHeartbeatLEDToggleInterval;
+		snprintf(buf, 31, "Debug Display not found at I2C 0x%02X", DebugDisplayI2CAddress);
+		_PL(buf)
+	}
+	else
+	{
+		CSSMStatus.DebugDisplayStatus = true;
+		DebugDisplay.Control(DebugDisplayClass::HOMPage);
+		snprintf(buf, 31, "Debug Display at I2C 0x%02X", DebugDisplayI2CAddress);
+		_PL(buf)
 	}
 
 	SensorData.Init(LOSBAnalogPin, ESP32VINAnalogPin);
@@ -160,6 +180,8 @@ void setup()
 	ReadControlsTask.enable();
 	UpdateLocalDisplayTask.enable();
 
+	HeartbeatLEDTask.setInterval(HeartbeatLEDTogglePeriod * TASK_MILLISECOND);
+	HeartbeatLEDTask.enable();
 
 }
 

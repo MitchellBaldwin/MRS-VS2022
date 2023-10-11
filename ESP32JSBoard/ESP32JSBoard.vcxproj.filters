@@ -42,6 +42,9 @@
     <ClCompile Include="src\BME280Data.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\DebugDisplay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="__vm\.ESP32JSBoard.vsarduino.h">
@@ -69,6 +72,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\BME280Data.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DebugDisplay.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

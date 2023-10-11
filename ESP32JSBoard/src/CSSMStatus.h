@@ -34,6 +34,7 @@ class CSSMStatusClass
 	 bool UART2Status = false;
 
 	 bool LocalDisplayStatus = false;
+	 bool DebugDisplayStatus = false;
 	 
 	 bool BME280Status = false;
 	 bool IMUStatus = false;
