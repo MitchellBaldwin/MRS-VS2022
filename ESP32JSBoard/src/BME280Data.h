@@ -32,6 +32,9 @@ public:
 
 	void Init();
 	String GetTchipString();
+	String GetPbaroString();
+	String GetRHString();
+
 };
 
 extern BME280DataClass BME280Data;

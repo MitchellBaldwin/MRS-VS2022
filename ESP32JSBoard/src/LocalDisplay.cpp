@@ -177,10 +177,21 @@ void LocalDisplayClass::DrawENVPage()
 	}
 
 	// Update dynamic displays:
-	display.fillRect(0, 32, 128, 8, SSD1306_BLACK);
+	display.fillRect(0, 24, 128, 8, SSD1306_BLACK);
 	//snprintf(buf, 22, BME280Data.GetTchipString().c_str());
-	display.setCursor(0, 32);
-	display.write(BME280Data.GetTchipString().c_str());
+	display.setCursor(8, 24);
+	String OutString = String("Tatm  ") + BME280Data.GetTchipString();
+	display.write(OutString.c_str());
+
+	display.fillRect(0, 32, 128, 8, SSD1306_BLACK);
+	display.setCursor(8, 32);
+	OutString = String("Pbaro ") + BME280Data.GetPbaroString();
+	display.write(OutString.c_str());
+
+	display.fillRect(0, 40, 128, 8, SSD1306_BLACK);
+	display.setCursor(8, 40);
+	OutString = String("RH    ") + BME280Data.GetRHString();
+	display.write(OutString.c_str());
 
 	display.display();
 }
@@ -328,10 +339,10 @@ void LocalDisplayClass::Control(uint8_t command)
 		DrawI2CPage();
 		break;
 	case ENVPage:
-		DrawI2CPage();
+		DrawENVPage();
 		break;
 	case IMUPage:
-		DrawI2CPage();
+		DrawIMUPage();
 		break;
 	case Commands::Prev:
 		if (currentPage > Pages::SYS)

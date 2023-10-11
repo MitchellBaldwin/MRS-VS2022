@@ -40,12 +40,14 @@ HardwareSerial IDCSerial(2);	// UART for inter-device communication & control
 #include "src/I2CBus.h"
 #include "src/LocalDisplay.h"
 constexpr byte LocalDisplayI2CAddress = 0x3C;
+constexpr byte DebugDisplayI2CAddress = 0x3D;
 
 #include "src/CSSMSensorData.h"
 // TODO: If OSB arrays are powered from ESP 32 3.3 V supply then consider running signals directly to the ADC ports
 // Scale and buffer VIN signal and use the VP pin (pin 36) for measurement
-constexpr byte LOSBAnalogPin = 36;
-constexpr byte ESP32VINAnalogPin = 35;
+constexpr byte LOSBAnalogPin = 34;
+constexpr byte ROSBAnalogPin = 35;
+constexpr byte ESP32VINAnalogPin = 36;
 
 #include "src/OSBArray.h"
 OSBArrayClass LOSBArray(LOSBAnalogPin);
@@ -76,6 +78,10 @@ Task HeartbeatLEDTask(HeartbeatLEDTogglePeriod* TASK_MILLISECOND, TASK_FOREVER, 
 constexpr long ReadSensorsInterval = 50;
 void ReadSensorDataCallback();
 Task ReadSensorsTask(ReadSensorsInterval* TASK_MILLISECOND, TASK_FOREVER, &ReadSensorDataCallback, &MainScheduler, false);
+
+constexpr long ReadENVDataInterval = 5000;
+void ReadENVDataCallback();
+Task ReadENVDataTask(ReadENVDataInterval* TASK_MILLISECOND, TASK_FOREVER, &ReadENVDataCallback, &MainScheduler, false);
 
 constexpr long ReadControlsInterval = 50;
 void ReadControlsCallback();
@@ -122,6 +128,14 @@ void setup()
 
 	I2CBus.Init();
 	I2CBus.Scan();
+	snprintf(buf, 22, "I2C %02X %02X %02X %02X %02X %02X",
+		I2CBus.ActiveI2CDeviceAddresses[0],
+		I2CBus.ActiveI2CDeviceAddresses[1],
+		I2CBus.ActiveI2CDeviceAddresses[2],
+		I2CBus.ActiveI2CDeviceAddresses[3],
+		I2CBus.ActiveI2CDeviceAddresses[4],
+		I2CBus.ActiveI2CDeviceAddresses[5]);
+	_PL(buf);
 
 	HeartbeatLEDTask.setInterval(HeartbeatLEDTogglePeriod * TASK_MILLISECOND);
 	HeartbeatLEDTask.enable();
@@ -142,6 +156,7 @@ void setup()
 
 	SensorData.Init(LOSBAnalogPin, ESP32VINAnalogPin);
 	ReadSensorsTask.enable();
+	ReadENVDataTask.enable();
 	ReadControlsTask.enable();
 	UpdateLocalDisplayTask.enable();
 
@@ -161,7 +176,11 @@ void ToggleBuiltinLEDCallback()
 void ReadSensorDataCallback()
 {
 	SensorData.Update();
-	
+}
+
+void ReadENVDataCallback()
+{
+	SensorData.ReadENVData();
 }
 
 void ReadControlsCallback()
