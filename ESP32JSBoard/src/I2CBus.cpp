@@ -19,8 +19,14 @@ void I2CBusClass::Init()
 bool I2CBusClass::ScanAddress(uint8_t address)
 {
 	Wire.beginTransmission(address);
-	if (Wire.endTransmission()) return true;
-	return false;
+	if (Wire.endTransmission() == 0x00)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 void I2CBusClass::Scan()
@@ -30,9 +36,10 @@ void I2CBusClass::Scan()
 	{
 		ActiveI2CDeviceAddresses[i] = 0x00;
 	}
-	for (uint8_t i = 0x00; i < 0x80; ++i)
+	// Scan for devices across the range 0x01 - 0x7F (0x00 always returns true?)
+	for (uint8_t i = 0x01; i < 0x80; ++i)
 	{
-		if (!ScanAddress(i))
+		if (ScanAddress(i))
 		{
 			if (I2CDeviceCount < MaxI2CDeviceCount)
 			{
@@ -43,7 +50,6 @@ void I2CBusClass::Scan()
 			{
 				maxDeviceCountExceeded = true;
 			}
-
 		}
 	}
 }

@@ -52,9 +52,27 @@ constexpr byte ROSBAnalogPin = 35;
 constexpr byte ESP32VINAnalogPin = 36;
 
 #include "src/OSBArray.h"
-OSBArrayClass LOSBArray(LOSBAnalogPin);
 //OSBArrayClass ROSBArray(ROSBAnalogPin);
 
+#define _ROBOX
+#ifdef _ROBOX
+OSBArrayClass OSBArray(LOSBAnalogPin);
+static const uint8_t OBS_NUM_BUTTONS = 8;
+static const uint8_t OSB_NUM_LEVELS = OBS_NUM_BUTTONS + 1;
+static const uint16_t OSB_LEVELS[OSB_NUM_LEVELS] =
+{
+  160,
+  830,
+  1100,
+  1350,
+  1640,
+  1920,
+  2240,
+  2640,
+  3100,
+};
+#elif
+OSBArrayClass LOSBArray(LOSBAnalogPin);
 static const uint8_t LOBS_NUM_BUTTONS = 4;
 static const uint8_t LOSB_NUM_LEVELS = LOBS_NUM_BUTTONS + 1;
 static const uint16_t LOSB_LEVELS[LOSB_NUM_LEVELS] = 
@@ -65,6 +83,18 @@ static const uint16_t LOSB_LEVELS[LOSB_NUM_LEVELS] =
   2400,
   3160
 };
+OSBArrayClass ROSBArray(LOSBAnalogPin);
+static const uint8_t ROBS_NUM_BUTTONS = 4;
+static const uint8_t ROSB_NUM_LEVELS = ROBS_NUM_BUTTONS + 1;
+static const uint16_tRLOSB_LEVELS[ROSB_NUM_LEVELS] = 
+{
+  0,		/* 0%, short to ground */
+  1165,
+  1770,
+  2400,
+  3160
+};
+#endif
 
 // Scheduler
 Scheduler MainScheduler;
@@ -141,8 +171,12 @@ void setup()
 		I2CBus.ActiveI2CDeviceAddresses[7]);
 	_PL(buf);
 
+#ifdef _ROBOX
+	OSBArray.Init(OSB_NUM_LEVELS, OSB_LEVELS);
+#elif
 	LOSBArray.Init(LOSB_NUM_LEVELS, LOSB_LEVELS);
-	//ROSBArray.Init(NUM_LEVELS, LEVELS);
+	ROSBArray.Init(ROSB_NUM_LEVELS, ROSB_LEVELS);
+#endif
 
 	if (!LocalDisplay.Init(LocalDisplayI2CAddress))
 	{
@@ -207,7 +241,7 @@ void ReadENVDataCallback()
 
 void ReadControlsCallback()
 {
-	byte OSBPressed = LOSBArray.GetOSBPress();
+	byte OSBPressed = OSBArray.GetOSBPress();
 	if (OSBPressed)
 	{
 		char buf[32];
@@ -216,11 +250,11 @@ void ReadControlsCallback()
 
 		switch (OSBPressed)
 		{
-		case OSBArrayClass::OSB1:
-			LocalDisplay.Control(LocalDisplayClass::Prev);
-			break;
-		case OSBArrayClass::OSB2:
+		case OSBArrayClass::OSB4:
 			LocalDisplay.Control(LocalDisplayClass::Next);
+			break;
+		case OSBArrayClass::OSB5:
+			DebugDisplay.Control(DebugDisplayClass::Next);
 			break;
 		default:
 			break;

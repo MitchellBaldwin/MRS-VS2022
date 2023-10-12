@@ -1,6 +1,9 @@
-// 
-// 
-// 
+/*	DebugDisplayClass - Base class for implementing paged graphical display interface for
+*	Arduino and ESP32 based embedded control systems.
+*
+*	Mitchell Baldwin copyright 2023
+*
+*/
 
 #include "DebugDisplay.h"
 #include "CSSMStatus.h"
@@ -23,6 +26,67 @@ void DebugDisplayClass::DrawPageHeaderAndFooter()
 void DebugDisplayClass::DrawHOMPage()
 {
 	currentPage = HOME;
+
+	if (lastPage != currentPage)
+	{
+		// Clear display and redraw static elements of the page format:
+		DrawPageHeaderAndFooter();
+
+		lastPage = currentPage;
+	}
+
+	// Update dynamic displays:
+
+	display.display();
+}
+
+void DebugDisplayClass::DrawESPPage()
+{
+	currentPage = ESPP;
+
+	if (lastPage != currentPage)
+	{
+		// Clear display and redraw static elements of the page format:
+		DrawPageHeaderAndFooter();
+
+		snprintf(buf, 22, "%s %d cores", ESP.getChipModel(), ESP.getChipCores());
+		display.setCursor(0, 16);
+		display.write(buf);
+		snprintf(buf, 22, "v%d %d MHz", ESP.getChipRevision(), ESP.getCpuFreqMHz());
+		display.setCursor(0, 24);
+		display.write(buf);
+		snprintf(buf, 22, "MAC: %012X", WiFi.);
+		display.setCursor(0, 32);
+		display.write(buf);
+
+		lastPage = currentPage;
+	}
+
+	// Update dynamic displays:
+
+	display.display();
+}
+
+void DebugDisplayClass::DrawMEMPage()
+{
+	currentPage = MEM;
+
+	if (lastPage != currentPage)
+	{
+		// Clear display and redraw static elements of the page format:
+		DrawPageHeaderAndFooter();
+
+		lastPage = currentPage;
+	}
+
+	// Update dynamic displays:
+
+	display.display();
+}
+
+void DebugDisplayClass::DrawWIFIPage()
+{
+	currentPage = WIFI;
 
 	if (lastPage != currentPage)
 	{
@@ -108,6 +172,15 @@ void DebugDisplayClass::Update()
 	case HOME:
 		DrawHOMPage();
 		break;
+	case ESPP:
+		DrawESPPage();
+		break;
+	case MEM:
+		DrawMEMPage();
+		break;
+	case WIFI:
+		DrawWIFIPage();
+		break;
 
 	default:
 		DrawNONEPage();
@@ -128,6 +201,15 @@ void DebugDisplayClass::Control(uint8_t command)
 		break;
 	case HOMPage:
 		DrawHOMPage();
+		break;
+	case ESPPage:
+		DrawESPPage();
+		break;
+	case MEMPage:
+		DrawMEMPage();
+		break;
+	case WIFIPage:
+		DrawWIFIPage();
 		break;
 	case Commands::Prev:
 		if (currentPage > Pages::HOME)

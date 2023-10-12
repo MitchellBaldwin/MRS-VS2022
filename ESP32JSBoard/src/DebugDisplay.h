@@ -1,4 +1,21 @@
-// DebugDisplay.h
+/*	DebugDisplayClass - Based on template class for implementing paged graphical display interface for
+*	Arduino and ESP32 based embedded control systems.
+*
+*	Extended to serve as local display for the ESP32 based Control Stick Steering (CSS) module
+*	Pages supported:
+*		Home	(HOME)	Default scrolling display of debug messages
+*		ESP		(ESP)	ESP32 chip & module info
+*		Memory	(MEM)	Memory status info
+*		WiFi	(WIFI)	WiFi, ESP NOW & network status info
+* 
+*		None	(NONE)	Blank display (to conserve power)
+*
+*	Mitchell Baldwin copyright 2023
+*
+*	v 0.00:	Initial command set
+*	v
+*
+*/
 
 #ifndef _DEBUGDISPLAY_h
 #define _DEBUGDISPLAY_h
@@ -32,6 +49,9 @@ protected:
 	enum Pages
 	{
 		HOME,
+		ESPP,
+		MEM,
+		WIFI,
 
 		NONE
 	};
@@ -41,17 +61,26 @@ protected:
 	const char* PageTitles[NONE] =
 	{
 		"MRS CSS    Debug Home",
+		"MRS CSS  Debug  ESP32",
+		"MRS CSS  Debug Memory",
+		"MRS CSS    Debug WiFi",
 
 	};
 
 	const char* PageMenus[NONE] =
 	{
-		"<NONE    HOM    NONE>",
+		"<NONE    HOM     ESP>",
+		"<HOM     ESP     MEM>",
+		"<ESP     MEM    WIFI>",
+		"<MEM    WIFI    NONE>",
 
 	};
 
 	void DrawPageHeaderAndFooter();
 	void DrawHOMPage();
+	void DrawESPPage();
+	void DrawMEMPage();
+	void DrawWIFIPage();
 
 	void DrawNONEPage();
 
@@ -61,6 +90,9 @@ public:
 		Clear,
 		Refresh,
 		HOMPage,
+		ESPPage,
+		MEMPage,
+		WIFIPage,
 		Prev,
 		Next,
 

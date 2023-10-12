@@ -23,6 +23,7 @@
 #include "Measurement.h"
 #include <BME280I2C.h>
 #include "BME280Data.h"
+#include <SparkFun_Qwiic_Joystick_Arduino_Library.h>
 
 class CSSMSensorData
 {
