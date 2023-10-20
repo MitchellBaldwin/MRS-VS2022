@@ -10,6 +10,7 @@
 
 */
 
+#include <TFT_eSPI.h>
 #include "src\DEBUG Macros.h"
 
 #include <TaskSchedulerSleepMethods.h>

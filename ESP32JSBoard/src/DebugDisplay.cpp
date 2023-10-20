@@ -55,7 +55,7 @@ void DebugDisplayClass::DrawESPPage()
 		snprintf(buf, 22, "v%d %d MHz", ESP.getChipRevision(), ESP.getCpuFreqMHz());
 		display.setCursor(0, 24);
 		display.write(buf);
-		snprintf(buf, 22, "MAC: %012X", WiFi.);
+		snprintf(buf, 22, "MAC: %012X", ESP.getEfuseMac());
 		display.setCursor(0, 32);
 		display.write(buf);
 

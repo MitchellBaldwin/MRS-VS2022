@@ -52,7 +52,6 @@ constexpr byte ROSBAnalogPin = 35;
 constexpr byte ESP32VINAnalogPin = 36;
 
 #include "src/OSBArray.h"
-//OSBArrayClass ROSBArray(ROSBAnalogPin);
 
 #define _ROBOX
 #ifdef _ROBOX
