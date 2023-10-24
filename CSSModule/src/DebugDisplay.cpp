@@ -75,6 +75,16 @@ void DebugDisplayClass::DrawMEMPage()
 	{
 		// Clear display and redraw static elements of the page format:
 		DrawPageHeaderAndFooter();
+		
+		snprintf(buf, 22, "%s %d cores", ESP.getChipModel(), ESP.getChipCores());
+		display.setCursor(0, 16);
+		display.write(buf);
+		snprintf(buf, 22, "v%d %d MHz", ESP.getChipRevision(), ESP.getCpuFreqMHz());
+		display.setCursor(0, 24);
+		display.write(buf);
+		snprintf(buf, 22, "MAC: %012X", ESP.getEfuseMac());
+		display.setCursor(0, 32);
+		display.write(buf);
 
 		lastPage = currentPage;
 	}

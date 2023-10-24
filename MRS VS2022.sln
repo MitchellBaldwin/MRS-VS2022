@@ -7,9 +7,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SFTPPowMgmtBoard", "SFTPPow
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ESP32PowMgmtBoard", "ESP32PowMgmtBoard\ESP32PowMgmtBoard.vcxproj", "{DF60D3D4-FBA0-4DD7-A058-9EF945BD5E3C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ESP32JSBoard", "ESP32JSBoard\ESP32JSBoard.vcxproj", "{EDC0B5D2-F3D9-4E5E-B046-DED5B533B191}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DEBUG Helpers", "DEBUG Helpers\DEBUG Helpers.vcxitems", "{92B77076-B132-437A-B955-E03BA9F3A7D3}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ESP32JSBoard", "CSSModule\CSSModule.vcxproj", "{EDC0B5D2-F3D9-4E5E-B046-DED5B533B191}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
