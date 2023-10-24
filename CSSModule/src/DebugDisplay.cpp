@@ -49,10 +49,10 @@ void DebugDisplayClass::DrawESPPage()
 		// Clear display and redraw static elements of the page format:
 		DrawPageHeaderAndFooter();
 
-		snprintf(buf, 22, "%s %d cores", ESP.getChipModel(), ESP.getChipCores());
+		snprintf(buf, 22, "Model: %s %d core", ESP.getChipModel(), ESP.getChipCores());
 		display.setCursor(0, 16);
 		display.write(buf);
-		snprintf(buf, 22, "v%d %d MHz", ESP.getChipRevision(), ESP.getCpuFreqMHz());
+		snprintf(buf, 22, "CPU: v%d %d MHz", ESP.getChipRevision(), ESP.getCpuFreqMHz());
 		display.setCursor(0, 24);
 		display.write(buf);
 		snprintf(buf, 22, "MAC: %012X", ESP.getEfuseMac());
@@ -76,13 +76,22 @@ void DebugDisplayClass::DrawMEMPage()
 		// Clear display and redraw static elements of the page format:
 		DrawPageHeaderAndFooter();
 		
-		snprintf(buf, 22, "%s %d cores", ESP.getChipModel(), ESP.getChipCores());
+		snprintf(buf, 22, "Heap: %d/%d", ESP.getFreeHeap(), ESP.getHeapSize());
 		display.setCursor(0, 16);
 		display.write(buf);
-		snprintf(buf, 22, "v%d %d MHz", ESP.getChipRevision(), ESP.getCpuFreqMHz());
+
+		snprintf(buf, 22, "Prog: %d/%d", ESP.getSketchSize(), ESP.getFreeSketchSpace());
 		display.setCursor(0, 24);
 		display.write(buf);
-		snprintf(buf, 22, "MAC: %012X", ESP.getEfuseMac());
+		
+		if (ESP.getPsramSize() > 0)
+		{
+			snprintf(buf, 22, "PSRAM: %d/%d", ESP.getFreePsram(), ESP.getPsramSize());
+		}
+		else
+		{
+			snprintf(buf, 22, "No PSRAM");
+		}
 		display.setCursor(0, 32);
 		display.write(buf);
 
