@@ -49,16 +49,25 @@ void DebugDisplayClass::DrawESPPage()
 		// Clear display and redraw static elements of the page format:
 		DrawPageHeaderAndFooter();
 
-		snprintf(buf, 22, "Model: %s %d core", ESP.getChipModel(), ESP.getChipCores());
+		snprintf(buf, 22, "%s %d core", ESP.getChipModel(), ESP.getChipCores());
 		display.setCursor(0, 16);
 		display.write(buf);
-		snprintf(buf, 22, "CPU: v%d %d MHz", ESP.getChipRevision(), ESP.getCpuFreqMHz());
+		
+		snprintf(buf, 22, "CPU v%d %d MHz", ESP.getChipRevision(), ESP.getCpuFreqMHz());
 		display.setCursor(0, 24);
 		display.write(buf);
-		snprintf(buf, 22, "MAC: %012X", ESP.getEfuseMac());
+		
+		uint8_t mac[6];
+		esp_efuse_mac_get_custom(mac);
+		snprintf(buf, 22, "MAC:%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+		//snprintf(buf, 22, "MAC:" MACSTR, mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 		display.setCursor(0, 32);
 		display.write(buf);
 
+		snprintf(buf, 22, "efMAC:%012X", ESP.getEfuseMac());
+		display.setCursor(0, 40);
+		display.write(buf);
+		
 		lastPage = currentPage;
 	}
 

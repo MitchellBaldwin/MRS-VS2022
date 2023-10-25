@@ -180,17 +180,17 @@ void LocalDisplayClass::DrawENVPage()
 	display.fillRect(0, 24, 128, 8, SSD1306_BLACK);
 	//snprintf(buf, 22, BME280Data.GetTchipString().c_str());
 	display.setCursor(8, 24);
-	String OutString = String("Tatm  ") + BME280Data.GetTchipString();
+	String OutString = String("Tatm  ") + SensorData.ENVData.GetTchipString();
 	display.write(OutString.c_str());
 
 	display.fillRect(0, 32, 128, 8, SSD1306_BLACK);
 	display.setCursor(8, 32);
-	OutString = String("Pbaro ") + BME280Data.GetPbaroString();
+	OutString = String("Pbaro ") + SensorData.ENVData.GetPbaroString();
 	display.write(OutString.c_str());
 
 	display.fillRect(0, 40, 128, 8, SSD1306_BLACK);
 	display.setCursor(8, 40);
-	OutString = String("RH    ") + BME280Data.GetRHString();
+	OutString = String("RH    ") + SensorData.ENVData.GetRHString();
 	display.write(OutString.c_str());
 
 	display.display();

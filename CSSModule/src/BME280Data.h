@@ -7,7 +7,7 @@
 *	Mitchell Baldwin copyright 2023
 *
 *	v 0.0:	Initial commit
-*	v 0.1:
+*	v 0.1:	Refactor to encapsulate BME280 sensor module
 *
 */
 
@@ -20,24 +20,32 @@
 	#include "WProgram.h"
 #endif
 
+#include <BME280.h>
+#include <BME280I2C.h>
+#include <BME280I2C_BRZO.h>
+#include <BME280Spi.h>
+#include <BME280SpiSw.h>
+#include <EnvironmentCalculations.h>
+
 class BME280DataClass
 {
 protected:
-
-
-public:
+	BME280I2C* bme280;
 	float Tchip = NAN;
 	float Pbaro = NAN;
 	float RH = NAN;
 
-	void Init();
+public:
+	BME280DataClass();	// Default constructor
+	bool Init();
+	void ReadENVData();
 	String GetTchipString();
 	String GetPbaroString();
 	String GetRHString();
 
 };
 
-extern BME280DataClass BME280Data;
+//extern BME280DataClass BME280Data;
 
 #endif
 

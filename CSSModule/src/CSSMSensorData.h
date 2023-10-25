@@ -21,21 +21,18 @@
 #endif
 
 #include "Measurement.h"
-#include <BME280I2C.h>
 #include "BME280Data.h"
-#include <SparkFun_Qwiic_Joystick_Arduino_Library.h>
 
 class CSSMSensorData
 {
 protected:
 	byte KBSensePin;
 	byte ESP32VINSensePin;
-	BME280I2C* bme280;
 
 public:
-	MeasurementClass KPVoltage;
-	MeasurementClass ESP32VIN;
-	BME280DataClass ENVData;
+	MeasurementClass KPVoltage;		// Raw analog voltage from keypad ladder button array
+	MeasurementClass ESP32VIN;		// Bufferesd analog voltage measurement
+	BME280DataClass ENVData;		// Environment measurements
 
 	CSSMSensorData();
 	bool Init(byte kbSensePin, byte esp32VINSensePin);

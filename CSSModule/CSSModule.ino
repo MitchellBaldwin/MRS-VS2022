@@ -11,6 +11,7 @@
 */
 
 
+#include "src/SFQJS.h"
 #include "src/BME280Data.h"
 #include "src/CSSMStatus.h"
 #include "src/DEBUG Macros.h"
@@ -208,6 +209,7 @@ void setup()
 	}
 
 	SensorData.Init(LOSBAnalogPin, ESP32VINAnalogPin);
+	
 	ReadSensorsTask.enable();
 	ReadENVDataTask.enable();
 	ReadControlsTask.enable();
