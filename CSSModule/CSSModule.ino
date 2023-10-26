@@ -178,6 +178,8 @@ void setup()
 	ROSBArray.Init(ROSB_NUM_LEVELS, ROSB_LEVELS);
 #endif
 
+	SensorData.Init(LOSBAnalogPin, ESP32VINAnalogPin);
+	
 	if (!LocalDisplay.Init(LocalDisplayI2CAddress))
 	{
 		CSSMStatus.LocalDisplayStatus = false;
@@ -208,8 +210,6 @@ void setup()
 		_PL(buf)
 	}
 
-	SensorData.Init(LOSBAnalogPin, ESP32VINAnalogPin);
-	
 	ReadSensorsTask.enable();
 	ReadENVDataTask.enable();
 	ReadControlsTask.enable();

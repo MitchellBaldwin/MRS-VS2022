@@ -5,6 +5,11 @@
 
 #include "BME280Data.h"
 #include <BME280.h>
+#include "DEBUG Macros.h"
+
+#ifdef _DEBUG_
+#include "CSSMStatus.h"
+#endif
 
 BME280DataClass::BME280DataClass()
 {
@@ -65,7 +70,7 @@ bool BME280DataClass::Init()
 	bool success = bme280->begin();
 
 #ifdef _DEBUG_
-	if (success)
+	if (!success)
 	{
 		char buf[32];
 		_PP(F("\BME280 initialization failed; "));
@@ -84,7 +89,7 @@ bool BME280DataClass::Init()
 			break;
 		default:
 			_PL(F("BMx280 chip not recognized"));
-			CSSMStatus.BME280Status = false;
+			success = false;
 		}
 	}
 #endif

@@ -35,7 +35,8 @@ bool CSSMSensorData::Init(byte kbSensePin, byte esp32VINSensePin)
 
 	CSSMStatus.BME280Status = ENVData.Init();
 
-	return CSSMStatus.BME280Status;
+	bool success = CSSMStatus.BME280Status && true;
+	return success;
 }
 
 void CSSMSensorData::Update()

@@ -64,9 +64,9 @@ void DebugDisplayClass::DrawESPPage()
 		display.setCursor(0, 32);
 		display.write(buf);
 
-		snprintf(buf, 22, "efMAC:%012X", ESP.getEfuseMac());
-		display.setCursor(0, 40);
-		display.write(buf);
+		//snprintf(buf, 22, "efMAC:%012X", ESP.getEfuseMac());
+		//display.setCursor(0, 40);
+		//display.write(buf);
 		
 		lastPage = currentPage;
 	}

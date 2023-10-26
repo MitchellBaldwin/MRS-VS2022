@@ -25,12 +25,13 @@
 class SFQJSClass
 {
 protected:
-	uint8_t JSI2CAddress = 0x20;
+	uint8_t JSI2CAddress = QWIIC_JOYSTICK_ADDR;
 	JOYSTICK* JS;
 
 public:
 	SFQJSClass();		// Default constructor
-	void Init();
+	bool Init();
+	bool Init(uint8_t i2cAddress);
 };
 
 extern SFQJSClass SFQJS;
