@@ -218,6 +218,94 @@ void LocalDisplayClass::DrawIMUPage()
 	display.display();
 }
 
+void LocalDisplayClass::DrawDRVPage()
+{
+	currentPage = DRV;
+
+	if (lastPage != currentPage)
+	{
+		DrawPageHeaderAndFooter();
+
+		display.setCursor(0, 40);
+
+		display.setCursor(64, 40);
+
+		display.setCursor(0, 48);
+
+		lastPage = currentPage;
+	}
+
+	// Update dynamic displays:
+
+	display.display();
+}
+
+void LocalDisplayClass::DrawHDGPage()
+{
+	currentPage = HDG;
+
+	if (lastPage != currentPage)
+	{
+		DrawPageHeaderAndFooter();
+
+		display.setCursor(0, 40);
+
+		display.setCursor(64, 40);
+
+		display.setCursor(0, 48);
+
+		lastPage = currentPage;
+	}
+
+	// Update dynamic displays:
+
+	display.display();
+}
+
+void LocalDisplayClass::DrawWPTPage()
+{
+	currentPage = WPT;
+
+	if (lastPage != currentPage)
+	{
+		DrawPageHeaderAndFooter();
+
+		display.setCursor(0, 40);
+
+		display.setCursor(64, 40);
+
+		display.setCursor(0, 48);
+
+		lastPage = currentPage;
+	}
+
+	// Update dynamic displays:
+
+	display.display();
+}
+
+void LocalDisplayClass::DrawSEQPage()
+{
+	currentPage = SEQ;
+
+	if (lastPage != currentPage)
+	{
+		DrawPageHeaderAndFooter();
+
+		display.setCursor(0, 40);
+
+		display.setCursor(64, 40);
+
+		display.setCursor(0, 48);
+
+		lastPage = currentPage;
+	}
+
+	// Update dynamic displays:
+
+	display.display();
+}
+
 void LocalDisplayClass::DrawNONEPage()
 {
 	currentPage = NONE;
@@ -304,6 +392,19 @@ void LocalDisplayClass::Update()
 	case IMU:
 		DrawIMUPage();
 		break;
+	
+	case DRV:
+		DrawDRVPage();
+		break;
+	case HDG:
+		DrawHDGPage();
+		break;
+	case WPT:
+		DrawWPTPage();
+		break;
+	case SEQ:
+		DrawSEQPage();
+		break;
 
 	default:
 		DrawNONEPage();
@@ -344,8 +445,26 @@ void LocalDisplayClass::Control(uint8_t command)
 	case IMUPage:
 		DrawIMUPage();
 		break;
+
+	case DRVPage:
+		DrawDRVPage();
+		break;
+	case HDGPage:
+		DrawHDGPage();
+		break;
+	case WPTPage:
+		DrawWPTPage();
+		break;
+	case SEQPage:
+		DrawSEQPage();
+		break;
+
 	case Commands::Prev:
-		if (currentPage > Pages::SYS)
+		if (currentPage == Pages::SYS)
+		{
+			currentPage = Pages::NONE;
+		}
+		else if (currentPage > Pages::SYS)
 		{
 			currentPage = (Pages)((byte)currentPage - 1);
 		}
@@ -353,15 +472,20 @@ void LocalDisplayClass::Control(uint8_t command)
 		{
 			currentPage = Pages::NONE;
 		}
+		Update();
 		break;
 	case Next:
-		if (currentPage < Pages::NONE)
+		if (currentPage == Pages::NONE)
+		{
+			currentPage = Pages::SYS;
+		}
+		else if (currentPage < Pages::IMU)
 		{
 			currentPage = (Pages)((byte)currentPage + 1);
 		}
 		else
 		{
-			currentPage = Pages::SYS;
+			currentPage = Pages::NONE;
 		}
 		Update();
 		break;

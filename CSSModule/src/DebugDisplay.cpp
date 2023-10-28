@@ -7,6 +7,7 @@
 
 #include "DebugDisplay.h"
 #include "CSSMStatus.h"
+#include "CSSMSensorData.h"
 
 void DebugDisplayClass::DrawPageHeaderAndFooter()
 {
@@ -36,6 +37,10 @@ void DebugDisplayClass::DrawHOMPage()
 	}
 
 	// Update dynamic displays:
+	display.fillRect(0, 32, 128, 8, SSD1306_BLACK);
+	snprintf(buf, 22, "KP %04d %#5.2f %s", SensorData.GetKBRaw(), SensorData.KPVoltage.GetRealValue(), SensorData.KPVoltage.Units);
+	display.setCursor(0, 32);
+	display.write(buf);
 
 	display.display();
 }

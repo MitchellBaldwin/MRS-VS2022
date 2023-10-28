@@ -61,15 +61,15 @@ static const uint8_t OBS_NUM_BUTTONS = 8;
 static const uint8_t OSB_NUM_LEVELS = OBS_NUM_BUTTONS + 1;
 static const uint16_t OSB_LEVELS[OSB_NUM_LEVELS] =
 {
-  160,
-  830,
+  250,
+  850,
   1100,
-  1350,
+  1450,
   1640,
-  1920,
-  2240,
-  2640,
-  3100,
+  2000,
+  2340,
+  2775,
+  3300,
 };
 #elif
 OSBArrayClass LOSBArray(LOSBAnalogPin);
@@ -122,6 +122,10 @@ Task ReadControlsTask(ReadControlsInterval* TASK_MILLISECOND, TASK_FOREVER, &Rea
 constexpr long UpdateLocalDisplayInterval = 100;
 void UpdateLocalDisplayCallback();
 Task UpdateLocalDisplayTask(UpdateLocalDisplayInterval* TASK_MILLISECOND, TASK_FOREVER, &UpdateLocalDisplayCallback, &MainScheduler, false);
+
+constexpr long UpdateDebugDisplayInterval = 500;
+void UpdateDebugDisplayCallback();
+Task UpdateDebugDisplayTask(UpdateDebugDisplayInterval* TASK_MILLISECOND, TASK_FOREVER, &UpdateDebugDisplayCallback, &MainScheduler, false);
 
 void setup()
 {
@@ -214,6 +218,7 @@ void setup()
 	ReadENVDataTask.enable();
 	ReadControlsTask.enable();
 	UpdateLocalDisplayTask.enable();
+	UpdateDebugDisplayTask.enable();
 
 	HeartbeatLEDTask.setInterval(HeartbeatLEDTogglePeriod * TASK_MILLISECOND);
 	HeartbeatLEDTask.enable();
@@ -251,11 +256,26 @@ void ReadControlsCallback()
 
 		switch (OSBPressed)
 		{
+		case OSBArrayClass::OSB1:
+			LocalDisplay.Control(LocalDisplayClass::DRVPage);
+			break;
+		case OSBArrayClass::OSB2:
+			LocalDisplay.Control(LocalDisplayClass::HDGPage);
+			break;
+		case OSBArrayClass::OSB3:
+			LocalDisplay.Control(LocalDisplayClass::SYSPage);
+			break;
 		case OSBArrayClass::OSB4:
 			LocalDisplay.Control(LocalDisplayClass::Next);
 			break;
 		case OSBArrayClass::OSB5:
 			DebugDisplay.Control(DebugDisplayClass::Next);
+			break;
+		case OSBArrayClass::OSB7:
+			LocalDisplay.Control(LocalDisplayClass::SEQPage);
+			break;
+		case OSBArrayClass::OSB8:
+			LocalDisplay.Control(LocalDisplayClass::WPTPage);
 			break;
 		default:
 			break;
@@ -269,4 +289,9 @@ void ReadControlsCallback()
 void UpdateLocalDisplayCallback()
 {
 	LocalDisplay.Update();
+}
+
+void UpdateDebugDisplayCallback()
+{
+	DebugDisplay.Update();
 }

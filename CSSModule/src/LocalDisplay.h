@@ -51,6 +51,11 @@ protected:
 		 ENV,
 		 IMU,
 
+		 DRV,
+		 HDG,
+		 WPT,
+		 SEQ,
+
 		 NONE
 	 };
 	 Pages currentPage = SYS;
@@ -58,13 +63,17 @@ protected:
 
 	 const char* PageTitles[NONE] =
 	 {
-		 "MRS CSS        System",
-		 "MRS CSS         Power",
-		 "MRS CSS         Comms",
-		 "MRS CSS           I2C",
-		 "MRS CSS           ENV",
-		 "MRS CSS           IMU",
+		 "MRS CSS DRIVE  System",
+		 "MRS CSS DRIVE   Power",
+		 "MRS CSS DRIVE   Comms",
+		 "MRS CSS DRIVE     I2C",
+		 "MRS CSS DRIVE     ENV",
+		 "MRS CSS DRIVE     IMU",
 
+		 "MRS CSS DRIVE        ",
+		 "MRS CSS  HDG         ",
+		 "MRS CSS  WPT         ",
+		 "MRS CSS  SEQ         ",
 	 };
 
 	 const char* PageMenus[NONE] =
@@ -76,6 +85,11 @@ protected:
 		 "<I2C     ENV     IMU>",
 		 "<ENV     IMU     nxt>",
 
+		 "<       DRIVE       >",
+		 "<   Heading Hold    >",
+		 "<  Waypoint Direct  >",
+		 "< Waypoint Sequence >",
+
 	 };
 
 	 void DrawPageHeaderAndFooter();
@@ -85,6 +99,11 @@ protected:
 	 void DrawI2CPage();
 	 void DrawENVPage();
 	 void DrawIMUPage();
+
+	 void DrawDRVPage();
+	 void DrawHDGPage();
+	 void DrawWPTPage();
+	 void DrawSEQPage();
 
 	 void DrawNONEPage();
 
@@ -100,6 +119,12 @@ public:
 		I2CPage,
 		ENVPage,
 		IMUPage,
+
+		DRVPage,
+		HDGPage,
+		WPTPage,
+		SEQPage,
+
 		Prev,
 		Next,
 
