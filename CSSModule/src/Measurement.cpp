@@ -12,67 +12,119 @@ MeasurementClass::MeasurementClass()
 	GainDenominator = 1000000;
 }
 
-MeasurementClass::MeasurementClass(int offset, int megaGain)
+MeasurementClass::MeasurementClass(int offset, int megaGain, int averageInterval)
 {
 	Offset = offset;
 	GainNumerator = megaGain;
 	GainDenominator = 1000000;
+	AverageInterval = averageInterval;
 }
 
-MeasurementClass::MeasurementClass(int offset, int megaGain, String units)
-{
-	Offset = offset;
-	GainNumerator = megaGain;
-	GainDenominator = 1000000;
-	Units = units;
-}
-
-MeasurementClass::MeasurementClass(int offset, int gainNumerator, int gainDenominator)
-{
-	Offset = offset;
-	GainNumerator = gainNumerator;
-	GainDenominator = gainDenominator;
-}
-
-MeasurementClass::MeasurementClass(int offset, int gainNumerator, int gainDenominator, String units)
-{
-	Offset = offset;
-	GainNumerator = gainNumerator;
-	GainDenominator = gainDenominator;
-	Units = units;
-}
-
-void MeasurementClass::Init(int offset, int megaGain)
-{
-	Offset = offset;
-	GainNumerator = megaGain;
-	GainDenominator = 1000000;
-}
-
-void MeasurementClass::Init(int offset, int megaGain, String units)
+MeasurementClass::MeasurementClass(int offset, int megaGain, String units, int averageInterval)
 {
 	Offset = offset;
 	GainNumerator = megaGain;
 	GainDenominator = 1000000;
 	Units = units;
+	AverageInterval = averageInterval;
 }
 
-void MeasurementClass::Init(int offset, int gainNumerator, int gainDenominator)
+MeasurementClass::MeasurementClass(int offset, int gainNumerator, int gainDenominator, int averageInterval)
 {
 	Offset = offset;
 	GainNumerator = gainNumerator;
 	GainDenominator = gainDenominator;
+	AverageInterval = averageInterval;
 }
 
-void MeasurementClass::Init(int offset, int gainNumerator, int gainDenominator, String units)
+MeasurementClass::MeasurementClass(int offset, int gainNumerator, int gainDenominator, String units, int averageInterval)
 {
 	Offset = offset;
 	GainNumerator = gainNumerator;
 	GainDenominator = gainDenominator;
 	Units = units;
+	AverageInterval = averageInterval;
+}
+
+void MeasurementClass::Init(int offset, int megaGain, int averageInterval)
+{
+	Offset = offset;
+	GainNumerator = megaGain;
+	GainDenominator = 1000000;
+	AverageInterval = averageInterval;
+	AverageValue = new movingAvg(AverageInterval);
+	AverageValue->begin();
+}
+
+void MeasurementClass::Init(int offset, int megaGain, String units, int averageInterval)
+{
+	Offset = offset;
+	GainNumerator = megaGain;
+	GainDenominator = 1000000;
+	Units = units;
+	AverageInterval = averageInterval;
+	AverageValue = new movingAvg(AverageInterval);
+	AverageValue->begin();
+}
+
+void MeasurementClass::Init(int offset, int gainNumerator, int gainDenominator, int averageInterval)
+{
+	Offset = offset;
+	GainNumerator = gainNumerator;
+	GainDenominator = gainDenominator;
+	AverageInterval = averageInterval;
+	AverageValue = new movingAvg(AverageInterval);
+	AverageValue->begin();
+}
+
+void MeasurementClass::Init(int offset, int gainNumerator, int gainDenominator, String units, int averageInterval)
+{
+	Offset = offset;
+	GainNumerator = gainNumerator;
+	GainDenominator = gainDenominator;
+	Units = units;
+	AverageInterval = averageInterval;
+	AverageValue = new movingAvg(AverageInterval);
+	AverageValue->begin();
+}
+
+void MeasurementClass::AddReading(int rawValue)
+{
+	// The reading() method returns the updated average value, so we could store that in a field here for easire future access
+	RawValue = rawValue;
+	AverageValue->reading(rawValue);
+}
+
+int MeasurementClass::GetRawValue()
+{
+	return RawValue;
+}
+
+int MeasurementClass::GetAverageRawValue()
+{
+	if (AverageValue->getCount() > 0)
+	{
+		return AverageValue->getAvg();
+	}
+	else
+	{
+		return 0;
+	}
 }
 
 float MeasurementClass::GetRealValue()
 {
 	return (RawValue - Offset) * (float)GainNumerator / (float)GainDenominator;
+}
+
+float MeasurementClass::GetAverageRealValue()
+{
+	if (AverageValue->getCount() > 0)
+	{
+		return (AverageValue->getAvg() - Offset) * (float)GainNumerator / (float)GainDenominator;
+	}
+	else
+	{
+		return 0.0f;
+	}
 }

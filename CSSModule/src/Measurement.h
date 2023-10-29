@@ -21,30 +21,40 @@
 #else
 	#include "WProgram.h"
 #endif
+#include <movingAvg.h>
+
+constexpr int defaultAverageInterval = 8;
 
 class MeasurementClass
 {
 protected:
+	int RawValue;
 	int Offset;
 	int GainNumerator;
 	int GainDenominator;
+	int AverageInterval = defaultAverageInterval;
+	movingAvg* AverageValue;
 
 public:
-	int RawValue;
 	String Units;
 
 	MeasurementClass();		// Default constructor
-	MeasurementClass(int offset, int megaGain);
-	MeasurementClass(int offset, int megaGain, String units);
-	MeasurementClass(int offset, int gainNumerator, int gainDenominator);
-	MeasurementClass(int offset, int gainNumerator, int gainDenominator, String units);
+	MeasurementClass(int offset, int megaGain, int averageInterval = 8);
+	MeasurementClass(int offset, int megaGain, String units, int averageInterval = 8);
+	MeasurementClass(int offset, int gainNumerator, int gainDenominator, int averageInterval = 8);
+	MeasurementClass(int offset, int gainNumerator, int gainDenominator, String units, int averageInterval = 8);
 
-	void Init(int offset, int megaGain);
-	void Init(int offset, int megaGain, String units);
-	void Init(int offset, int gainNumerator, int gainDenominator);
-	void Init(int offset, int gainNumerator, int gainDenominator, String units);
+	void Init(int offset, int megaGain, int averageInterval = 8);
+	void Init(int offset, int megaGain, String units, int averageInterval = 8);
+	void Init(int offset, int gainNumerator, int gainDenominator, int averageInterval = 8);
+	void Init(int offset, int gainNumerator, int gainDenominator, String units, int averageInterval = 8);
+
+	void AddReading(int rawValue);
+	int GetRawValue();
+	int GetAverageRawValue();
 
 	float GetRealValue();
+	float GetAverageRealValue();
 };
 
 #endif

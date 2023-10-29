@@ -73,7 +73,7 @@ void LocalDisplayClass::DrawSYSPage()
 	//display.write(buf);
 
 	display.fillRect(0, 32, 128, 8, SSD1306_BLACK);
-	snprintf(buf, 22, "KP %04d %#5.2f %s", SensorData.GetKBRaw(), SensorData.KPVoltage.GetRealValue(), SensorData.KPVoltage.Units);
+	snprintf(buf, 22, "KP %04d %#5.2f %s", SensorData.GetKBRaw(), SensorData.KPVoltage.GetAverageRealValue(), SensorData.KPVoltage.Units);
 	display.setCursor(0, 32);
 	display.write(buf);
 
