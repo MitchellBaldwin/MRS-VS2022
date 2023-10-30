@@ -11,6 +11,15 @@
 */
 
 
+//#include <WiFiAP.h>
+//#include <WiFiClient.h>
+//#include <WiFiGeneric.h>
+//#include <WiFiMulti.h>
+//#include <WiFiScan.h>
+//#include <WiFiServer.h>
+//#include <WiFiSTA.h>
+//#include <WiFiType.h>
+//#include <WiFiUdp.h>
 #include "src/SFQJS.h"
 #include "src/BME280Data.h"
 #include "src/CSSMStatus.h"
@@ -62,14 +71,14 @@ static const uint8_t OSB_NUM_LEVELS = OBS_NUM_BUTTONS + 1;
 static const uint16_t OSB_LEVELS[OSB_NUM_LEVELS] =
 {
   250,
-  850,
-  1100,
-  1450,
-  1640,
-  2000,
-  2340,
-  2775,
-  3300,
+  860,
+  1140,
+  1440,
+  1700,
+  2040,
+  2360,
+  2750,
+  3290,
 };
 #elif
 OSBArrayClass LOSBArray(LOSBAnalogPin);
@@ -107,6 +116,10 @@ long HeartbeatLEDTogglePeriod = NormalHeartbeatLEDToggleInterval;
 void ToggleBuiltinLEDCallback();
 Task HeartbeatLEDTask(HeartbeatLEDTogglePeriod* TASK_MILLISECOND, TASK_FOREVER, &ToggleBuiltinLEDCallback, &MainScheduler, false);
 
+constexpr long ReadControlsInterval = 50;
+void ReadControlsCallback();
+Task ReadControlsTask(ReadControlsInterval* TASK_MILLISECOND, TASK_FOREVER, &ReadControlsCallback, &MainScheduler, false);
+
 constexpr long ReadSensorsInterval = 50;
 void ReadSensorDataCallback();
 Task ReadSensorsTask(ReadSensorsInterval* TASK_MILLISECOND, TASK_FOREVER, &ReadSensorDataCallback, &MainScheduler, false);
@@ -114,10 +127,6 @@ Task ReadSensorsTask(ReadSensorsInterval* TASK_MILLISECOND, TASK_FOREVER, &ReadS
 constexpr long ReadENVDataInterval = 5000;
 void ReadENVDataCallback();
 Task ReadENVDataTask(ReadENVDataInterval* TASK_MILLISECOND, TASK_FOREVER, &ReadENVDataCallback, &MainScheduler, false);
-
-constexpr long ReadControlsInterval = 50;
-void ReadControlsCallback();
-Task ReadControlsTask(ReadControlsInterval* TASK_MILLISECOND, TASK_FOREVER, &ReadControlsCallback, &MainScheduler, false);
 
 constexpr long UpdateLocalDisplayInterval = 100;
 void UpdateLocalDisplayCallback();

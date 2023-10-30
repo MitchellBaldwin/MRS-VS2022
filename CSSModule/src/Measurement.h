@@ -32,11 +32,12 @@ protected:
 	int Offset;
 	int GainNumerator;
 	int GainDenominator;
+	String Units;
 	int AverageInterval = defaultAverageInterval;
 	movingAvg* AverageValue;
+	char buf[32];
 
 public:
-	String Units;
 
 	MeasurementClass();		// Default constructor
 	MeasurementClass(int offset, int megaGain, int averageInterval = 8);
@@ -55,6 +56,10 @@ public:
 
 	float GetRealValue();
 	float GetAverageRealValue();
+
+	String GetRealString();
+	String GetRealString(String format);
+
 };
 
 #endif

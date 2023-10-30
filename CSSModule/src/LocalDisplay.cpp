@@ -73,7 +73,7 @@ void LocalDisplayClass::DrawSYSPage()
 	//display.write(buf);
 
 	display.fillRect(0, 32, 128, 8, SSD1306_BLACK);
-	snprintf(buf, 22, "KP %04d %#5.2f %s", SensorData.GetKBRaw(), SensorData.KPVoltage.GetAverageRealValue(), SensorData.KPVoltage.Units);
+	snprintf(buf, 22, "KP %04d %s", SensorData.GetKBRaw(), SensorData.GetKPString("%#5.2f"));
 	display.setCursor(0, 32);
 	display.write(buf);
 
@@ -99,7 +99,7 @@ void LocalDisplayClass::DrawPOWPage()
 
 	// Update dynamic displays:
 	display.fillRect(0, 32, 128, 8, SSD1306_BLACK);
-	snprintf(buf, 22, "VIN %#5.2f %s", SensorData.ESP32VIN.GetRealValue(), SensorData.ESP32VIN.Units);
+	snprintf(buf, 22, "VIN %s", SensorData.GetESP32VINString("%#5.2f"));
 	display.setCursor(0, 32);
 	display.write(buf);
 

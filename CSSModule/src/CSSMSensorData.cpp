@@ -20,7 +20,7 @@ bool CSSMSensorData::Init(byte kbSensePin, byte esp32VINSensePin)
 	// 3.3 V / 4096 * 1000000 = 806 V/count:
 	//KPVoltage.Init(0, 806, "V");
 	// Can achieve the same result as follows:
-	KPVoltage.Init(0, 33, 40960, "V", 64);
+	KPVoltage.Init(0, 33, 40960, "V", 16);
 	
 	ESP32VINSensePin = esp32VINSensePin;
 	pinMode(ESP32VINSensePin, INPUT);
@@ -50,6 +50,36 @@ void CSSMSensorData::Update()
 uint16_t CSSMSensorData::GetKBRaw()
 {
 	return KPVoltage.GetAverageRawValue();
+}
+
+float CSSMSensorData::GetKBReal()
+{
+	return KPVoltage.GetAverageRealValue();
+}
+
+String CSSMSensorData::GetKPString()
+{
+	return KPVoltage.GetRealString();
+}
+
+String CSSMSensorData::GetKPString(String format)
+{
+	return KPVoltage.GetRealString(format);
+}
+
+float CSSMSensorData::GetESP32VINReal()
+{
+	return ESP32VIN.GetAverageRealValue();
+}
+
+String CSSMSensorData::GetESP32VINString()
+{
+	return ESP32VIN.GetRealString();
+}
+
+String CSSMSensorData::GetESP32VINString(String format)
+{
+	return ESP32VIN.GetRealString(format);
 }
 
 void CSSMSensorData::ReadENVData()

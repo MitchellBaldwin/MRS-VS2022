@@ -8,6 +8,7 @@
 #include "DebugDisplay.h"
 #include "CSSMStatus.h"
 #include "CSSMSensorData.h"
+#include <WiFi.h>
 
 void DebugDisplayClass::DrawPageHeaderAndFooter()
 {
@@ -38,7 +39,7 @@ void DebugDisplayClass::DrawHOMPage()
 
 	// Update dynamic displays:
 	display.fillRect(0, 32, 128, 8, SSD1306_BLACK);
-	snprintf(buf, 22, "KP %04d %#5.2f %s", SensorData.GetKBRaw(), SensorData.KPVoltage.GetRealValue(), SensorData.KPVoltage.Units);
+	snprintf(buf, 22, "KP %04d %s", SensorData.GetKBRaw(), SensorData.GetKPString("%#5.2f"));
 	display.setCursor(0, 32);
 	display.write(buf);
 
@@ -63,15 +64,17 @@ void DebugDisplayClass::DrawESPPage()
 		display.write(buf);
 		
 		uint8_t mac[6];
-		esp_efuse_mac_get_custom(mac);
+		esp_efuse_mac_get_default(mac);
+		//esp_efuse_mac_get_custom(mac);
 		snprintf(buf, 22, "MAC:%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 		//snprintf(buf, 22, "MAC:" MACSTR, mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 		display.setCursor(0, 32);
 		display.write(buf);
 
-		//snprintf(buf, 22, "efMAC:%012X", ESP.getEfuseMac());
-		//display.setCursor(0, 40);
-		//display.write(buf);
+		WiFi.macAddress(mac);
+		snprintf(buf, 22, "MAC:%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+		display.setCursor(0, 40);
+		display.write(buf);
 		
 		lastPage = currentPage;
 	}

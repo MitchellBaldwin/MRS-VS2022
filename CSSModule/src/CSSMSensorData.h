@@ -37,7 +37,16 @@ public:
 	CSSMSensorData();
 	bool Init(byte kbSensePin, byte esp32VINSensePin);
 	void Update();
+	
 	uint16_t GetKBRaw();
+	float GetKBReal();
+	String GetKPString();
+	String GetKPString(String format);
+
+	float GetESP32VINReal();
+	String GetESP32VINString();
+	String GetESP32VINString(String format);
+	
 	void ReadENVData();
 };
 

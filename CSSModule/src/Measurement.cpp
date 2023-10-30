@@ -128,3 +128,16 @@ float MeasurementClass::GetAverageRealValue()
 		return 0.0f;
 	}
 }
+
+String MeasurementClass::GetRealString()
+{
+	//TODO: Check whether 'n' in the snprintf function can be as high as the total capacity of the character buffer provided
+	snprintf(buf, 31, "%#5.2f %s", GetAverageRealValue(), Units);
+	return String(buf);
+}
+
+String MeasurementClass::GetRealString(String format)
+{
+	snprintf(buf, 31, (format + String(" %s")).c_str(), GetAverageRealValue(), Units);
+	return String(buf);
+}
