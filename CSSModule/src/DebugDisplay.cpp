@@ -64,7 +64,7 @@ void DebugDisplayClass::DrawESPPage()
 		display.write(buf);
 		
 		uint8_t mac[6];
-		esp_efuse_mac_get_default(mac);
+		esp_efuse_mac_get_default(mac);		// Returns the same MAC as does WiFi.madAddress(uint8_t*)
 		//esp_efuse_mac_get_custom(mac);
 		snprintf(buf, 22, "MAC:%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 		//snprintf(buf, 22, "MAC:" MACSTR, mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);

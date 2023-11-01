@@ -35,6 +35,10 @@ bool CSSMSensorData::Init(byte kbSensePin, byte esp32VINSensePin)
 
 	CSSMStatus.BME280Status = ENVData.Init();
 
+	ESP32Encoder::useInternalWeakPullResistors = puType::UP;
+	HDGEncoder.attachHalfQuad(HDGEncoderDTPin, HDGEncoderCLKPin);
+	HDGEncoder.setCount(0);
+
 	bool success = CSSMStatus.BME280Status && true;
 	return success;
 }
@@ -43,8 +47,22 @@ void CSSMSensorData::Update()
 {
 	int newReading = analogRead(KBSensePin);
 	KPVoltage.AddReading(newReading);
+	
 	newReading = analogRead(ESP32VINSensePin);
 	ESP32VIN.AddReading(newReading);
+	
+	HDGEncoderSetting = (int)HDGEncoder.getCount() / 2;
+	if (HDGEncoderSetting > 359)
+	{
+		HDGEncoderSetting = 0;
+		HDGEncoder.setCount(0);
+	}
+	else if (HDGEncoderSetting < 0)
+	{
+		HDGEncoderSetting = 359;
+		HDGEncoder.setCount(HDGEncoderSetting * 2);
+	}
+	
 }
 
 uint16_t CSSMSensorData::GetKBRaw()

@@ -6,7 +6,6 @@
 */
 
 #include "LocalDisplay.h"
-//#include "CSSMGlobals.h"
 #include "CSSMStatus.h"
 #include "I2CBus.h"
 #include "CSSMSensorData.h"
@@ -14,10 +13,11 @@
 void LocalDisplayClass::DrawPageHeaderAndFooter()
 {
 	display.clearDisplay();
-	display.setCursor(0, 0);
 	display.cp437();
 	display.setTextSize(1);
-	display.write(PageTitles[currentPage]);
+	snprintf(buf, 22, "MRS CSS %s%s", LocalDisplayClass::ModeHeadings[CSSMStatus.Mode], PageTitles[currentPage]);
+	display.setCursor(0, 0);
+	display.write(buf);
 	snprintf(buf, 22, "v%d.%d", CSSMStatus.MajorVersion, CSSMStatus.MinorVersion);
 	display.setCursor(0, 8);
 	display.write(buf);
@@ -64,12 +64,12 @@ void LocalDisplayClass::DrawSYSPage()
 
 	// Update dynamic displays:
 	display.fillRect(0, 16, 128, 8, SSD1306_BLACK);
-	//snprintf(buf, 22, "U/D %+04d     F/R %+04d", JSPkt.PTJSY, JSPkt.DrvJSY);
+	snprintf(buf, 22, "HDG %+04d     CRS %+04d", SensorData.HDGEncoderSetting, SensorData.CRSEncoderSetting);
 	display.setCursor(0, 16);
-	//display.write(buf);
-	display.fillRect(0, 24, 128, 8, 0x0000);
-	//snprintf(buf, 22, "L/R %+04d     L/R %+04d", JSPkt.PTJSX, JSPkt.DrvJSX);
-	display.setCursor(0, 24);
+	display.write(buf);
+	//display.fillRect(0, 24, 128, 8, 0x0000);
+	//snprintf(buf, 22, "L/R %+04d     L/R %+04d", 0, 0);
+	//display.setCursor(0, 24);
 	//display.write(buf);
 
 	display.fillRect(0, 32, 128, 8, SSD1306_BLACK);
@@ -178,7 +178,6 @@ void LocalDisplayClass::DrawENVPage()
 
 	// Update dynamic displays:
 	display.fillRect(0, 24, 128, 8, SSD1306_BLACK);
-	//snprintf(buf, 22, BME280Data.GetTchipString().c_str());
 	display.setCursor(8, 24);
 	String OutString = String("Tatm  ") + SensorData.ENVData.GetTchipString();
 	display.write(OutString.c_str());

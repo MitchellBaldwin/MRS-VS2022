@@ -10,7 +10,6 @@
 
 */
 
-
 //#include <WiFiAP.h>
 //#include <WiFiClient.h>
 //#include <WiFiGeneric.h>
@@ -20,7 +19,7 @@
 //#include <WiFiSTA.h>
 //#include <WiFiType.h>
 //#include <WiFiUdp.h>
-#include "src/SFQJS.h"
+//#include "src/SFQJS.h"
 #include "src/BME280Data.h"
 #include "src/CSSMStatus.h"
 #include "src/DEBUG Macros.h"
@@ -266,9 +265,11 @@ void ReadControlsCallback()
 		switch (OSBPressed)
 		{
 		case OSBArrayClass::OSB1:
+			CSSMStatus.Mode = CSSMStatusClass::Modes::DRV;
 			LocalDisplay.Control(LocalDisplayClass::DRVPage);
 			break;
 		case OSBArrayClass::OSB2:
+			CSSMStatus.Mode = CSSMStatusClass::Modes::HDG;
 			LocalDisplay.Control(LocalDisplayClass::HDGPage);
 			break;
 		case OSBArrayClass::OSB3:
@@ -281,9 +282,11 @@ void ReadControlsCallback()
 			DebugDisplay.Control(DebugDisplayClass::Next);
 			break;
 		case OSBArrayClass::OSB7:
+			CSSMStatus.Mode = CSSMStatusClass::Modes::SEQ;
 			LocalDisplay.Control(LocalDisplayClass::SEQPage);
 			break;
 		case OSBArrayClass::OSB8:
+			CSSMStatus.Mode = CSSMStatusClass::Modes::WPT;
 			LocalDisplay.Control(LocalDisplayClass::WPTPage);
 			break;
 		default:

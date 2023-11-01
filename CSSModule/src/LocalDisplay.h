@@ -63,18 +63,33 @@ protected:
 
 	 const char* PageTitles[NONE] =
 	 {
-		 "MRS CSS DRIVE  System",
-		 "MRS CSS DRIVE   Power",
-		 "MRS CSS DRIVE   Comms",
-		 "MRS CSS DRIVE     I2C",
-		 "MRS CSS DRIVE     ENV",
-		 "MRS CSS DRIVE     IMU",
+		 "  System",
+		 "   Power",
+		 "   Comms",
+		 "     I2C",
+		 "     ENV",
+		 "     IMU",
 
-		 "MRS CSS DRIVE        ",
-		 "MRS CSS  HDG         ",
-		 "MRS CSS  WPT         ",
-		 "MRS CSS  SEQ         ",
+		 "        ",
+		 "        ",
+		 "        ",
+		 "        ",
 	 };
+
+	 //const char* PageTitles[NONE] =
+	 //{
+		// "MRS CSS DRIVE  System",
+		// "MRS CSS DRIVE   Power",
+		// "MRS CSS DRIVE   Comms",
+		// "MRS CSS DRIVE     I2C",
+		// "MRS CSS DRIVE     ENV",
+		// "MRS CSS DRIVE     IMU",
+
+		// "MRS CSS DRIVE        ",
+		// "MRS CSS  HDG         ",
+		// "MRS CSS  WPT         ",
+		// "MRS CSS  SEQ         ",
+	 //};
 
 	 const char* PageMenus[NONE] =
 	 {
@@ -90,6 +105,14 @@ protected:
 		 "<  Waypoint Direct  >",
 		 "< Waypoint Sequence >",
 
+	 };
+
+	 const char* ModeHeadings[CSSMStatusClass::Modes::NONE] =
+	 {
+		 "DRIVE",
+		 " HDG ",
+		 " WPT ",
+		 " SEQ ",
 	 };
 
 	 void DrawPageHeaderAndFooter();

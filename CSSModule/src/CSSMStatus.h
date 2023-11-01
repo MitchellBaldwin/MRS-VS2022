@@ -26,6 +26,17 @@ class CSSMStatusClass
 
 
  public:
+	 enum Modes
+	 {
+		 DRV,
+		 HDG,
+		 WPT,
+		 SEQ,
+
+		 NONE
+	 };
+	 Modes Mode = DRV;
+	 
 	 uint8_t MajorVersion = 1;
 	 uint8_t MinorVersion = 1;
 

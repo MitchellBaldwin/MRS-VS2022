@@ -6,6 +6,7 @@
 #ifdef _DEBUG_
 #define _PP(a) Serial.print(a);
 #define _PL(a) Serial.println(a);
+#define _PPH(a) Serial.print(a, HEX);
 #define _PLH(a) Serial.println(a, HEX);
 #else
 #define _PP(a)
