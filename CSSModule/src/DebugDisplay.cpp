@@ -129,6 +129,16 @@ void DebugDisplayClass::DrawWIFIPage()
 		// Clear display and redraw static elements of the page format:
 		DrawPageHeaderAndFooter();
 
+		snprintf(buf, 22, "IP: %s", WiFi.localIP().toString());
+		display.setCursor(0, 24);
+		display.write(buf);
+
+		uint8_t mac[6];
+		WiFi.macAddress(mac);
+		snprintf(buf, 22, "MAC:%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+		display.setCursor(0, 40);
+		display.write(buf);
+
 		lastPage = currentPage;
 	}
 

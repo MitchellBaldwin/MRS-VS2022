@@ -19,6 +19,35 @@
 //#include <WiFiSTA.h>
 //#include <WiFiType.h>
 //#include <WiFiUdp.h>
+//#include <AsyncEventSource.h>
+//#include <AsyncJson.h>
+//#include <AsyncWebSocket.h>
+//#include <AsyncWebSynchronization.h>
+//#include <SPIFFSEditor.h>
+//#include <StringArray.h>
+//#include <WebAuthentication.h>
+//#include <WebHandlerImpl.h>
+//#include <WebResponseImpl.h>
+
+#include <elegantWebpage.h>
+#include <Hash.h>
+#include <AsyncTCP.h>
+
+//#include <wm_strings_es.h>
+//#include <wm_strings_en.h>
+//#include <wm_consts_en.h>
+//#include <strings_en.h>
+
+//#include <WiFiManager.h>
+
+#include <ESPAsyncWebServer.h>
+#include <ESPAsyncWiFiManager.h>
+#include <AsyncElegantOTA.h>
+
+AsyncWebServer server(80);
+DNSServer dns;
+AsyncWiFiManager wifiManager(&server, &dns);
+
 //#include "src/SFQJS.h"
 #include "src/BME280Data.h"
 #include "src/CSSMStatus.h"
@@ -57,7 +86,8 @@ constexpr byte DebugDisplayI2CAddress = 0x3D;
 // TODO: If OSB arrays are powered from ESP 32 3.3 V supply then consider running signals directly to the ADC ports
 // Scale and buffer VIN signal and use the VP pin (pin 36) for measurement
 constexpr byte LOSBAnalogPin = 34;
-constexpr byte ROSBAnalogPin = 35;
+constexpr byte ROSBAnalogPin = 35;		//TODO: Deconflict with ThrottleSensePin
+constexpr byte ThrottlePin = 35;
 constexpr byte ESP32VINAnalogPin = 36;
 
 #include "src/OSBArray.h"
@@ -135,6 +165,10 @@ constexpr long UpdateDebugDisplayInterval = 500;
 void UpdateDebugDisplayCallback();
 Task UpdateDebugDisplayTask(UpdateDebugDisplayInterval* TASK_MILLISECOND, TASK_FOREVER, &UpdateDebugDisplayCallback, &MainScheduler, false);
 
+constexpr long SendCSSMPacketInterval = 100;
+void SendCSSMPacketCallback();
+Task SendCSSMPacketTask(SendCSSMPacketInterval* TASK_MILLISECOND, TASK_FOREVER, &SendCSSMPacketCallback, &MainScheduler, false);
+
 void setup()
 {
 	USBSerial.begin(115200);
@@ -190,7 +224,7 @@ void setup()
 	ROSBArray.Init(ROSB_NUM_LEVELS, ROSB_LEVELS);
 #endif
 
-	SensorData.Init(LOSBAnalogPin, ESP32VINAnalogPin);
+	SensorData.Init(LOSBAnalogPin, ThrottlePin, ESP32VINAnalogPin);
 	
 	if (!LocalDisplay.Init(LocalDisplayI2CAddress))
 	{
@@ -222,11 +256,15 @@ void setup()
 		_PL(buf)
 	}
 
+	CSSMStatus.WiFiStatus = initWiFi();
+	
 	ReadSensorsTask.enable();
 	ReadENVDataTask.enable();
 	ReadControlsTask.enable();
 	UpdateLocalDisplayTask.enable();
 	UpdateDebugDisplayTask.enable();
+
+	//SendCSSMPacketTask.enable();
 
 	HeartbeatLEDTask.setInterval(HeartbeatLEDTogglePeriod * TASK_MILLISECOND);
 	HeartbeatLEDTask.enable();
@@ -259,8 +297,8 @@ void ReadControlsCallback()
 	if (OSBPressed)
 	{
 		char buf[32];
-		snprintf(buf, 32, "OSB ID 0x%02X pressed", OSBPressed);
-		_PL(buf);
+		//snprintf(buf, 32, "OSB ID 0x%02X pressed", OSBPressed);
+		//_PL(buf);
 
 		switch (OSBPressed)
 		{
@@ -280,6 +318,9 @@ void ReadControlsCallback()
 			break;
 		case OSBArrayClass::OSB5:
 			DebugDisplay.Control(DebugDisplayClass::Next);
+			break;
+		case OSBArrayClass::OSB6:
+			//DebugDisplay.Control(DebugDisplayClass::Next);
 			break;
 		case OSBArrayClass::OSB7:
 			CSSMStatus.Mode = CSSMStatusClass::Modes::SEQ;
@@ -306,4 +347,28 @@ void UpdateLocalDisplayCallback()
 void UpdateDebugDisplayCallback()
 {
 	DebugDisplay.Update();
+}
+
+void SendCSSMPacketCallback()
+{
+
+}
+
+bool initWiFi()
+{
+	wifiManager.autoConnect("MRS CSSM", "password");
+
+	server.on("/", HTTP_GET, [](AsyncWebServerRequest* request) {
+		request->send(200, "text/html", "<b>Mobile Robot System</b> Control Stick Steering Module (MRS-CSSM)<br>Enter '[local IP address]/update' in the browser address bar to update firmware");
+		});
+
+	AsyncElegantOTA.begin(&server);    // Start ElegantOTA
+	server.begin();
+	_PP("HTTP server started at ");
+	IPAddress LocalIP = WiFi.localIP();
+	_PP(LocalIP.toString());
+	_PP(":");
+	_PL();
+
+	return true;
 }

@@ -25,6 +25,8 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
+#include "CSSMStatus.h"
+
 constexpr int SCREEN_WIDTH = 128;	// OLED display width, in pixels
 constexpr int SCREEN_HEIGHT = 64;	// OLED display height, in pixels
 

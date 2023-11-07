@@ -31,10 +31,12 @@ class CSSMSensorData
 {
 protected:
 	byte KBSensePin = 34;
+	byte ThrottleSensePin = 35;
 	byte ESP32VINSensePin = 36;
 
-	MeasurementClass KPVoltage;		// Raw analog voltage from keypad ladder button array
-	MeasurementClass ESP32VIN;		// Bufferesd analog voltage measurement
+	MeasurementClass KPVoltage;			// Raw analog voltage from keypad ladder button array
+	MeasurementClass ThrottleSetting;	// -100.0 tp 100.0 % slide throttle setting
+	MeasurementClass ESP32VIN;			// Bufferesd analog voltage measurement
 
 	byte HDGEncoderDTPin = 26;
 	byte HDGEncoderCLKPin = 25;
@@ -48,7 +50,8 @@ public:
 	int CRSEncoderSetting = 0;
 
 	CSSMSensorData();
-	bool Init(byte kbSensePin, byte esp32VINSensePin);
+	bool Init();
+	bool Init(byte kbSensePin, byte throttleSensePin, byte esp32VINSensePin);
 	void Update();
 	
 	uint16_t GetKBRaw();
@@ -56,6 +59,8 @@ public:
 	String GetKPString();
 	String GetKPString(String format);
 
+	float GetThrottleReal();
+	
 	float GetESP32VINReal();
 	String GetESP32VINString();
 	String GetESP32VINString(String format);

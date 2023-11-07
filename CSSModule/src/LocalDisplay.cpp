@@ -15,7 +15,7 @@ void LocalDisplayClass::DrawPageHeaderAndFooter()
 	display.clearDisplay();
 	display.cp437();
 	display.setTextSize(1);
-	snprintf(buf, 22, "MRS CSS %s%s", LocalDisplayClass::ModeHeadings[CSSMStatus.Mode], PageTitles[currentPage]);
+	snprintf(buf, 22, "MRS CSS %s%s", ModeHeadings[CSSMStatus.Mode], PageTitles[currentPage]);
 	display.setCursor(0, 0);
 	display.write(buf);
 	snprintf(buf, 22, "v%d.%d", CSSMStatus.MajorVersion, CSSMStatus.MinorVersion);
@@ -64,8 +64,11 @@ void LocalDisplayClass::DrawSYSPage()
 
 	// Update dynamic displays:
 	display.fillRect(0, 16, 128, 8, SSD1306_BLACK);
-	snprintf(buf, 22, "HDG %+04d     CRS %+04d", SensorData.HDGEncoderSetting, SensorData.CRSEncoderSetting);
+	snprintf(buf, 22, "THR %+6.1f%%", SensorData.GetThrottleReal());
 	display.setCursor(0, 16);
+	display.write(buf);
+	snprintf(buf, 22, "HDG %+04d", SensorData.HDGEncoderSetting);
+	display.setCursor(79, 16);
 	display.write(buf);
 	//display.fillRect(0, 24, 128, 8, 0x0000);
 	//snprintf(buf, 22, "L/R %+04d     L/R %+04d", 0, 0);
@@ -235,6 +238,13 @@ void LocalDisplayClass::DrawDRVPage()
 	}
 
 	// Update dynamic displays:
+	display.fillRect(0, 16, 128, 8, SSD1306_BLACK);
+	snprintf(buf, 22, "THR %+6.1f%%", SensorData.GetThrottleReal());
+	display.setCursor(0, 16);
+	display.write(buf);
+	snprintf(buf, 22, "HDG %+04d", SensorData.HDGEncoderSetting);
+	display.setCursor(79, 16);
+	display.write(buf);
 
 	display.display();
 }
@@ -257,6 +267,18 @@ void LocalDisplayClass::DrawHDGPage()
 	}
 
 	// Update dynamic displays:
+	display.fillRect(0, 16, 128, 8, SSD1306_BLACK);
+	snprintf(buf, 22, "THR %+6.1f%%", SensorData.GetThrottleReal());
+	display.setCursor(0, 16);
+	display.write(buf);
+	snprintf(buf, 22, "HDG %+04d", SensorData.HDGEncoderSetting);
+	display.setCursor(79, 16);
+	display.write(buf);
+
+	display.fillRect(0, 24, 128, 8, SSD1306_BLACK);
+	snprintf(buf, 22, "CRS %+04d", SensorData.CRSEncoderSetting);
+	display.setCursor(79, 24);
+	display.write(buf);
 
 	display.display();
 }

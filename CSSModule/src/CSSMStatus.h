@@ -44,6 +44,8 @@ class CSSMStatusClass
 	 bool UART1Status = false;
 	 bool UART2Status = false;
 
+	 bool WiFiStatus = false;
+	 
 	 bool LocalDisplayStatus = false;
 	 bool DebugDisplayStatus = false;
 	 
