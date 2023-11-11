@@ -9,6 +9,7 @@
 #include "CSSMStatus.h"
 #include "I2CBus.h"
 #include "CSSMSensorData.h"
+#include <WiFi.h>
 
 void LocalDisplayClass::DrawPageHeaderAndFooter()
 {
@@ -46,9 +47,10 @@ void LocalDisplayClass::DrawSYSPage()
 		sprintf(buf, "ENV%s", CSSMStatus.BME280Status ? upArrow : downArrow);
 		display.setCursor(64, 40);
 		display.write(buf, 4);
-		sprintf(buf, "IMU%s", CSSMStatus.IMUStatus ? upArrow : downArrow);
+		//sprintf(buf, "IMU%s", CSSMStatus.IMUStatus ? upArrow : downArrow);
+		sprintf(buf, "WiFi%s", CSSMStatus.WiFiStatus ? upArrow : downArrow);
 		display.setCursor(92, 40);
-		display.write(buf, 4);
+		display.write(buf, 5);
 		display.setCursor(0, 48);
 		snprintf(buf, 22, "I2C %02X %02X %02X %02X %02X %02X",
 			I2CBus.ActiveI2CDeviceAddresses[0],
@@ -64,7 +66,7 @@ void LocalDisplayClass::DrawSYSPage()
 
 	// Update dynamic displays:
 	display.fillRect(0, 16, 128, 8, SSD1306_BLACK);
-	snprintf(buf, 22, "THR %+6.1f%%", SensorData.GetThrottleReal());
+	snprintf(buf, 22, "THR %+6.1f%%", SensorData.GetThrottle());
 	display.setCursor(0, 16);
 	display.write(buf);
 	snprintf(buf, 22, "HDG %+04d", SensorData.HDGEncoderSetting);
@@ -117,9 +119,15 @@ void LocalDisplayClass::DrawCOMPage()
 	{
 		DrawPageHeaderAndFooter();
 
-		display.setCursor(0, 40);
+		snprintf(buf, 22, "IP: %s", WiFi.localIP().toString());
+		display.setCursor(0, 24);
+		display.write(buf);
 
-		display.setCursor(64, 40);
+		uint8_t mac[6];
+		WiFi.macAddress(mac);
+		snprintf(buf, 22, "MAC:%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+		display.setCursor(0, 40);
+		display.write(buf);
 
 		display.setCursor(0, 48);
 
@@ -239,7 +247,7 @@ void LocalDisplayClass::DrawDRVPage()
 
 	// Update dynamic displays:
 	display.fillRect(0, 16, 128, 8, SSD1306_BLACK);
-	snprintf(buf, 22, "THR %+6.1f%%", SensorData.GetThrottleReal());
+	snprintf(buf, 22, "THR %+6.1f%%", SensorData.GetThrottle());
 	display.setCursor(0, 16);
 	display.write(buf);
 	snprintf(buf, 22, "HDG %+04d", SensorData.HDGEncoderSetting);
@@ -268,7 +276,7 @@ void LocalDisplayClass::DrawHDGPage()
 
 	// Update dynamic displays:
 	display.fillRect(0, 16, 128, 8, SSD1306_BLACK);
-	snprintf(buf, 22, "THR %+6.1f%%", SensorData.GetThrottleReal());
+	snprintf(buf, 22, "THR %+6.1f%%", SensorData.GetThrottle());
 	display.setCursor(0, 16);
 	display.write(buf);
 	snprintf(buf, 22, "HDG %+04d", SensorData.HDGEncoderSetting);

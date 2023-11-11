@@ -38,7 +38,7 @@ class CSSMStatusClass
 	 Modes Mode = DRV;
 	 
 	 uint8_t MajorVersion = 1;
-	 uint8_t MinorVersion = 1;
+	 uint8_t MinorVersion = 2;
 
 	 bool UART0Status = false;
 	 bool UART1Status = false;

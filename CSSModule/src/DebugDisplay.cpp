@@ -39,8 +39,16 @@ void DebugDisplayClass::DrawHOMPage()
 
 	// Update dynamic displays:
 	display.fillRect(0, 32, 128, 8, SSD1306_BLACK);
+	if (!CSSMStatus.WiFiStatus)
+	{
+		snprintf(buf, 22, "Initializing WiFi");
+		display.setCursor(0, 32);
+		display.write(buf);
+	}
+
+	display.fillRect(0, 48, 128, 8, SSD1306_BLACK);
 	snprintf(buf, 22, "KP %04d %s", SensorData.GetKBRaw(), SensorData.GetKPString("%#5.2f"));
-	display.setCursor(0, 32);
+	display.setCursor(0, 48);
 	display.write(buf);
 
 	display.display();

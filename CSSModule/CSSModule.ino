@@ -5,7 +5,7 @@
 
  v1.0	Initial release
  v1.1	Added support for ladder button arrays
- v1.2	
+ v1.2	Added WiFi and OTA programming support
  v1.3	
 
 */
@@ -28,19 +28,16 @@
 //#include <WebAuthentication.h>
 //#include <WebHandlerImpl.h>
 //#include <WebResponseImpl.h>
-
-#include <elegantWebpage.h>
-#include <Hash.h>
-#include <AsyncTCP.h>
-
+//#include <elegantWebpage.h>
+//#include <Hash.h>
+//#include <AsyncTCP.h>
 //#include <wm_strings_es.h>
 //#include <wm_strings_en.h>
 //#include <wm_consts_en.h>
 //#include <strings_en.h>
-
 //#include <WiFiManager.h>
+//#include <ESPAsyncWebServer.h>
 
-#include <ESPAsyncWebServer.h>
 #include <ESPAsyncWiFiManager.h>
 #include <AsyncElegantOTA.h>
 
@@ -92,7 +89,10 @@ constexpr byte ESP32VINAnalogPin = 36;
 
 #include "src/OSBArray.h"
 
-#define _ROBOX
+// Uncomment just one of the defines to select OSB array in use:
+//#define _LROSBS
+//#define _ROBOX
+#define _OSBS_WITH_ENCODERS
 #ifdef _ROBOX
 OSBArrayClass OSBArray(LOSBAnalogPin);
 static const uint8_t OBS_NUM_BUTTONS = 8;
@@ -109,7 +109,8 @@ static const uint16_t OSB_LEVELS[OSB_NUM_LEVELS] =
   2750,
   3290,
 };
-#elif
+#endif
+#ifdef defined _LROSBS
 OSBArrayClass LOSBArray(LOSBAnalogPin);
 static const uint8_t LOBS_NUM_BUTTONS = 4;
 static const uint8_t LOSB_NUM_LEVELS = LOBS_NUM_BUTTONS + 1;
@@ -133,6 +134,21 @@ static const uint16_tRLOSB_LEVELS[ROSB_NUM_LEVELS] =
   3160
 };
 #endif
+#ifdef _OSBS_WITH_ENCODERS
+OSBArrayClass OSBArray(LOSBAnalogPin);
+static const uint8_t OBS_NUM_BUTTONS = 6;
+static const uint8_t OSB_NUM_LEVELS = OBS_NUM_BUTTONS + 1;
+static const uint16_t OSB_LEVELS[OSB_NUM_LEVELS] =
+{
+  4,
+  985,
+  1490,
+  2025,
+  2535,
+  3085,
+  3660
+};
+#endif
 
 // Scheduler
 Scheduler MainScheduler;
@@ -145,7 +161,7 @@ long HeartbeatLEDTogglePeriod = NormalHeartbeatLEDToggleInterval;
 void ToggleBuiltinLEDCallback();
 Task HeartbeatLEDTask(HeartbeatLEDTogglePeriod* TASK_MILLISECOND, TASK_FOREVER, &ToggleBuiltinLEDCallback, &MainScheduler, false);
 
-constexpr long ReadControlsInterval = 50;
+constexpr long ReadControlsInterval = 100;
 void ReadControlsCallback();
 Task ReadControlsTask(ReadControlsInterval* TASK_MILLISECOND, TASK_FOREVER, &ReadControlsCallback, &MainScheduler, false);
 
@@ -219,12 +235,38 @@ void setup()
 
 #ifdef _ROBOX
 	OSBArray.Init(OSB_NUM_LEVELS, OSB_LEVELS);
-#elif
+#endif
+#ifdef _LROSBS
 	LOSBArray.Init(LOSB_NUM_LEVELS, LOSB_LEVELS);
 	ROSBArray.Init(ROSB_NUM_LEVELS, ROSB_LEVELS);
 #endif
+#ifdef _OSBS_WITH_ENCODERS
+	OSBArray.Init(OSB_NUM_LEVELS, OSB_LEVELS);
+#endif
 
 	SensorData.Init(LOSBAnalogPin, ThrottlePin, ESP32VINAnalogPin);
+	
+	if (!DebugDisplay.Init(DebugDisplayI2CAddress))
+	{
+		CSSMStatus.DebugDisplayStatus = false;
+		//HeartbeatLEDTogglePeriod = NoDebugDisplayHeartbeatLEDToggleInterval;
+		snprintf(buf, 31, "Debug Display not found at I2C 0x%02X", DebugDisplayI2CAddress);
+		_PL(buf)
+	}
+	else
+	{
+		CSSMStatus.DebugDisplayStatus = true;
+		DebugDisplay.Control(DebugDisplayClass::HOMPage);
+		snprintf(buf, 31, "Debug Display at I2C 0x%02X", DebugDisplayI2CAddress);
+		_PL(buf)
+	}
+
+	// Initialize WiFi and update Debug display to confirm success
+	CSSMStatus.WiFiStatus = initWiFi();
+	if (CSSMStatus.DebugDisplayStatus)
+	{
+		DebugDisplay.Update();
+	}
 	
 	if (!LocalDisplay.Init(LocalDisplayI2CAddress))
 	{
@@ -241,23 +283,6 @@ void setup()
 		_PL(buf)
 	}
 
-	if (!DebugDisplay.Init(DebugDisplayI2CAddress))
-	{
-		CSSMStatus.DebugDisplayStatus = false;
-		//HeartbeatLEDTogglePeriod = NoDebugDisplayHeartbeatLEDToggleInterval;
-		snprintf(buf, 31, "Debug Display not found at I2C 0x%02X", DebugDisplayI2CAddress);
-		_PL(buf)
-	}
-	else
-	{
-		CSSMStatus.DebugDisplayStatus = true;
-		DebugDisplay.Control(DebugDisplayClass::HOMPage);
-		snprintf(buf, 31, "Debug Display at I2C 0x%02X", DebugDisplayI2CAddress);
-		_PL(buf)
-	}
-
-	CSSMStatus.WiFiStatus = initWiFi();
-	
 	ReadSensorsTask.enable();
 	ReadENVDataTask.enable();
 	ReadControlsTask.enable();
@@ -302,34 +327,42 @@ void ReadControlsCallback()
 
 		switch (OSBPressed)
 		{
-		case OSBArrayClass::OSB1:
-			CSSMStatus.Mode = CSSMStatusClass::Modes::DRV;
-			LocalDisplay.Control(LocalDisplayClass::DRVPage);
-			break;
-		case OSBArrayClass::OSB2:
+		case OSBArrayClass::OSB1:	
+			// HDG rotary; press to engage Heading Hold (HDG) mode
 			CSSMStatus.Mode = CSSMStatusClass::Modes::HDG;
 			LocalDisplay.Control(LocalDisplayClass::HDGPage);
 			break;
-		case OSBArrayClass::OSB3:
-			LocalDisplay.Control(LocalDisplayClass::SYSPage);
-			break;
-		case OSBArrayClass::OSB4:
-			LocalDisplay.Control(LocalDisplayClass::Next);
-			break;
-		case OSBArrayClass::OSB5:
+		case OSBArrayClass::OSB2:	
+			// Cycle Debug display
 			DebugDisplay.Control(DebugDisplayClass::Next);
 			break;
-		case OSBArrayClass::OSB6:
-			//DebugDisplay.Control(DebugDisplayClass::Next);
+		case OSBArrayClass::OSB3:
+			// Engage Direct Drive (DRV) mode
+			CSSMStatus.Mode = CSSMStatusClass::Modes::DRV;
+			LocalDisplay.Control(LocalDisplayClass::DRVPage);
 			break;
-		case OSBArrayClass::OSB7:
+		case OSBArrayClass::OSB4:
+			// Engage Sequence (Seq) mode
 			CSSMStatus.Mode = CSSMStatusClass::Modes::SEQ;
 			LocalDisplay.Control(LocalDisplayClass::SEQPage);
 			break;
-		case OSBArrayClass::OSB8:
+		case OSBArrayClass::OSB5:	
+			// Cycle SYS display
+			LocalDisplay.Control(LocalDisplayClass::Next);
+			break;
+		case OSBArrayClass::OSB6:	
+			// CRS rotary; press to engage WPT mode
 			CSSMStatus.Mode = CSSMStatusClass::Modes::WPT;
 			LocalDisplay.Control(LocalDisplayClass::WPTPage);
 			break;
+		//case OSBArrayClass::OSB7:
+		//	CSSMStatus.Mode = CSSMStatusClass::Modes::SEQ;
+		//	LocalDisplay.Control(LocalDisplayClass::SEQPage);
+		//	break;
+		//case OSBArrayClass::OSB8:
+		//	CSSMStatus.Mode = CSSMStatusClass::Modes::WPT;
+		//	LocalDisplay.Control(LocalDisplayClass::WPTPage);
+		//	break;
 		default:
 			break;
 		}
@@ -356,7 +389,10 @@ void SendCSSMPacketCallback()
 
 bool initWiFi()
 {
-	wifiManager.autoConnect("MRS CSSM", "password");
+	//TODO: Set CSSMStatus flag to reflect WiFi connection success & state
+	//TODO: Implement a hardware means to force the WiFi Manager into configuration mode to allow selection of a different network
+	
+	bool success = wifiManager.autoConnect("MRS CSSM", "password");
 
 	server.on("/", HTTP_GET, [](AsyncWebServerRequest* request) {
 		request->send(200, "text/html", "<b>Mobile Robot System</b> Control Stick Steering Module (MRS-CSSM)<br>Enter '[local IP address]/update' in the browser address bar to update firmware");
@@ -370,5 +406,5 @@ bool initWiFi()
 	_PP(":");
 	_PL();
 
-	return true;
+	return success;
 }

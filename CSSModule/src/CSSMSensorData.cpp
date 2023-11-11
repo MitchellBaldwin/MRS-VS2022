@@ -6,6 +6,7 @@
 #include "CSSMSensorData.h"
 #include "CSSMStatus.h"
 #include "DEBUG Macros.h"
+#include <math.h>
 
 CSSMSensorData::CSSMSensorData()
 {
@@ -42,6 +43,8 @@ bool CSSMSensorData::Init()
 	ESP32Encoder::useInternalWeakPullResistors = puType::UP;
 	HDGEncoder.attachHalfQuad(HDGEncoderDTPin, HDGEncoderCLKPin);
 	HDGEncoder.setCount(0);
+	CRSEncoder.attachHalfQuad(CRSEncoderDTPin, CRSEncoderCLKPin);
+	CRSEncoder.setCount(0);
 
 	bool success = CSSMStatus.BME280Status && true;
 	return success;
@@ -79,6 +82,18 @@ void CSSMSensorData::Update()
 		HDGEncoder.setCount(HDGEncoderSetting * 2);
 	}
 	
+	CRSEncoderSetting = (int)CRSEncoder.getCount() / 2;
+	if (CRSEncoderSetting > 359)
+	{
+		CRSEncoderSetting = 0;
+		CRSEncoder.setCount(0);
+	}
+	else if (CRSEncoderSetting < 0)
+	{
+		CRSEncoderSetting = 359;
+		CRSEncoder.setCount(CRSEncoderSetting * 2);
+	}
+	
 }
 
 uint16_t CSSMSensorData::GetKBRaw()
@@ -101,9 +116,33 @@ String CSSMSensorData::GetKPString(String format)
 	return KPVoltage.GetRealString(format);
 }
 
-float CSSMSensorData::GetThrottleReal()
+float CSSMSensorData::GetThrottleActual()
 {
 	return ThrottleSetting.GetAverageRealValue();
+}
+
+/// <summary>
+/// Get throttle setting in the  range [-100%:+100%] with center dead zone
+/// </summary>
+/// <returns>Throttle setting adjusted for dead zone</returns>
+float CSSMSensorData::GetThrottle()
+{
+	float actual = ThrottleSetting.GetAverageRealValue();
+
+	if (abs(actual) < ThrottleDeadZone)
+	{
+		return 0.0f;
+	}
+	if (actual >= ThrottleDeadZone)
+	{
+		actual = (actual - ThrottleDeadZone) * 100.0f / (100.0f - ThrottleDeadZone);
+	}
+	else if (actual <= -ThrottleDeadZone)
+	{
+		actual = (actual + ThrottleDeadZone) * 100.0f / (100.0f - ThrottleDeadZone);
+	}
+	
+	return actual;
 }
 
 float CSSMSensorData::GetESP32VINReal()

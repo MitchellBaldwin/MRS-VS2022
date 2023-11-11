@@ -34,17 +34,23 @@ protected:
 	byte ThrottleSensePin = 35;
 	byte ESP32VINSensePin = 36;
 
-	MeasurementClass KPVoltage;			// Raw analog voltage from keypad ladder button array
+	float ThrottleDeadZone = 5.0f;		// +/- % dead zone applied around zero
+
+	MeasurementClass KPVoltage;			// Analog voltage from keypad ladder button array
 	MeasurementClass ThrottleSetting;	// -100.0 tp 100.0 % slide throttle setting
-	MeasurementClass ESP32VIN;			// Bufferesd analog voltage measurement
+	MeasurementClass ESP32VIN;			// Analog CSSM supply voltage measurement
 
 	byte HDGEncoderDTPin = 26;
 	byte HDGEncoderCLKPin = 25;
 
+	byte CRSEncoderDTPin = 13;
+	byte CRSEncoderCLKPin = 14;
+
 	ESP32Encoder HDGEncoder;
+	ESP32Encoder CRSEncoder;
 
 public:
-	BME280DataClass ENVData;		// Environment measurements
+	BME280DataClass ENVData;			// Environment measurements
 
 	int HDGEncoderSetting = 0;
 	int CRSEncoderSetting = 0;
@@ -59,7 +65,8 @@ public:
 	String GetKPString();
 	String GetKPString(String format);
 
-	float GetThrottleReal();
+	float GetThrottleActual();			// Get unmasked throttle setting
+	float GetThrottle();				// Get throttle setting adjusted for dead zone(s)
 	
 	float GetESP32VINReal();
 	String GetESP32VINString();
