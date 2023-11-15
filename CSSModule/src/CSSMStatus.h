@@ -26,20 +26,30 @@ class CSSMStatusClass
 
 
  public:
-	 enum Modes
+	 uint8_t MajorVersion = 1;
+	 uint8_t MinorVersion = 2;
+
+	 enum DriveModes
 	 {
 		 DRV,
 		 HDG,
 		 WPT,
 		 SEQ,
 
-		 NONE
+		 NoDriveMode
 	 };
-	 Modes Mode = DRV;
-	 
-	 uint8_t MajorVersion = 1;
-	 uint8_t MinorVersion = 2;
+	 DriveModes DriveMode = DriveModes::DRV;
 
+	 enum ComModes
+	 {
+		 IDCPktSerial,	// COBS encoded packet exchange with MRS RC MCC through UART2 (Default mode)
+		 WiFiTCP,		// For the CSSM, direct WiFi connection to MRS MCC, bypassing MRS RC MCC 
+		 ESPNOW,		// For the CSSM, direct ESP-NOW connection with MRS MCC, bypassing MRS RC MCC
+
+		 NoComs
+	 };
+	 ComModes ComMode = ComModes::IDCPktSerial;
+	 
 	 bool UART0Status = false;
 	 bool UART1Status = false;
 	 bool UART2Status = false;

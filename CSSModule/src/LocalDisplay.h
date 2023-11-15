@@ -109,12 +109,19 @@ protected:
 
 	 };
 
-	 const char* ModeHeadings[CSSMStatusClass::Modes::NONE] =
+	 const char* DriveModeHeadings[CSSMStatusClass::DriveModes::NoDriveMode] =
 	 {
 		 "DRIVE",
 		 " HDG ",
 		 " WPT ",
 		 " SEQ ",
+	 };
+
+	 const char* ComModeHeadings[CSSMStatusClass::ComModes::NoComs] =
+	 {
+		 "MRS RC MCC UART2",
+		 "Direct WiFi/TCP ",
+		 "Direct ESP-NOW  ",
 	 };
 
 	 void DrawPageHeaderAndFooter();

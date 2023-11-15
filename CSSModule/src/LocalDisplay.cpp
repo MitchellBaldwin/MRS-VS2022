@@ -16,7 +16,7 @@ void LocalDisplayClass::DrawPageHeaderAndFooter()
 	display.clearDisplay();
 	display.cp437();
 	display.setTextSize(1);
-	snprintf(buf, 22, "MRS CSS %s%s", ModeHeadings[CSSMStatus.Mode], PageTitles[currentPage]);
+	snprintf(buf, 22, "MRS CSS %s%s", DriveModeHeadings[CSSMStatus.DriveMode], PageTitles[currentPage]);
 	display.setCursor(0, 0);
 	display.write(buf);
 	snprintf(buf, 22, "v%d.%d", CSSMStatus.MajorVersion, CSSMStatus.MinorVersion);
@@ -118,6 +118,10 @@ void LocalDisplayClass::DrawCOMPage()
 	if (lastPage != currentPage)
 	{
 		DrawPageHeaderAndFooter();
+
+		snprintf(buf, 22, "Mode: %s", ComModeHeadings[CSSMStatus.ComMode]);
+		display.setCursor(0, 16);
+		display.write(buf);
 
 		snprintf(buf, 22, "IP: %s", WiFi.localIP().toString());
 		display.setCursor(0, 24);

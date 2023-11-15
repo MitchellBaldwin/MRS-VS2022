@@ -3,6 +3,8 @@
  Created:	6/24/2023 3:51:52 PM
  Author:	Mitchell Baldwin copyright 2023
 
+ Main executable for the Mobile Robot System Remote Controller Control Stick Steering Module (MRS RC CSSM)
+
  v1.0	Initial release
  v1.1	Added support for ladder button arrays
  v1.2	Added WiFi and OTA programming support
@@ -38,6 +40,7 @@
 //#include <WiFiManager.h>
 //#include <ESPAsyncWebServer.h>
 
+//#include "src/ESP32WiFi.h"
 #include <ESPAsyncWiFiManager.h>
 #include <AsyncElegantOTA.h>
 
@@ -262,7 +265,9 @@ void setup()
 	}
 
 	// Initialize WiFi and update Debug display to confirm success
+	//CSSMStatus.WiFiStatus = ESP32WiFi.Init();
 	CSSMStatus.WiFiStatus = initWiFi();
+
 	if (CSSMStatus.DebugDisplayStatus)
 	{
 		DebugDisplay.Update();
@@ -329,7 +334,7 @@ void ReadControlsCallback()
 		{
 		case OSBArrayClass::OSB1:	
 			// HDG rotary; press to engage Heading Hold (HDG) mode
-			CSSMStatus.Mode = CSSMStatusClass::Modes::HDG;
+			CSSMStatus.DriveMode = CSSMStatusClass::DriveModes::HDG;
 			LocalDisplay.Control(LocalDisplayClass::HDGPage);
 			break;
 		case OSBArrayClass::OSB2:	
@@ -338,12 +343,12 @@ void ReadControlsCallback()
 			break;
 		case OSBArrayClass::OSB3:
 			// Engage Direct Drive (DRV) mode
-			CSSMStatus.Mode = CSSMStatusClass::Modes::DRV;
+			CSSMStatus.DriveMode = CSSMStatusClass::DriveModes::DRV;
 			LocalDisplay.Control(LocalDisplayClass::DRVPage);
 			break;
 		case OSBArrayClass::OSB4:
 			// Engage Sequence (Seq) mode
-			CSSMStatus.Mode = CSSMStatusClass::Modes::SEQ;
+			CSSMStatus.DriveMode = CSSMStatusClass::DriveModes::SEQ;
 			LocalDisplay.Control(LocalDisplayClass::SEQPage);
 			break;
 		case OSBArrayClass::OSB5:	
@@ -352,7 +357,7 @@ void ReadControlsCallback()
 			break;
 		case OSBArrayClass::OSB6:	
 			// CRS rotary; press to engage WPT mode
-			CSSMStatus.Mode = CSSMStatusClass::Modes::WPT;
+			CSSMStatus.DriveMode = CSSMStatusClass::DriveModes::WPT;
 			LocalDisplay.Control(LocalDisplayClass::WPTPage);
 			break;
 		//case OSBArrayClass::OSB7:
