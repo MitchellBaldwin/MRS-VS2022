@@ -1,0 +1,21 @@
+# MRSRCMCC build property overrides
+#
+#debug.toolingsystem=gdbscript
+## Most stable OpenOCD Version for newer ESP32 Boards 
+#tools.openocd.debug.path={runtime.tools.openocd-esp32-0.10.1-2021.11.11.path}
+## Ensure the board resets when using Debug > Attach to Process for convenience
+#vs-cmd.Debug.AttachtoProcess.tools.openocd.initCmd=-c "init; reset halt"
+## Ensure the Flash Size is set to 0 to prevent issues
+#tools.esps3usb.vmserver.args={params.verbose} -l "{{build.path}/{build.project_name}_DebugOpenOCD.log}" -s "{path}/share/openocd/scripts/" -c "set ESP_FLASH_SIZE 0" -f "{path}/share/openocd/scripts/interface/{build.openocddebugger}" -c "set ESP32_RTOS none" {initCmd}
+
+# ESP32S3_USBJTAG build property overrides
+#
+debug.toolingsystem=gdbscript
+# Board Pacakge version OpenOCD Version for later ESP32 Board Packages
+tools.openocd.debug.path={runtime.tools.openocd-esp32.path}
+vs-cmd.Debug.AttachtoProcess.tools.openocd.initCmd=-c "init; reset halt"
+tools.esps3usb.vmserver.args={params.verbose} -l "{{build.path}/{build.project_name}_DebugOpenOCD.log}" -s "{path}/share/openocd/scripts/" -c "set ESP_FLASH_SIZE 0" -f "{path}/share/openocd/scripts/interface/{build.openocddebugger}" -c "set ESP32_RTOS none" {initCmd}
+
+vm.settings.shorten-include-paths=false
+vm.settings.use-single-backslashes=true
+

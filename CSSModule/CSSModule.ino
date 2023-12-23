@@ -48,10 +48,10 @@ AsyncWebServer server(80);
 DNSServer dns;
 AsyncWiFiManager wifiManager(&server, &dns);
 
-//#include "src/SFQJS.h"
+#include <DEBUG Macros.h>
+
 #include "src/BME280Data.h"
 #include "src/CSSMStatus.h"
-#include "src/DEBUG Macros.h"
 
 constexpr byte DebugLED = 0x04;
 
@@ -96,6 +96,7 @@ constexpr byte ESP32VINAnalogPin = 36;
 //#define _LROSBS
 //#define _ROBOX
 #define _OSBS_WITH_ENCODERS
+
 #ifdef _ROBOX
 OSBArrayClass OSBArray(LOSBAnalogPin);
 static const uint8_t OBS_NUM_BUTTONS = 8;

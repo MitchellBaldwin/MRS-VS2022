@@ -9,20 +9,24 @@
 	#include "WProgram.h"
 #endif
 
+#include <ESPAsyncWiFiManager.h>
+#include <AsyncElegantOTA.h>
+
 class ESP32WiFiClass
 {
  protected:
 
 
  public:
+	AsyncWebServer* server;
+	DNSServer* dns;
+	AsyncWiFiManager* wifiManager;
+
 	bool Init();
+
 };
 
 extern ESP32WiFiClass ESP32WiFi;
-
-extern AsyncWebServer server;
-extern DNSServer dns;
-extern AsyncWiFiManager wifiManager;
 
 #endif
 

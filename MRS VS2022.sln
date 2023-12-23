@@ -15,6 +15,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SFQJSTest", "SFQJSTest\SFQJ
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MRSRCMCC", "MRSRCMCC\MRSRCMCC.vcxproj", "{530244F0-94AC-4E9E-9304-7FB159B0023D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A9A896CE-2EFC-46DD-82C9-2432EE8FED72}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM = Debug|ARM
@@ -145,5 +147,10 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2587C31C-B46E-4A30-8B5A-5052685AAE00}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		DEBUG Helpers\DEBUG Helpers.vcxitems*{25df7ed6-ef8f-4f4a-87be-741f945cbe57}*SharedItemsImports = 4
+		DEBUG Helpers\DEBUG Helpers.vcxitems*{530244f0-94ac-4e9e-9304-7fb159b0023d}*SharedItemsImports = 4
+		DEBUG Helpers\DEBUG Helpers.vcxitems*{92b77076-b132-437a-b955-e03ba9f3a7d3}*SharedItemsImports = 9
 	EndGlobalSection
 EndGlobal

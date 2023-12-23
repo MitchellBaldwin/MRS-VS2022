@@ -479,9 +479,6 @@
     <ClInclude Include="src\CSSMStatus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\DEBUG Macros.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\DebugDisplay.h">
       <Filter>Header Files</Filter>
     </ClInclude>

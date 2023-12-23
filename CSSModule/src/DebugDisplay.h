@@ -4,7 +4,7 @@
 *	Extended to serve as local display for the ESP32 based Control Stick Steering (CSS) module
 *	Pages supported:
 *		Home	(HOME)	Default scrolling display of debug messages
-*		ESP		(ESP)	ESP32 chip & module info
+*		ESPP	(ESP)	ESP32 chip & module info
 *		Memory	(MEM)	Memory status info
 *		WiFi	(WIFI)	WiFi, ESP NOW & network status info
 * 
