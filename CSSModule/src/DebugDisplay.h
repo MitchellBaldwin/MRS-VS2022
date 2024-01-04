@@ -39,12 +39,16 @@ constexpr int DEBUG_SCREEN_HEIGHT = 64;	// OLED display height, in pixels
 // On an arduino LEONARDO:   2(SDA),  3(SCL), ...
 constexpr int DEBUG_OLED_RESET = -1;	// Reset pin # (or -1 if sharing Arduino reset pin)
 
+constexpr uint8_t MAX_TEXT_LINES = 4;
+
 class DebugDisplayClass
 {
 protected:
 	Adafruit_SSD1306 display;
 	uint8_t I2CAddress = 0x00;
 	char buf[32];
+	uint8_t curLine = 0x00;
+	String lines[MAX_TEXT_LINES];
 
 	enum Pages
 	{
@@ -104,6 +108,7 @@ public:
 	bool Test();
 	void Update();
 	void Control(uint8_t command);
+	void AddTextLine(String textLine);
 
 };
 

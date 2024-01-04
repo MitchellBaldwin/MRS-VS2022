@@ -895,5 +895,8 @@
     <Text Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\AsyncElegantOTA\keywords.txt">
       <Filter>src\_micro-api-readonly\libraries\AsyncElegantOTA</Filter>
     </Text>
+    <Text Include="board.txt">
+      <Filter>Misc Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

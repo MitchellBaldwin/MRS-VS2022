@@ -38,13 +38,18 @@ void DebugDisplayClass::DrawHOMPage()
 	}
 
 	// Update dynamic displays:
-	display.fillRect(0, 32, 128, 8, SSD1306_BLACK);
-	if (!CSSMStatus.WiFiStatus)
+	display.fillRect(0, 16, 128, 32, SSD1306_BLACK);
+	for (int i = 0; i < MAX_TEXT_LINES; ++i)
 	{
-		snprintf(buf, 22, "Initializing WiFi");
-		display.setCursor(0, 32);
-		display.write(buf);
+		display.setCursor(0, 16 + i * 8);
+		display.write(lines[i].c_str());
 	}
+	//if (!CSSMStatus.WiFiStatus)
+	//{
+	//	snprintf(buf, 22, "Initializing WiFi");
+	//	display.setCursor(0, 32);
+	//	display.write(buf);
+	//}
 
 	display.fillRect(0, 48, 128, 8, SSD1306_BLACK);
 	snprintf(buf, 22, "KP %04d %s", SensorData.GetKBRaw(), SensorData.GetKPString("%#5.2f"));
@@ -289,6 +294,18 @@ void DebugDisplayClass::Control(uint8_t command)
 	default:
 		return;
 	}
+}
+
+void DebugDisplayClass::AddTextLine(String textLine)
+{
+	if (curLine >= MAX_TEXT_LINES)
+	{
+		for (curLine = 0; curLine < MAX_TEXT_LINES - 1; ++curLine)
+		{
+			lines[curLine] = lines[curLine + 1];
+		}
+	}
+	lines[curLine++] = textLine;
 }
 
 

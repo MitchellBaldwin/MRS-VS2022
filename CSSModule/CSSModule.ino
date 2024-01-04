@@ -82,6 +82,11 @@ constexpr byte LocalDisplayI2CAddress = 0x3C;
 #include "src/DebugDisplay.h"
 constexpr byte DebugDisplayI2CAddress = 0x3D;
 
+#ifdef _TEST_
+char buf[32];
+uint32_t testCounter = 0;
+#endif
+
 #include "src/CSSMSensorData.h"
 // TODO: If OSB arrays are powered from ESP 32 3.3 V supply then consider running signals directly to the ADC ports
 // Scale and buffer VIN signal and use the VP pin (pin 36) for measurement
@@ -267,7 +272,8 @@ void setup()
 
 	// Initialize WiFi and update Debug display to confirm success
 	//CSSMStatus.WiFiStatus = ESP32WiFi.Init();
-	CSSMStatus.WiFiStatus = initWiFi();
+	CSSMStatus.WiFiStatus = false;
+	//CSSMStatus.WiFiStatus = initWiFi();
 
 	if (CSSMStatus.DebugDisplayStatus)
 	{
@@ -328,15 +334,22 @@ void ReadControlsCallback()
 	if (OSBPressed)
 	{
 		char buf[32];
-		//snprintf(buf, 32, "OSB ID 0x%02X pressed", OSBPressed);
-		//_PL(buf);
+#ifdef _TEST_
+		////snprintf(buf, 32, "OSB ID 0x%02X pressed", OSBPressed);
+		////_PL(buf);
+#endif // _TEST_
 
+		//TODO: To support multi-function OSBs the response to the press of each OSB shall be based on CSSMStatusClass::DriveMode 
+		// Consider replacing the PageMenu text displayed on the bottom line of the LocalDisplay with acronyms or pneumonics 
+		//indicating the function of each OSB, or at least the center four key-style buttons 
+		//(i.e., not the buttons integral to the rotary encoders).
+		
 		switch (OSBPressed)
 		{
 		case OSBArrayClass::OSB1:	
-			// HDG rotary; press to engage Heading Hold (HDG) mode
-			CSSMStatus.DriveMode = CSSMStatusClass::DriveModes::HDG;
-			LocalDisplay.Control(LocalDisplayClass::HDGPage);
+			// CRS rotary; press to engage WPT mode
+			CSSMStatus.DriveMode = CSSMStatusClass::DriveModes::SEQ;
+			LocalDisplay.Control(LocalDisplayClass::SEQPage);
 			break;
 		case OSBArrayClass::OSB2:	
 			// Cycle Debug display
@@ -348,18 +361,18 @@ void ReadControlsCallback()
 			LocalDisplay.Control(LocalDisplayClass::DRVPage);
 			break;
 		case OSBArrayClass::OSB4:
-			// Engage Sequence (Seq) mode
-			CSSMStatus.DriveMode = CSSMStatusClass::DriveModes::SEQ;
-			LocalDisplay.Control(LocalDisplayClass::SEQPage);
+			//// Engage Sequence (Seq) mode
+			//CSSMStatus.DriveMode = CSSMStatusClass::DriveModes::SEQ;
+			//LocalDisplay.Control(LocalDisplayClass::SEQPage);
 			break;
 		case OSBArrayClass::OSB5:	
 			// Cycle SYS display
 			LocalDisplay.Control(LocalDisplayClass::Next);
 			break;
 		case OSBArrayClass::OSB6:	
-			// CRS rotary; press to engage WPT mode
-			CSSMStatus.DriveMode = CSSMStatusClass::DriveModes::WPT;
-			LocalDisplay.Control(LocalDisplayClass::WPTPage);
+			// HDG rotary; press to engage Heading Hold (HDG) mode
+			CSSMStatus.DriveMode = CSSMStatusClass::DriveModes::HDG;
+			LocalDisplay.Control(LocalDisplayClass::HDGPage);
 			break;
 		//case OSBArrayClass::OSB7:
 		//	CSSMStatus.Mode = CSSMStatusClass::Modes::SEQ;
@@ -385,6 +398,13 @@ void UpdateLocalDisplayCallback()
 
 void UpdateDebugDisplayCallback()
 {
+#ifdef _TEST_
+	//*** Test code start:
+	snprintf(buf, 22, "Testing %06d", testCounter++);
+	DebugDisplay.AddTextLine(buf);
+	//*** Test code end.
+#endif // _TEST_
+
 	DebugDisplay.Update();
 }
 
@@ -398,7 +418,21 @@ bool initWiFi()
 	//TODO: Set CSSMStatus flag to reflect WiFi connection success & state
 	//TODO: Implement a hardware means to force the WiFi Manager into configuration mode to allow selection of a different network
 	
+	if (CSSMStatus.DebugDisplayStatus)
+	{
+		DebugDisplay.AddTextLine("Initializing WiFi");
+	}
+	
+	wifiManager.setConnectTimeout(30);		// 30 s connection timeout period allowed
+	
+	wifiManager.setConfigPortalTimeout(180);	// 3 minute configuration portal timeout
+
 	bool success = wifiManager.autoConnect("MRS CSSM", "password");
+
+	if (CSSMStatus.DebugDisplayStatus)
+	{
+		DebugDisplay.AddTextLine("WiFi...");
+	}
 
 	server.on("/", HTTP_GET, [](AsyncWebServerRequest* request) {
 		request->send(200, "text/html", "<b>Mobile Robot System</b> Control Stick Steering Module (MRS-CSSM)<br>Enter '[local IP address]/update' in the browser address bar to update firmware");

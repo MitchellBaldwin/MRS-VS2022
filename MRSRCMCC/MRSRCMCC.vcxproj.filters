@@ -14,34 +14,43 @@
       <Extensions>xml;json;txt;rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="src">
-      <UniqueIdentifier>{c52a67bf-0953-43af-93da-c3934596d207}</UniqueIdentifier>
+      <UniqueIdentifier>{b49e4e4e-5031-4048-b626-cb635fe58156}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly">
-      <UniqueIdentifier>{7d9050ed-1ed0-4f57-819d-7d101acafefa}</UniqueIdentifier>
+      <UniqueIdentifier>{9d925ed4-caab-45a7-9dcc-2f8242f6c711}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\core">
-      <UniqueIdentifier>{295f8fab-3dd3-4c70-a2ae-cf9581e72b08}</UniqueIdentifier>
+      <UniqueIdentifier>{539fc194-b8aa-46d9-a128-fa151b63c8b8}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\core\apps">
-      <UniqueIdentifier>{ecc00184-83c9-4505-97e2-87528449186f}</UniqueIdentifier>
+      <UniqueIdentifier>{2664c06e-2b45-4c24-b6eb-45720b7f0fe2}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\core\apps\sntp">
-      <UniqueIdentifier>{5711ee91-a0b6-4cb9-b5d1-53b1f34f80f3}</UniqueIdentifier>
+      <UniqueIdentifier>{74ed96c0-7263-423e-b54d-92d0393bebf0}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\core\libb64">
-      <UniqueIdentifier>{b5641047-e34f-41f2-ade3-0300e61bcbeb}</UniqueIdentifier>
+      <UniqueIdentifier>{780f2c64-dab6-4f6e-81dc-46c53361f530}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries">
-      <UniqueIdentifier>{5c7a907c-42c8-4fed-96d1-7c8aa2825bec}</UniqueIdentifier>
+      <UniqueIdentifier>{f426c64f-8a9d-4799-be51-c72aa455cdf2}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\TaskScheduler">
-      <UniqueIdentifier>{dada0339-404f-4262-82b8-68066ee0c074}</UniqueIdentifier>
+      <UniqueIdentifier>{126457e6-8ed6-48e4-971f-f17dd4045e1f}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\PacketSerial">
-      <UniqueIdentifier>{f0d8b7e6-db2c-411e-8b76-b3a3f82e5385}</UniqueIdentifier>
+      <UniqueIdentifier>{9b40cae2-ded3-4f5b-9f90-b437a3f5d5aa}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\TFT_eSPI">
-      <UniqueIdentifier>{d984cbe1-cda5-4f7a-bca1-0287c846367a}</UniqueIdentifier>
+      <UniqueIdentifier>{7d509cc4-ec9d-4b33-bac6-51aba2dd9ab6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\_micro-api-readonly\libraries\SPI">
+      <UniqueIdentifier>{beaf78c8-46dd-43be-8cb1-9e4ff1a67e2f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\_micro-api-readonly\libraries\FS">
+      <UniqueIdentifier>{efd3fa74-37a7-4e42-9745-f8c317d26aed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\_micro-api-readonly\libraries\SPIFFS">
+      <UniqueIdentifier>{25336d51-dc51-400e-92bb-30fb8fac4bf4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -62,6 +71,15 @@
     </None>
     <None Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\TFT_eSPI\library.properties">
       <Filter>src\_micro-api-readonly\libraries\TFT_eSPI</Filter>
+    </None>
+    <None Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\SPI\library.properties">
+      <Filter>src\_micro-api-readonly\libraries\SPI</Filter>
+    </None>
+    <None Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\FS\library.properties">
+      <Filter>src\_micro-api-readonly\libraries\FS</Filter>
+    </None>
+    <None Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\SPIFFS\library.properties">
+      <Filter>src\_micro-api-readonly\libraries\SPIFFS</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -200,6 +218,18 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\TFT_eSPI\TFT_eSPI.cpp">
       <Filter>src\_micro-api-readonly\libraries\TFT_eSPI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\SPI\src\SPI.cpp">
+      <Filter>src\_micro-api-readonly\libraries\SPI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\FS\src\FS.cpp">
+      <Filter>src\_micro-api-readonly\libraries\FS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\FS\src\vfs_api.cpp">
+      <Filter>src\_micro-api-readonly\libraries\FS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\SPIFFS\src\SPIFFS.cpp">
+      <Filter>src\_micro-api-readonly\libraries\SPIFFS</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -368,7 +398,7 @@
     <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\libb64\cencode.h">
       <Filter>src\_micro-api-readonly\core\libb64</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\variants\lilygo_t_display_s3\pins_arduino.h">
+    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\variants\doitESP32devkitV1\pins_arduino.h">
       <Filter>src\_micro-api-readonly\core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\TaskScheduler\src\TaskScheduler.h">
@@ -401,8 +431,26 @@
     <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\TFT_eSPI\User_Setup_Select.h">
       <Filter>src\_micro-api-readonly\libraries\TFT_eSPI</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\SPI\src\SPI.h">
+      <Filter>src\_micro-api-readonly\libraries\SPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\FS\src\FS.h">
+      <Filter>src\_micro-api-readonly\libraries\FS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\FS\src\FSImpl.h">
+      <Filter>src\_micro-api-readonly\libraries\FS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\FS\src\vfs_api.h">
+      <Filter>src\_micro-api-readonly\libraries\FS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\SPIFFS\src\SPIFFS.h">
+      <Filter>src\_micro-api-readonly\libraries\SPIFFS</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <Text Include="board.txt">
+      <Filter>Misc Files</Filter>
+    </Text>
     <Text Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\TaskScheduler\keywords.txt">
       <Filter>src\_micro-api-readonly\libraries\TaskScheduler</Filter>
     </Text>
@@ -427,8 +475,8 @@
     <Text Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\TFT_eSPI\README.txt">
       <Filter>src\_micro-api-readonly\libraries\TFT_eSPI</Filter>
     </Text>
-    <Text Include="board.txt">
-      <Filter>Misc Files</Filter>
+    <Text Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\SPI\keywords.txt">
+      <Filter>src\_micro-api-readonly\libraries\SPI</Filter>
     </Text>
   </ItemGroup>
 </Project>

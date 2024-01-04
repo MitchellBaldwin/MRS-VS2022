@@ -95,17 +95,30 @@ protected:
 
 	 const char* PageMenus[NONE] =
 	 {
-		 "<NONE    SYS     POW>",
-		 "<SYS     POW     COM>",
-		 "<POW     COM     I2C>",
-		 "<COM     I2C     nxt>",
-		 "<I2C     ENV     IMU>",
-		 "<ENV     IMU     nxt>",
+		 "DbNx  DRVm       LoNx",	// OSB menu for the SYS page: select next DebugDisplay page, enter DRIVE mode, select next LoaclDisplay page
+		 "SYSp  Mode       LoNx",	// OSB menu for the POW page: select SYS page, select current drive DriveMode page, 
+		 "SYSp  Mode WiFi  LoNx",	// OSB menu for the COM page: select SYS page, select current drive DriveMode page, connect to WiFi, 
+		 "SYSp  Mode Scan  LoNx",	// OSB menu for the I2C page: select SYS page, select current drive DriveMode page, rescan I2C bus, 
+		 "SYSp  Mode UPDT  LoNx",	// OSB menu for the ENV page: select SYS page, select current drive DriveMode page, force update of environment measurements, 
+		 "SYSp  Mode       LoNx",	// OSB menu for the IMU page: select SYS page, select current drive DriveMode page, 
 
-		 "<       DRIVE       >",
-		 "<   Heading Hold    >",
-		 "<  Waypoint Direct  >",
-		 "< Waypoint Sequence >",
+		 "SYSp                >",	// OSB menu for the DRV mode page: select SYS page, 
+		 "SYSp                >",	// OSB menu for the HDG mode page: select SYS page, 
+		 "SYSp                >",	// OSB menu for the WPT mode page: select SYS page, 
+		 "SYSp  Prev Next  >WPT",	// OSB menu for the SEQ mode page: select SYS page, select previous waypoint in sequence, select next waypoint in sequence, 
+									//enter WPT mode with the currently selected waypoint as the target
+
+		 //"<NONE    SYS     POW>",
+		 //"<SYS     POW     COM>",
+		 //"<POW     COM     I2C>",
+		 //"<COM     I2C     nxt>",
+		 //"<I2C     ENV     IMU>",
+		 //"<ENV     IMU     nxt>",
+
+		 //"<       DRIVE       >",
+		 //"<   Heading Hold    >",
+		 //"<  Waypoint Direct  >",
+		 //"< Waypoint Sequence >",
 
 	 };
 
