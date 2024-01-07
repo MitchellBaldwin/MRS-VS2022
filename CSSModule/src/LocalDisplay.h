@@ -173,6 +173,13 @@ public:
 		Prev,
 		Next,
 
+		OSB01Pressed,
+		OSB02Pressed,
+		OSB03Pressed,
+		OSB04Pressed,
+		OSB05Pressed,
+		OSB06Pressed,
+
 		Last
 	};
 
@@ -181,6 +188,7 @@ public:
 	bool Test();
 	void Update();
 	void Control(uint8_t command);
+	bool IsOnSYSPage();
 
 };
 

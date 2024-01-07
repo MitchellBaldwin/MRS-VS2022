@@ -527,5 +527,14 @@ void LocalDisplayClass::Control(uint8_t command)
 	}
 }
 
+bool LocalDisplayClass::IsOnSYSPage()
+{
+	if (currentPage == SYS)
+	{
+		return true;
+	}
+	return false;
+}
+
 LocalDisplayClass LocalDisplay;
 

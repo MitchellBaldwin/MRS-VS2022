@@ -149,13 +149,13 @@ static const uint8_t OBS_NUM_BUTTONS = 6;
 static const uint8_t OSB_NUM_LEVELS = OBS_NUM_BUTTONS + 1;
 static const uint16_t OSB_LEVELS[OSB_NUM_LEVELS] =
 {
-  4,
-  985,
-  1490,
-  2025,
-  2535,
-  3085,
-  3660
+  0,
+  797,
+  1203,
+  1623,
+  2078,
+  2594,
+  3249
 };
 #endif
 
@@ -339,37 +339,71 @@ void ReadControlsCallback()
 		////_PL(buf);
 #endif // _TEST_
 
-		//TODO: To support multi-function OSBs the response to the press of each OSB shall be based on CSSMStatusClass::DriveMode 
-		// Consider replacing the PageMenu text displayed on the bottom line of the LocalDisplay with acronyms or pneumonics 
-		//indicating the function of each OSB, or at least the center four key-style buttons 
+		//TODO: To support multi-function OSBs the response to the press of each OSB must be based on other states
+		//including the current LocalDisplay page state and CSSMStatusClass::DriveMode 
+		// Replace the PageMenu text displayed on the bottom line of the LocalDisplay with acronyms or pneumonics 
+		//indicating the function of each OSB, or at least the center four key-style OSBs 
 		//(i.e., not the buttons integral to the rotary encoders).
 		
 		switch (OSBPressed)
 		{
-		case OSBArrayClass::OSB1:	
+		case OSBArrayClass::OSB1:	// CRS (left) rotary endocer button
 			// CRS rotary; press to engage WPT mode
 			CSSMStatus.DriveMode = CSSMStatusClass::DriveModes::SEQ;
 			LocalDisplay.Control(LocalDisplayClass::SEQPage);
 			break;
-		case OSBArrayClass::OSB2:	
-			// Cycle Debug display
-			DebugDisplay.Control(DebugDisplayClass::Next);
+		case OSBArrayClass::OSB2:	// OSB2/SYS
+			if (LocalDisplay.IsOnSYSPage())
+			{
+				// Cycle Debug display
+				DebugDisplay.Control(DebugDisplayClass::Next);
+			}
+			else
+			{
+				LocalDisplay.Control(LocalDisplayClass::SYSPage);
+			}
 			break;
-		case OSBArrayClass::OSB3:
-			// Engage Direct Drive (DRV) mode
-			CSSMStatus.DriveMode = CSSMStatusClass::DriveModes::DRV;
-			LocalDisplay.Control(LocalDisplayClass::DRVPage);
+		case OSBArrayClass::OSB3:	// OSB3/>Mode
+			if (LocalDisplay.IsOnSYSPage())
+			{
+				// Engage Direct Drive (DRV) mode
+				CSSMStatus.DriveMode = CSSMStatusClass::DriveModes::DRV;
+				LocalDisplay.Control(LocalDisplayClass::DRVPage);
+			}
+			else
+			{
+				// Return LocalDisplay to the page correspnding to the current CSSMStatus.DriveMode
+				switch (CSSMStatus.DriveMode)
+				{
+				case CSSMStatusClass::DriveModes::DRV:
+					LocalDisplay.Control(LocalDisplayClass::DRVPage);
+					break;
+				case CSSMStatusClass::DriveModes::HDG:
+					LocalDisplay.Control(LocalDisplayClass::HDGPage);
+					break;
+				case CSSMStatusClass::DriveModes::WPT:
+					LocalDisplay.Control(LocalDisplayClass::WPTPage);
+					break;
+				case CSSMStatusClass::DriveModes::SEQ:
+					LocalDisplay.Control(LocalDisplayClass::SEQPage);
+					break;
+
+				default:
+					LocalDisplay.Control(LocalDisplayClass::SYSPage);
+					break;
+				}
+			}
 			break;
-		case OSBArrayClass::OSB4:
+		case OSBArrayClass::OSB4:	// OSB4/>Func
 			//// Engage Sequence (Seq) mode
 			//CSSMStatus.DriveMode = CSSMStatusClass::DriveModes::SEQ;
 			//LocalDisplay.Control(LocalDisplayClass::SEQPage);
 			break;
-		case OSBArrayClass::OSB5:	
+		case OSBArrayClass::OSB5:	// OSB5/>Next
 			// Cycle SYS display
 			LocalDisplay.Control(LocalDisplayClass::Next);
 			break;
-		case OSBArrayClass::OSB6:	
+		case OSBArrayClass::OSB6:	// HDG (right) rotary encoder button
 			// HDG rotary; press to engage Heading Hold (HDG) mode
 			CSSMStatus.DriveMode = CSSMStatusClass::DriveModes::HDG;
 			LocalDisplay.Control(LocalDisplayClass::HDGPage);
