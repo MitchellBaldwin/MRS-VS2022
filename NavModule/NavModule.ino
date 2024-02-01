@@ -67,7 +67,7 @@ void setup()
 	tft.setTextDatum(CL_DATUM);
 	tft.print("5.00 V");
 
-	tft.setCursor(10, tft.height() / 2 + 16);
+	tft.setCursor(2, tft.height() / 2 + 16);
 	tft.setTextSize(1);
 	tft.setTextColor(TFT_GREEN);
 	tft.setTextDatum(CL_DATUM);
@@ -75,10 +75,10 @@ void setup()
 	WiFi.macAddress(mac);
 	tft.printf("MAC:%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 
-	tft.setCursor(10, tft.height() / 2 + 24);
+	tft.setCursor(2, tft.height() / 2 + 24);
 	tft.printf("IP: %s", WiFi.localIP().toString());
 
-	tft.drawRect(2, 10, tft.getViewportWidth() - 2, tft.getViewportHeight() - 10, TFT_DARKCYAN);
+	tft.drawRect(0, 0, tft.getViewportWidth(), tft.getViewportHeight(), TFT_DARKCYAN);
 }
 
 void loop()
