@@ -1,0 +1,5 @@
+# ESP32PowMgmtBoard build property overrides
+#
+
+vm.settings.shorten-include-paths=false
+vm.settings.use-single-backslashes=true

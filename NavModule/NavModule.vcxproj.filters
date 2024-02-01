@@ -20,13 +20,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ESP32PowMgmtBoard.ino" />
+    <ClCompile Include="NavModule.ino" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="__vm\.ESP32PowMgmtBoard.vsarduino.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\DEBUG Helpers\src\DEBUG Macros.h">
+    <ClInclude Include="__vm\.NavModule.vsarduino.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,9 +1,9 @@
 /*
- Name:		ESP32PowMgmtBoard.ino
- Created:	1/15/2024 4:26:28 PM
- Author:	Mitchell Baldwin copyright 2024
-
- Main executable for the Mobile Robot System Remote Controller Power Control Module (MRS RC PCM)
+ Name:		NavModule.ino
+ Created:	2/1/2024 8:50:07 AM
+ Author:	Mitchell Baldwin
+  
+ Main executable for the Mobile Robot System Remote Controller Navigation Module (MRS RC NM)
 
  v1.0	Initial release
  v1.1	
@@ -34,7 +34,7 @@ TFT_eSPI tft = TFT_eSPI();
 // #define _TASK_OO_CALLBACKS		// Support for dynamic callback method binding
 #include <TaskScheduler.h>
 
-constexpr byte LED_BUILTIN = 0x02;
+//constexpr byte LED_BUILTIN = 0x02;
 //constexpr auto HeartbeatLEDToggleInterval = 1000;
 
 // Scheduler
@@ -43,7 +43,7 @@ Scheduler MainScheduler;
 //void ToggleBuiltinLEDCallback();
 //Task HeartbeatLEDTask(HeartbeatLEDToggleInterval* TASK_MILLISECOND, TASK_FOREVER, &ToggleBuiltinLEDCallback, &MainScheduler, false);
 
-void setup() 
+void setup()
 {
 	//pinMode(LED_BUILTIN, OUTPUT);
 	_PL();
@@ -54,7 +54,7 @@ void setup()
 	tft.init();
 	tft.setRotation(2);
 	tft.fillScreen(TFT_BLACK);
-	
+
 	//tft.setCursor();	// Used with 'printxx' statements; not needed when using drawString()
 	tft.setTextSize(1);
 	tft.setTextColor(TFT_RED, TFT_BLACK, false);
@@ -66,7 +66,7 @@ void setup()
 	tft.setTextColor(TFT_YELLOW);
 	tft.setTextDatum(CL_DATUM);
 	tft.print("5.00 V");
-	
+
 	tft.setCursor(10, tft.height() / 2 + 16);
 	tft.setTextSize(1);
 	tft.setTextColor(TFT_GREEN);
@@ -77,11 +77,11 @@ void setup()
 
 	tft.setCursor(10, tft.height() / 2 + 24);
 	tft.printf("IP: %s", WiFi.localIP().toString());
-	
-	tft.drawRect(2, 10, tft.getViewportWidth() - 2, tft.getViewportHeight() -10, TFT_DARKCYAN);
+
+	tft.drawRect(2, 10, tft.getViewportWidth() - 2, tft.getViewportHeight() - 10, TFT_DARKCYAN);
 }
 
-void loop() 
+void loop()
 {
 	MainScheduler.execute();
 }
