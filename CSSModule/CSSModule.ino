@@ -41,6 +41,10 @@
 //#include <ESPAsyncWebServer.h>
 
 //#include "src/ESP32WiFi.h"
+#include <ezButton.h>
+ezButton SW1(27);
+int SW1State = 0;
+
 #include <ESPAsyncWiFiManager.h>
 #include <AsyncElegantOTA.h>
 
@@ -255,6 +259,8 @@ void setup()
 
 	SensorData.Init(LOSBAnalogPin, ThrottlePin, ESP32VINAnalogPin);
 	
+	SW1.setDebounceTime(50);
+
 	if (!DebugDisplay.Init(DebugDisplayI2CAddress))
 	{
 		CSSMStatus.DebugDisplayStatus = false;
@@ -311,6 +317,16 @@ void setup()
 void loop()
 {
 	MainScheduler.execute();
+
+	// Test code:
+	SW1.loop();
+	int newSW1State = SW1.getState();
+	if (newSW1State != SW1State)
+	{
+		_PL(newSW1State);
+		SW1State = newSW1State;
+	}
+
 }
 
 void ToggleBuiltinLEDCallback()

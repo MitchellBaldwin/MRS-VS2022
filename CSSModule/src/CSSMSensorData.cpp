@@ -37,6 +37,8 @@ bool CSSMSensorData::Init()
 	// about 1.04 (4%) at 12.0 V; since supply voltage (VIN) in use is expected to be in a
 	// range of about 8.0V (LiPo supply) to 12.0 V (external power supply), we adjust the 
 	// MegaGain by a factor of 1.05: 6284 * 1.05 = 6598:
+	// With 5.127 V indicated pn precision DMM, this scale factor results in an indicated
+	//measurement of 4.45 V (13.2% error)
 	ESP32VIN.Init(0, 6598, "V");
 
 	CSSMStatus.BME280Status = ENVData.Init();
