@@ -49,6 +49,11 @@ bool CSSMSensorData::Init()
 	CRSEncoder.attachHalfQuad(CRSEncoderDTPin, CRSEncoderCLKPin);
 	CRSEncoder.setCount(0);
 
+	LeftToggleSwitch = new ezButton(LeftToggleSwitchPin);
+	CenterToggleSwitch = new ezButton(CenterToggleSwitchPin);
+	RightToggleSwitch = new ezButton(RightToggleSwitchPin);
+	RightRockerSwitch = new ezButton(RightRockerSwitchPin);
+
 	bool success = CSSMStatus.BME280Status && true;
 	return success;
 }
@@ -60,6 +65,16 @@ bool CSSMSensorData::Init(byte kbSensePin, byte throttleSensePin, byte esp32VINS
 	ESP32VINSensePin = esp32VINSensePin;
 
 	return Init();
+}
+
+bool CSSMSensorData::Init(byte kbSensePin, byte throttleSensePin, byte esp32VINSensePin, byte leftToggleSwitchPin, byte centerToggleSwitchPin, byte rightToggleSwitchPin, byte rightRockerSwitchPin)
+{
+	LeftToggleSwitchPin = leftToggleSwitchPin;
+	CenterToggleSwitchPin = centerToggleSwitchPin;
+	RightToggleSwitchPin = rightToggleSwitchPin;
+	RightRockerSwitchPin - rightRockerSwitchPin;
+
+	return Init(kbSensePin, throttleSensePin, esp32VINSensePin);
 }
 
 void CSSMSensorData::Update()
@@ -97,6 +112,35 @@ void CSSMSensorData::Update()
 		CRSEncoder.setCount(CRSEncoderSetting * 2);
 	}
 	
+	LeftToggleSwitch->loop();
+	int newState = LeftToggleSwitch->getState();
+	if (LeftToggleSwitchState != newState)
+	{
+		LeftToggleSwitchState = newState;
+		_PL(LeftToggleSwitchState);
+	}
+	CenterToggleSwitch->loop();
+	newState = CenterToggleSwitch->getState();
+	if (CenterToggleSwitchState != newState)
+	{
+		CenterToggleSwitchState = newState;
+		_PL(CenterToggleSwitchState);
+	}
+	RightToggleSwitch->loop();
+	newState = RightToggleSwitch->getState();
+	if (RightToggleSwitchState != newState)
+	{
+		RightToggleSwitchState = newState;
+		_PL(RightToggleSwitchState);
+	}
+	RightRockerSwitch->loop();
+	newState = RightRockerSwitch->getState();
+	newState = newState?0:1;	// Need to reverse sense of state for rocker switch
+	if (RightRockerSwitchState != newState)
+	{
+		RightRockerSwitchState = newState;
+		_PL(RightRockerSwitchState);
+	}
 }
 
 uint16_t CSSMSensorData::GetKBRaw()

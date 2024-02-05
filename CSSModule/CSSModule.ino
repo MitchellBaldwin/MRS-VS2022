@@ -41,9 +41,6 @@
 //#include <ESPAsyncWebServer.h>
 
 //#include "src/ESP32WiFi.h"
-#include <ezButton.h>
-ezButton SW1(27);
-int SW1State = 0;
 
 #include <ESPAsyncWiFiManager.h>
 #include <AsyncElegantOTA.h>
@@ -57,7 +54,7 @@ AsyncWiFiManager wifiManager(&server, &dns);
 #include "src/BME280Data.h"
 #include "src/CSSMStatus.h"
 
-constexpr byte DebugLED = 0x04;
+//constexpr byte DebugLED = 0x04;
 
 #include <TaskScheduler.h>
 // #define _TASK_TIMECRITICAL		// Enable monitoring scheduling overruns
@@ -98,6 +95,11 @@ constexpr byte LOSBAnalogPin = 34;
 constexpr byte ROSBAnalogPin = 35;		//TODO: Deconflict with ThrottleSensePin
 constexpr byte ThrottlePin = 35;
 constexpr byte ESP32VINAnalogPin = 36;
+
+constexpr byte LeftToggleSwitchPin = 0x1B;		// GPIO27
+constexpr byte CenterToggleSwitchPin = 0x20;	// GPIO32
+constexpr byte RightToggleSwitchPin = 0x21;		// GPIO33
+constexpr byte RightRockerSwitchPin = 0x04;		// GPIO04
 
 #include "src/OSBArray.h"
 
@@ -229,9 +231,9 @@ void setup()
 	pinMode(LED_BUILTIN, OUTPUT);
 	_PL();
 	_PL(buf);
-	pinMode(DebugLED, OUTPUT);
-	snprintf(buf, 31, "Debug LED pin 0x%02X", DebugLED);
-	_PL(buf);
+	//pinMode(DebugLED, OUTPUT);
+	//snprintf(buf, 31, "Debug LED pin 0x%02X", DebugLED);
+	//_PL(buf);
 
 	I2CBus.Init();
 	I2CBus.Scan();
@@ -257,9 +259,9 @@ void setup()
 	OSBArray.Init(OSB_NUM_LEVELS, OSB_LEVELS);
 #endif
 
-	SensorData.Init(LOSBAnalogPin, ThrottlePin, ESP32VINAnalogPin);
+	SensorData.Init(LOSBAnalogPin, ThrottlePin, ESP32VINAnalogPin, LeftToggleSwitchPin, CenterToggleSwitchPin, RightToggleSwitchPin, RightRockerSwitchPin);
 	
-	SW1.setDebounceTime(50);
+	//SW1.setDebounceTime(50);
 
 	if (!DebugDisplay.Init(DebugDisplayI2CAddress))
 	{
@@ -319,13 +321,6 @@ void loop()
 	MainScheduler.execute();
 
 	// Test code:
-	SW1.loop();
-	int newSW1State = SW1.getState();
-	if (newSW1State != SW1State)
-	{
-		_PL(newSW1State);
-		SW1State = newSW1State;
-	}
 
 }
 

@@ -12,6 +12,25 @@
 
 */
 
+#include <seesaw_neopixel.h>
+#include <Adafruit_seesaw.h>
+constexpr byte SS_BUTTON = 0x18;
+constexpr byte SS_NEOPIX = 0x06;
+constexpr byte HDGEncoderI2CAddress = 0x36;
+Adafruit_seesaw HDGEncoder;
+seesaw_NeoPixel HDGNeoPix = seesaw_NeoPixel(1, SS_NEOPIX, NEO_GRB + NEO_KHZ800);
+int32_t HDGSetting = 0;
+
+#include "src/NMControls.h"
+constexpr byte RightRockerSwitchPin = 0x04;		// GPIO04
+
+#include "src/OSBArray.h"
+constexpr byte LOSBAnalogPin = 34;
+constexpr byte ROSBAnalogPin = 35;
+
+
+#include "src/I2CBus.h"
+
 #include <WiFi.h>
 #include <TFT_eSPI.h>
 TFT_eSPI tft = TFT_eSPI();
@@ -34,14 +53,16 @@ TFT_eSPI tft = TFT_eSPI();
 // #define _TASK_OO_CALLBACKS		// Support for dynamic callback method binding
 #include <TaskScheduler.h>
 
+Scheduler MainScheduler;			// Main loop task scheduler
+
 //constexpr byte LED_BUILTIN = 0x02;
 //constexpr auto HeartbeatLEDToggleInterval = 1000;
-
-// Scheduler
-Scheduler MainScheduler;
-
 //void ToggleBuiltinLEDCallback();
 //Task HeartbeatLEDTask(HeartbeatLEDToggleInterval* TASK_MILLISECOND, TASK_FOREVER, &ToggleBuiltinLEDCallback, &MainScheduler, false);
+
+constexpr uint64_t ReadControleInterval = 100;	// ms
+void ReadControlsCallback();
+Task ReadControlsTask(ReadControleInterval* TASK_MILLISECOND, TASK_FOREVER, &ReadControlsCallback, &MainScheduler, false);
 
 void setup()
 {
@@ -52,7 +73,7 @@ void setup()
 	//HeartbeatLEDTask.enable();
 
 	tft.init();
-	tft.setRotation(2);
+	tft.setRotation(0);
 	tft.fillScreen(TFT_BLACK);
 
 	//tft.setCursor();	// Used with 'printxx' statements; not needed when using drawString()
@@ -78,7 +99,62 @@ void setup()
 	tft.setCursor(2, tft.height() / 2 + 24);
 	tft.printf("IP: %s", WiFi.localIP().toString());
 
-	tft.drawRect(0, 0, tft.getViewportWidth(), tft.getViewportHeight(), TFT_DARKCYAN);
+	//tft.drawRect(0, 0, tft.getViewportWidth(), tft.getViewportHeight(), TFT_DARKCYAN);
+
+	char buf[64];
+
+	I2CBus.Init();
+	I2CBus.Scan();
+	snprintf(buf, 31, "I2C %02X %02X %02X %02X %02X %02X %02X %02X",
+		I2CBus.ActiveI2CDeviceAddresses[0],
+		I2CBus.ActiveI2CDeviceAddresses[1],
+		I2CBus.ActiveI2CDeviceAddresses[2],
+		I2CBus.ActiveI2CDeviceAddresses[3],
+		I2CBus.ActiveI2CDeviceAddresses[4],
+		I2CBus.ActiveI2CDeviceAddresses[5],
+		I2CBus.ActiveI2CDeviceAddresses[6],
+		I2CBus.ActiveI2CDeviceAddresses[7]);
+	_PL(buf);
+	tft.setCursor(2, tft.height() / 2 + 48);
+	tft.printf("I2C: %s", buf);
+
+	if (!HDGEncoder.begin(HDGEncoderI2CAddress) || !HDGNeoPix.begin(HDGEncoderI2CAddress))
+	{
+		sprintf(buf, "HDG encoder not found at %02X", HDGEncoderI2CAddress);
+		_PL(buf);
+		tft.setCursor(2, tft.height() / 2 + 56);
+		tft.printf(buf);
+	}
+	else
+	{
+		sprintf(buf, "HDG encoder started at 0x%02X;", HDGEncoderI2CAddress);
+		_PL(buf);
+		tft.setCursor(2, tft.height() / 2 + 56);
+		tft.printf(buf);
+	
+		uint32_t afssVersion = ((HDGEncoder.getVersion() >> 0x10) & 0xFFFF);
+		sprintf(buf, "ver: %d", afssVersion);
+		_PL(buf);
+		tft.setCursor(3 * tft.width() / 4, tft.height() / 2 + 56);
+		tft.printf(buf);
+
+		HDGNeoPix.setPixelColor(0, HDGNeoPix.Color(0x00, 0x00, 0x08));
+		//HDGNeoPix.setBrightness(0);
+		HDGNeoPix.show();
+
+		HDGEncoder.pinMode(SS_BUTTON, INPUT_PULLUP);
+		HDGSetting = HDGEncoder.getEncoderPosition();
+
+		//_PL("Enabling HDG encoder interrupts");
+		//delay(10);
+		//AFSS.setGPIOInterrupts((uint32_t)1 << SS_BUTTON, 1);
+		//AFSS.enableEncoderInterrupt();
+	}
+
+	NMControls.Init(RightRockerSwitchPin);
+	
+	ReadControlsTask.enable();
+
 }
 
 void loop()
@@ -89,4 +165,52 @@ void loop()
 void ToggleBuiltinLEDCallback()
 {
 	digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+}
+
+void ReadControlsCallback()
+{
+	NMControls.Update();
+	
+	char buf[64];
+	
+	// Test OSB arrays:
+	tft.setTextColor(TFT_CYAN, TFT_BLACK, true);
+	uint16_t OSBADC = analogRead(LOSBAnalogPin);
+	sprintf(buf, "LOSB: %04D", OSBADC);
+	tft.drawString(buf, 2, tft.height() - 24);
+	OSBADC = analogRead(ROSBAnalogPin);
+	sprintf(buf, "ROSB: %04D", OSBADC);
+	tft.drawString(buf, tft.width() - tft.textWidth(buf), tft.height() - 24);
+
+	// Test AF rotary encoder & Neopixel boards:
+	if (!HDGEncoder.digitalRead(SS_BUTTON))
+	{
+		_PL("HDG encoder button pressed");
+	}
+	int32_t newHDGSetting = HDGEncoder.getEncoderPosition();
+	if (newHDGSetting != HDGSetting)
+	{
+		_PL(newHDGSetting);
+		HDGSetting = newHDGSetting;
+		//HDGNeoPix.setPixelColor(0, Wheel(newHDGSetting & 0xFF));
+		//HDGNeoPix.show();
+		sprintf(buf, "%+04D", HDGSetting);
+		tft.setTextColor(TFT_ORANGE, TFT_BLACK, true);
+		tft.drawString(buf, tft.width() - tft.textWidth(buf), tft.height() - 8);
+	}
+
+}
+
+uint32_t Wheel(byte WheelPos) 
+{
+	WheelPos = 255 - WheelPos;
+	if (WheelPos < 85) {
+		return HDGNeoPix.Color(255 - WheelPos * 3, 0, WheelPos * 3);
+	}
+	if (WheelPos < 170) {
+		WheelPos -= 85;
+		return HDGNeoPix.Color(0, WheelPos * 3, 255 - WheelPos * 3);
+	}
+	WheelPos -= 170;
+	return HDGNeoPix.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
 }
