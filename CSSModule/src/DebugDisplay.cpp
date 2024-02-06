@@ -308,6 +308,14 @@ void DebugDisplayClass::AddTextLine(String textLine)
 	lines[curLine++] = textLine;
 }
 
+void DebugDisplayClass::ClearText()
+{
+	for (int i = 0; i < MAX_TEXT_LINES; ++i)
+	{
+		lines[i] = "";
+	}
+}
+
 
 DebugDisplayClass DebugDisplay;
 

@@ -43,7 +43,7 @@
 //#include "src/ESP32WiFi.h"
 
 #include <ESPAsyncWiFiManager.h>
-#include <AsyncElegantOTA.h>
+//#include <AsyncElegantOTA.h>
 
 AsyncWebServer server(80);
 DNSServer dns;
@@ -281,7 +281,7 @@ void setup()
 	// Initialize WiFi and update Debug display to confirm success
 	//CSSMStatus.WiFiStatus = ESP32WiFi.Init();
 	CSSMStatus.WiFiStatus = false;
-	//CSSMStatus.WiFiStatus = initWiFi();
+	CSSMStatus.WiFiStatus = initWiFi();
 
 	if (CSSMStatus.DebugDisplayStatus)
 	{
@@ -476,14 +476,22 @@ bool initWiFi()
 
 	if (CSSMStatus.DebugDisplayStatus)
 	{
-		DebugDisplay.AddTextLine("WiFi...");
+		if (success)
+		{
+			DebugDisplay.ClearText();
+			DebugDisplay.AddTextLine("WiFi connected");
+		}
+		else
+		{
+			DebugDisplay.AddTextLine("Not connected!");
+		}
 	}
 
 	server.on("/", HTTP_GET, [](AsyncWebServerRequest* request) {
 		request->send(200, "text/html", "<b>Mobile Robot System</b> Control Stick Steering Module (MRS-CSSM)<br>Enter '[local IP address]/update' in the browser address bar to update firmware");
 		});
 
-	AsyncElegantOTA.begin(&server);    // Start ElegantOTA
+	//AsyncElegantOTA.begin(&server);    // Start ElegantOTA
 	server.begin();
 	_PP("HTTP server started at ");
 	IPAddress LocalIP = WiFi.localIP();

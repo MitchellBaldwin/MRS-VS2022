@@ -109,6 +109,7 @@ public:
 	void Update();
 	void Control(uint8_t command);
 	void AddTextLine(String textLine);
+	void ClearText();
 
 };
 
