@@ -406,26 +406,37 @@ void ReadControlsCallback()
 			}
 			break;
 		case OSBArrayClass::OSB4:	// OSB4/>Func
-			//// Engage Sequence (Seq) mode
-			//CSSMStatus.DriveMode = CSSMStatusClass::DriveModes::SEQ;
-			//LocalDisplay.Control(LocalDisplayClass::SEQPage);
+			switch (LocalDisplay.GetCurrentPage())
+			{
+			case LocalDisplayClass::Pages::COM:
+					// 'WiFi' Func> OSB response:
+
+				break;
+			case LocalDisplayClass::Pages::I2C:
+					// 'Scan' Func> OSB response:
+					DebugDisplay.AddTextLine("Scanning I2C bus...");
+					I2CBus.Scan();
+					DebugDisplay.AddTextLine("I2C bus scan complete");
+				break;
+			case LocalDisplayClass::Pages::ENV:
+					// 'UPDT' Func> OSB response:
+					SensorData.ReadENVData();
+					break;
+			default:
+				break;
+			}
 			break;
 		case OSBArrayClass::OSB5:	// OSB5/>Next
 			// Cycle SYS display
 			LocalDisplay.Control(LocalDisplayClass::Next);
 			break;
 		case OSBArrayClass::OSB6:	// HDG (right) rotary encoder button
-			// HDG rotary; press to engage Heading Hold (HDG) mode
 			CSSMStatus.DriveMode = CSSMStatusClass::DriveModes::HDG;
 			LocalDisplay.Control(LocalDisplayClass::HDGPage);
 			break;
 		//case OSBArrayClass::OSB7:
-		//	CSSMStatus.Mode = CSSMStatusClass::Modes::SEQ;
-		//	LocalDisplay.Control(LocalDisplayClass::SEQPage);
 		//	break;
 		//case OSBArrayClass::OSB8:
-		//	CSSMStatus.Mode = CSSMStatusClass::Modes::WPT;
-		//	LocalDisplay.Control(LocalDisplayClass::WPTPage);
 		//	break;
 		default:
 			break;
@@ -460,25 +471,38 @@ void SendCSSMPacketCallback()
 
 bool initWiFi()
 {
-	//TODO: Set CSSMStatus flag to reflect WiFi connection success & state
-	//TODO: Implement a hardware means to force the WiFi Manager into configuration mode to allow selection of a different network
+	//DONE: Set CSSMStatus flag to reflect WiFi connection success & state
+	//DONE: Implement a hardware means to force the WiFi Manager into configuration mode to allow selection of a different network
 	
 	if (CSSMStatus.DebugDisplayStatus)
 	{
 		DebugDisplay.AddTextLine("Initializing WiFi");
+		DebugDisplay.Update();
+
 	}
 	
-	wifiManager.setConnectTimeout(30);		// 30 s connection timeout period allowed
-	
+	wifiManager.setConnectTimeout(30);			// 30 s connection timeout period allowed
 	wifiManager.setConfigPortalTimeout(180);	// 3 minute configuration portal timeout
 
-	bool success = wifiManager.autoConnect("MRS CSSM", "password");
+	bool success = false;
+	if (digitalRead(RightRockerSwitchPin) == 0)
+	{
+		_PL("On-demand config portal start");
+		wifiManager.resetSettings();
+		delay(1000);
+		success = wifiManager.startConfigPortal("MRS CSSM", "password");
+	}
+	else
+	{
+		_PL("Config portal auto-connect");
+		success = wifiManager.autoConnect("MRS CSSM", "password");
+	}
 
 	if (CSSMStatus.DebugDisplayStatus)
 	{
 		if (success)
 		{
-			DebugDisplay.ClearText();
+			//DebugDisplay.ClearText();
 			DebugDisplay.AddTextLine("WiFi connected");
 		}
 		else

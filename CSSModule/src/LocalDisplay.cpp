@@ -123,8 +123,12 @@ void LocalDisplayClass::DrawCOMPage()
 		display.setCursor(0, 16);
 		display.write(buf);
 
-		snprintf(buf, 22, "IP: %s", WiFi.localIP().toString());
+		snprintf(buf, 22, "SSID: %s", WiFi.SSID());
 		display.setCursor(0, 24);
+		display.write(buf);
+
+		snprintf(buf, 22, "IP: %s", WiFi.localIP().toString());
+		display.setCursor(0, 32);
 		display.write(buf);
 
 		uint8_t mac[6];
@@ -527,9 +531,50 @@ void LocalDisplayClass::Control(uint8_t command)
 	}
 }
 
+LocalDisplayClass::Pages LocalDisplayClass::GetCurrentPage()
+{
+	return currentPage;
+}
+
 bool LocalDisplayClass::IsOnSYSPage()
 {
 	if (currentPage == SYS)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool LocalDisplayClass::IsOnPOWPage()
+{
+	if (currentPage == POW)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool LocalDisplayClass::IsOnCOMPage()
+{
+	if (currentPage == COM)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool LocalDisplayClass::IsOnI2CPage()
+{
+	if (currentPage == I2C)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool LocalDisplayClass::IsOnENVPage()
+{
+	if (currentPage == ENV)
 	{
 		return true;
 	}

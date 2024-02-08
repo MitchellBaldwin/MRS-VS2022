@@ -39,27 +39,29 @@ constexpr int SCREEN_HEIGHT = 64;	// OLED display height, in pixels
 
 class LocalDisplayClass
 {
+public:
+	enum Pages
+	{
+		SYS,
+		POW,
+		COM,
+		I2C,
+		ENV,
+		IMU,
+
+		DRV,
+		HDG,
+		WPT,
+		SEQ,
+
+		NONE
+	};
+
 protected:
 	 Adafruit_SSD1306 display;
 	 uint8_t I2CAddress = 0x00;
 	 char buf[32];
 
-	 enum Pages
-	 {
-		 SYS,
-		 POW,
-		 COM,
-		 I2C,
-		 ENV,
-		 IMU,
-
-		 DRV,
-		 HDG,
-		 WPT,
-		 SEQ,
-
-		 NONE
-	 };
 	 Pages currentPage = SYS;
 	 Pages lastPage = NONE;		// Aid to determine when a complete page redraw is needed
 
@@ -188,7 +190,12 @@ public:
 	bool Test();
 	void Update();
 	void Control(uint8_t command);
+	Pages GetCurrentPage();
 	bool IsOnSYSPage();
+	bool IsOnPOWPage();
+	bool IsOnCOMPage();
+	bool IsOnI2CPage();
+	bool IsOnENVPage();
 
 };
 
