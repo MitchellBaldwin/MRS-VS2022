@@ -95,6 +95,9 @@ public:
 	String GetESP32VINString(String format);
 	
 	void ReadENVData();
+
+	int GetRightRockerSwitchStateRaw();
+
 };
 
 extern CSSMSensorData SensorData;

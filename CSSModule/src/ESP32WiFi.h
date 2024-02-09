@@ -10,7 +10,7 @@
 #endif
 
 #include <ESPAsyncWiFiManager.h>
-#include <AsyncElegantOTA.h>
+//#include <AsyncElegantOTA.h>
 
 class ESP32WiFiClass
 {
@@ -22,7 +22,7 @@ class ESP32WiFiClass
 	DNSServer* dns;
 	AsyncWiFiManager* wifiManager;
 
-	bool Init();
+	bool Init(bool);
 
 };
 

@@ -40,9 +40,9 @@
 //#include <WiFiManager.h>
 //#include <ESPAsyncWebServer.h>
 
-//#include "src/ESP32WiFi.h"
+#include "src/ESP32WiFi.h"
 
-#include <ESPAsyncWiFiManager.h>
+//#include <ESPAsyncWiFiManager.h>
 //#include <AsyncElegantOTA.h>
 
 AsyncWebServer server(80);
@@ -278,10 +278,10 @@ void setup()
 		_PL(buf)
 	}
 
-	// Initialize WiFi and update Debug display to confirm success
-	//CSSMStatus.WiFiStatus = ESP32WiFi.Init();
+	// Initialize WiFi and update Debug display to confirm success;
+	// Perform hard reset of WiFi network association if right rocker switch is ON, invoking WiFi manager config portal on soft AP at 192.168.4.1:
 	CSSMStatus.WiFiStatus = false;
-	CSSMStatus.WiFiStatus = initWiFi();
+	CSSMStatus.WiFiStatus = ESP32WiFi.Init(SensorData.GetRightRockerSwitchStateRaw() == 0);
 
 	if (CSSMStatus.DebugDisplayStatus)
 	{
@@ -409,19 +409,19 @@ void ReadControlsCallback()
 			switch (LocalDisplay.GetCurrentPage())
 			{
 			case LocalDisplayClass::Pages::COM:
-					// 'WiFi' Func> OSB response:
-
+				// 'WiFi' Func> OSB response:
+				ESP32WiFi.Init(true);
 				break;
 			case LocalDisplayClass::Pages::I2C:
-					// 'Scan' Func> OSB response:
-					DebugDisplay.AddTextLine("Scanning I2C bus...");
-					I2CBus.Scan();
-					DebugDisplay.AddTextLine("I2C bus scan complete");
+				// 'Scan' Func> OSB response:
+				DebugDisplay.AddTextLine("Scanning I2C bus...");
+				I2CBus.Scan();
+				DebugDisplay.AddTextLine("I2C bus scan complete");
 				break;
 			case LocalDisplayClass::Pages::ENV:
-					// 'UPDT' Func> OSB response:
-					SensorData.ReadENVData();
-					break;
+				// 'UPDT' Func> OSB response:
+				SensorData.ReadENVData();
+				break;
 			default:
 				break;
 			}
@@ -469,59 +469,3 @@ void SendCSSMPacketCallback()
 
 }
 
-bool initWiFi()
-{
-	//DONE: Set CSSMStatus flag to reflect WiFi connection success & state
-	//DONE: Implement a hardware means to force the WiFi Manager into configuration mode to allow selection of a different network
-	
-	if (CSSMStatus.DebugDisplayStatus)
-	{
-		DebugDisplay.AddTextLine("Initializing WiFi");
-		DebugDisplay.Update();
-
-	}
-	
-	wifiManager.setConnectTimeout(30);			// 30 s connection timeout period allowed
-	wifiManager.setConfigPortalTimeout(180);	// 3 minute configuration portal timeout
-
-	bool success = false;
-	if (digitalRead(RightRockerSwitchPin) == 0)
-	{
-		_PL("On-demand config portal start");
-		wifiManager.resetSettings();
-		delay(1000);
-		success = wifiManager.startConfigPortal("MRS CSSM", "password");
-	}
-	else
-	{
-		_PL("Config portal auto-connect");
-		success = wifiManager.autoConnect("MRS CSSM", "password");
-	}
-
-	if (CSSMStatus.DebugDisplayStatus)
-	{
-		if (success)
-		{
-			//DebugDisplay.ClearText();
-			DebugDisplay.AddTextLine("WiFi connected");
-		}
-		else
-		{
-			DebugDisplay.AddTextLine("Not connected!");
-		}
-	}
-
-	server.on("/", HTTP_GET, [](AsyncWebServerRequest* request) {
-		request->send(200, "text/html", "<b>Mobile Robot System</b> Control Stick Steering Module (MRS-CSSM)<br>Enter '[local IP address]/update' in the browser address bar to update firmware");
-		});
-
-	//AsyncElegantOTA.begin(&server);    // Start ElegantOTA
-	server.begin();
-	_PP("HTTP server started at ");
-	IPAddress LocalIP = WiFi.localIP();
-	_PP(LocalIP.toString());
-	_PP(":");
-	_PL();
-
-	return success;
-}

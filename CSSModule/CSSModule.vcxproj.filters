@@ -474,6 +474,9 @@
     <ClCompile Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\ezButton\src\ezButton.cpp">
       <Filter>src\_micro-api-readonly\libraries\ezButton</Filter>
     </ClCompile>
+    <ClCompile Include="src\ESP32WiFi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="__vm\.CSSModule.vsarduino.h">
@@ -844,6 +847,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\ezButton\src\ezButton.h">
       <Filter>src\_micro-api-readonly\libraries\ezButton</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ESP32WiFi.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

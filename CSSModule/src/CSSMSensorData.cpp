@@ -212,6 +212,11 @@ void CSSMSensorData::ReadENVData()
 	ENVData.ReadENVData();
 }
 
+int CSSMSensorData::GetRightRockerSwitchStateRaw()
+{
+	return digitalRead(RightRockerSwitchPin);
+}
+
 
 CSSMSensorData SensorData;
 
