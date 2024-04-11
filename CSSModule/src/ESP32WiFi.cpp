@@ -1,6 +1,8 @@
-// 
-// 
-// 
+/*	ESP32WiFi.cpp
+*	ESP32WiFiClass - Base class for managing WiFi connectivity for ESP32-based MRS modules
+*
+*
+*/
 
 #include "ESP32WiFi.h"
 #include "DEBUG Macros.h"
@@ -44,6 +46,13 @@ bool ESP32WiFiClass::Init(bool resetWiFiAndInvokeConfigPortal = false)
 	}
 	else
 	{
+		if (CSSMStatus.DebugDisplayStatus)
+		{
+			DebugDisplay.AddTextLine("Attempt auto-connext");
+			//DebugDisplay.AddTextLine("MRS CSSM 192.168.4.1");
+			DebugDisplay.Update();
+
+		}
 		_PL("Config portal auto-connect");
 		success = wifiManager->autoConnect("MRS CSSM", "password");
 	}

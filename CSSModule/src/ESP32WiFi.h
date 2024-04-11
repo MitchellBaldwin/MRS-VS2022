@@ -1,5 +1,15 @@
-// ESP32WiFi.h
-
+/*	ESP32WiFi.h
+*	ESP32WiFiClass - Base class for managing WiFi connectivity for ESP32-based MRS modules
+*
+*
+*
+*
+*	Mitchell Baldwin copyright 2024
+*
+*	v 0.00:	Initial data structure
+*	v
+*
+*/
 #ifndef _ESP32WIFI_h
 #define _ESP32WIFI_h
 
