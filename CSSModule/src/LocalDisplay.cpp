@@ -123,7 +123,7 @@ void LocalDisplayClass::DrawCOMPage()
 		display.setCursor(0, 16);
 		display.write(buf);
 
-		snprintf(buf, 22, "SSID: %s", WiFi.SSID());
+		snprintf(buf, 22, "%s %d dBm", WiFi.SSID().c_str(), WiFi.RSSI());
 		display.setCursor(0, 24);
 		display.write(buf);
 

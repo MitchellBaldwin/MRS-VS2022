@@ -88,11 +88,11 @@
     <Filter Include="src\_micro-api-readonly\libraries\SparkFun_Qwiic_Joystick_Arduino_Library">
       <UniqueIdentifier>{153fa8c3-4fbb-48f3-bdb8-5137bcf03f71}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\_micro-api-readonly\libraries\AsyncElegantOTA">
-      <UniqueIdentifier>{889959ef-fe71-4689-89ba-d91bfdae27f8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\ezButton">
       <UniqueIdentifier>{ccccb8b2-0f35-4bae-80e0-2ac14b255e93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\_micro-api-readonly\libraries\AsyncElegantOTA">
+      <UniqueIdentifier>{577a7488-38cf-4625-a063-2a923c48b57b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -168,14 +168,14 @@
     <None Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\SparkFun_Qwiic_Joystick_Arduino_Library\library.properties">
       <Filter>src\_micro-api-readonly\libraries\SparkFun_Qwiic_Joystick_Arduino_Library</Filter>
     </None>
+    <None Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\ezButton\library.properties">
+      <Filter>src\_micro-api-readonly\libraries\ezButton</Filter>
+    </None>
     <None Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\AsyncElegantOTA\library.json">
       <Filter>src\_micro-api-readonly\libraries\AsyncElegantOTA</Filter>
     </None>
     <None Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\AsyncElegantOTA\library.properties">
       <Filter>src\_micro-api-readonly\libraries\AsyncElegantOTA</Filter>
-    </None>
-    <None Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\ezButton\library.properties">
-      <Filter>src\_micro-api-readonly\libraries\ezButton</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -836,6 +836,12 @@
     <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\SparkFun_Qwiic_Joystick_Arduino_Library\src\SparkFun_Qwiic_Joystick_Arduino_Library.h">
       <Filter>src\_micro-api-readonly\libraries\SparkFun_Qwiic_Joystick_Arduino_Library</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\ezButton\src\ezButton.h">
+      <Filter>src\_micro-api-readonly\libraries\ezButton</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ESP32WiFi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\AsyncElegantOTA\src\AsyncElegantOTA.h">
       <Filter>src\_micro-api-readonly\libraries\AsyncElegantOTA</Filter>
     </ClInclude>
@@ -844,12 +850,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\AsyncElegantOTA\src\Hash.h">
       <Filter>src\_micro-api-readonly\libraries\AsyncElegantOTA</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\ezButton\src\ezButton.h">
-      <Filter>src\_micro-api-readonly\libraries\ezButton</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ESP32WiFi.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -910,14 +910,14 @@
     <Text Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\SparkFun_Qwiic_Joystick_Arduino_Library\keywords.txt">
       <Filter>src\_micro-api-readonly\libraries\SparkFun_Qwiic_Joystick_Arduino_Library</Filter>
     </Text>
-    <Text Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\AsyncElegantOTA\keywords.txt">
-      <Filter>src\_micro-api-readonly\libraries\AsyncElegantOTA</Filter>
-    </Text>
     <Text Include="board.txt">
       <Filter>Misc Files</Filter>
     </Text>
     <Text Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\ezButton\keywords.txt">
       <Filter>src\_micro-api-readonly\libraries\ezButton</Filter>
+    </Text>
+    <Text Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\AsyncElegantOTA\keywords.txt">
+      <Filter>src\_micro-api-readonly\libraries\AsyncElegantOTA</Filter>
     </Text>
   </ItemGroup>
 </Project>

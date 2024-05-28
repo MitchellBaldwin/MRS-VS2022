@@ -9,15 +9,20 @@
 #include "CSSMStatus.h"
 #include "DebugDisplay.h"
 #include "CSSMSensorData.h"
+#include <AsyncElegantOTA.h>
+#include <elegantWebpage.h>
+#include <Hash.h>
 
 bool ESP32WiFiClass::Init(bool resetWiFiAndInvokeConfigPortal = false)
 {
 	//DONE: Set CSSMStatus flag to reflect WiFi connection success & state
 	//DONE: Implement a hardware means to force the WiFi Manager into configuration mode to allow selection of a different network
-	
-	server = new AsyncWebServer(80);
+	char buf[32];
+
+	server = new AsyncWebServer(HTTPServerPort);
 	dns = new DNSServer();
 	wifiManager = new AsyncWiFiManager(server, dns);
+
 
 	if (CSSMStatus.DebugDisplayStatus)
 	{
@@ -28,17 +33,18 @@ bool ESP32WiFiClass::Init(bool resetWiFiAndInvokeConfigPortal = false)
 	
 	wifiManager->setConnectTimeout(30);			// 30 s connection timeout period allowed
 	wifiManager->setConfigPortalTimeout(180);	// 3 minute configuration portal timeout
+	wifiManager->setAPCallback(ESP32WiFiClass::configModeCallback);
 
 	bool success = false;
 	if (resetWiFiAndInvokeConfigPortal)
 	{
-		if (CSSMStatus.DebugDisplayStatus)
-		{
-			DebugDisplay.AddTextLine("Start config portal");
-			DebugDisplay.AddTextLine("MRS CSSM 192.168.4.1");
-			DebugDisplay.Update();
+		//if (CSSMStatus.DebugDisplayStatus)
+		//{
+		//	DebugDisplay.AddTextLine("Starting config portal");
+		//	DebugDisplay.AddTextLine("MRS CSSM 192.168.4.1");
+		//	DebugDisplay.Update();
 
-		}
+		//}
 		_PL("On-demand config portal start");
 		wifiManager->resetSettings();
 		delay(1000);
@@ -48,8 +54,13 @@ bool ESP32WiFiClass::Init(bool resetWiFiAndInvokeConfigPortal = false)
 	{
 		if (CSSMStatus.DebugDisplayStatus)
 		{
-			DebugDisplay.AddTextLine("Attempt auto-connext");
-			//DebugDisplay.AddTextLine("MRS CSSM 192.168.4.1");
+			DebugDisplay.AddTextLine("Try auto-connext...");
+			
+			// Try to display the saved SSID that the autoConnect method will use:
+			//snprintf(buf, 22, "SSID: %s", wifiManager->getConfigPortalSSID().c_str());
+			//snprintf(buf, 22, "SSID: %s", WiFi.SSID().c_str());
+			//DebugDisplay.AddTextLine(buf);
+			
 			DebugDisplay.Update();
 
 		}
@@ -61,27 +72,104 @@ bool ESP32WiFiClass::Init(bool resetWiFiAndInvokeConfigPortal = false)
 	{
 		if (success)
 		{
-			DebugDisplay.AddTextLine("WiFi connected");
+			snprintf(buf, 22, "Connected (%d dBm)", WiFi.RSSI());
+			DebugDisplay.AddTextLine(buf);
+			snprintf(buf, 22, "SSID: %s", WiFi.SSID().c_str());
+			DebugDisplay.AddTextLine(buf);
+
 		}
 		else
 		{
 			DebugDisplay.AddTextLine("Not connected!");
 		}
+		DebugDisplay.Update();
 	}
 
-	server->on("/", HTTP_GET, [](AsyncWebServerRequest* request) {
-		request->send(200, "text/html", "<b>Mobile Robot System</b> Control Stick Steering Module (MRS-CSSM)<br>Enter '[local IP address]/update' in the browser address bar to update firmware");
-		});
+	if (success)
+	{
+		server->on("/", HTTP_GET, [](AsyncWebServerRequest* request) {
+			request->send(200, "text/html", "<b>Mobile Robot System</b> Control Stick Steering Module (MRS-CSSM)<br>Enter '[local IP address]/update' in the browser address bar to update firmware");
+			});
 
-	//AsyncElegantOTA.begin(&server);    // Start ElegantOTA
-	server->begin();
-	_PP("HTTP server started at ");
-	IPAddress LocalIP = WiFi.localIP();
-	_PP(LocalIP.toString());
-	_PP(":");
-	_PL();
+		AsyncElegantOTA.begin(server);    // Start ElegantOTA
+		server->begin();
+		_PP("HTTP server started at ");
+		IPAddress LocalIP = WiFi.localIP();
+		_PP(LocalIP.toString());
+		_PP(":");
+		_PL(HTTPServerPort);
+
+	}
+	return success;
+}
+
+bool ESP32WiFiClass::EnterConfigPortal()
+{
+	char buf[32];
+	bool success = false;
+
+	//server->end();
+
+	//if (CSSMStatus.DebugDisplayStatus)
+	//{
+	//	DebugDisplay.AddTextLine("Start config portal");
+	//	DebugDisplay.AddTextLine("MRS CSSM 192.168.4.1");
+	//	DebugDisplay.Update();
+
+	//}
+	_PL("On-demand config portal start");
+	wifiManager->resetSettings();
+	delay(1000);
+	success = wifiManager->startConfigPortal("MRS CSSM", "password");
+
+	if (CSSMStatus.DebugDisplayStatus)
+	{
+		if (success)
+		{
+			snprintf(buf, 22, "Connected (%d dBm)", WiFi.RSSI());
+			DebugDisplay.AddTextLine(buf);
+			snprintf(buf, 22, "SSID: %s", WiFi.SSID().c_str());
+			DebugDisplay.AddTextLine(buf);
+
+		}
+		else
+		{
+			DebugDisplay.AddTextLine("Not connected!");
+		}
+		DebugDisplay.Update();
+	}
+
+	//DONE: Kills server, so need to restart or re-initialize it...
+	//AsyncElegantOTA.restart();
+	if (success)
+	{
+		server->on("/", HTTP_GET, [](AsyncWebServerRequest* request) {
+			request->send(200, "text/html", "<b>Mobile Robot System</b> Control Stick Steering Module (MRS-CSSM)<br>Enter '[local IP address]/update' in the browser address bar to update firmware");
+			});
+
+		AsyncElegantOTA.begin(server);    // Start ElegantOTA
+		server->begin();
+		_PP("HTTP server started at ");
+		IPAddress LocalIP = WiFi.localIP();
+		_PP(LocalIP.toString());
+		_PP(":");
+		_PL(HTTPServerPort);
+
+	}
 
 	return success;
+}
+
+void ESP32WiFiClass::configModeCallback(AsyncWiFiManager* myAsynchWiFiManager)
+{
+	if (CSSMStatus.DebugDisplayStatus)
+	{
+		DebugDisplay.AddTextLine("Start config portal");
+		DebugDisplay.AddTextLine("MRS CSSM 192.168.4.1");
+		DebugDisplay.Update();
+
+	}
+	_PL("On-demand config portal start");
 }
 
 ESP32WiFiClass ESP32WiFi;

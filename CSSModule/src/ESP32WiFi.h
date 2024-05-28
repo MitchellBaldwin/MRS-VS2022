@@ -25,7 +25,7 @@
 class ESP32WiFiClass
 {
  protected:
-
+	 uint16_t HTTPServerPort = 80;
 
  public:
 	AsyncWebServer* server;
@@ -33,7 +33,8 @@ class ESP32WiFiClass
 	AsyncWiFiManager* wifiManager;
 
 	bool Init(bool);
-
+	bool EnterConfigPortal();
+	static void configModeCallback(AsyncWiFiManager* myAsynchWiFiManager);
 };
 
 extern ESP32WiFiClass ESP32WiFi;

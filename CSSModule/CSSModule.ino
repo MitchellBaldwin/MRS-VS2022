@@ -410,7 +410,10 @@ void ReadControlsCallback()
 			{
 			case LocalDisplayClass::Pages::COM:
 				// 'WiFi' Func> OSB response:
-				ESP32WiFi.Init(true);
+				//TODO: ESP32WiFi.Init(true) fails because the method re-creates the WiFiManage, DNS, and server objects;
+				//Need to write a new method allowing graceful reset of the WiFi system and then enter the config portal
+				//ESP32WiFi.Init(true);
+				CSSMStatus.WiFiStatus = ESP32WiFi.EnterConfigPortal();
 				break;
 			case LocalDisplayClass::Pages::I2C:
 				// 'Scan' Func> OSB response:

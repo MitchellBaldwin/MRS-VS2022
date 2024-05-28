@@ -9,6 +9,11 @@
 
 #include <math.h>
 
+uint32_t CSSMSensorData::ReadCalibratedADC1(int rawADC1)
+{
+	return  esp_adc_cal_raw_to_voltage(rawADC1, &ADC1Chars);
+}
+
 CSSMSensorData::CSSMSensorData()
 {
 	CSSMStatus.BME280Status = false;
@@ -16,6 +21,8 @@ CSSMSensorData::CSSMSensorData()
 
 bool CSSMSensorData::Init()
 {
+	esp_adc_cal_characterize(ADC_UNIT_1, ADC_ATTEN_DB_11, ADC_WIDTH_BIT_12, 1100, &ADC1Chars);
+	
 	pinMode(KBSensePin, INPUT);
 	// Assumes use of a unity gain OpAmp buffer (3.3 V max);
 	// 3.3 V / 4096 * 1000000 = 806 uV/count:
@@ -39,7 +46,11 @@ bool CSSMSensorData::Init()
 	// MegaGain by a factor of 1.05: 6284 * 1.05 = 6598:
 	// With 5.127 V indicated pn precision DMM, this scale factor results in an indicated
 	//measurement of 4.45 V (13.2% error)
-	ESP32VIN.Init(0, 6598, "V");
+	//
+	// Update: Using ESP32 efuse calibration data:
+	// With 5.00 V supplied, system displays 6.48 V with neutral gain
+	//ESP32VIN.Init(0, 10000, "V");
+	ESP32VIN.Init(0, 7716, "V");
 
 	CSSMStatus.BME280Status = ENVData.Init();
 
@@ -72,7 +83,7 @@ bool CSSMSensorData::Init(byte kbSensePin, byte throttleSensePin, byte esp32VINS
 	LeftToggleSwitchPin = leftToggleSwitchPin;
 	CenterToggleSwitchPin = centerToggleSwitchPin;
 	RightToggleSwitchPin = rightToggleSwitchPin;
-	RightRockerSwitchPin - rightRockerSwitchPin;
+	RightRockerSwitchPin = rightRockerSwitchPin;
 
 	return Init(kbSensePin, throttleSensePin, esp32VINSensePin);
 }
@@ -86,6 +97,7 @@ void CSSMSensorData::Update()
 	ThrottleSetting.AddReading(newReading);
 	
 	newReading = analogRead(ESP32VINSensePin);
+	newReading = ReadCalibratedADC1(newReading);
 	ESP32VIN.AddReading(newReading);
 	
 	HDGEncoderSetting = (int)HDGEncoder.getCount() / 2;

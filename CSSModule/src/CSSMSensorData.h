@@ -24,6 +24,7 @@
 #include "BME280Data.h"
 #include <ezButton.h>
 #include <ESP32Encoder.h>
+#include "esp_adc_cal.h"
 
 //#include "SFQJS.h"
 //#include "SparkFun_Qwiic_Joystick_Arduino_Library.h"
@@ -64,9 +65,11 @@ protected:
 	ezButton* RightToggleSwitch;
 	ezButton* RightRockerSwitch;
 
+	esp_adc_cal_characteristics_t ADC1Chars;
+	uint32_t ReadCalibratedADC1(int rawADC1);	// Returns calibrated ADC1 measurement in mV
 
 public:
-	BME280DataClass ENVData;			// Environment measurements
+	BME280DataClass ENVData;					// Environment measurements
 
 	int HDGEncoderSetting = 0;
 	int CRSEncoderSetting = 0;

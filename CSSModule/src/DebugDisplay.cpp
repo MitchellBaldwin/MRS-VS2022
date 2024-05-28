@@ -142,12 +142,12 @@ void DebugDisplayClass::DrawWIFIPage()
 		// Clear display and redraw static elements of the page format:
 		DrawPageHeaderAndFooter();
 
-		snprintf(buf, 22, "IP: %s", WiFi.localIP().toString());
-		display.setCursor(0, 24);
+		snprintf(buf, 22, "%s %d dBm", WiFi.SSID().c_str(), WiFi.RSSI());
+		display.setCursor(0, 16);
 		display.write(buf);
 
-		snprintf(buf, 22, "SSID: %s", WiFi.SSID().c_str());
-		display.setCursor(0, 32);
+		snprintf(buf, 22, "IP: %s", WiFi.localIP().toString());
+		display.setCursor(0, 24);
 		display.write(buf);
 
 		uint8_t mac[6];
