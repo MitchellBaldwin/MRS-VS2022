@@ -38,14 +38,14 @@ bool ESP32WiFiClass::Init(bool resetWiFiAndInvokeConfigPortal = false)
 	bool success = false;
 	if (resetWiFiAndInvokeConfigPortal)
 	{
+		// Replaced by callback function added to WiFiManager:
 		//if (CSSMStatus.DebugDisplayStatus)
 		//{
 		//	DebugDisplay.AddTextLine("Starting config portal");
 		//	DebugDisplay.AddTextLine("MRS CSSM 192.168.4.1");
 		//	DebugDisplay.Update();
-
 		//}
-		_PL("On-demand config portal start");
+		_PL("Resetting WiFiManager and starting on-demand config portal...");
 		wifiManager->resetSettings();
 		delay(1000);
 		success = wifiManager->startConfigPortal("MRS CSSM", "password");
@@ -54,14 +54,15 @@ bool ESP32WiFiClass::Init(bool resetWiFiAndInvokeConfigPortal = false)
 	{
 		if (CSSMStatus.DebugDisplayStatus)
 		{
-			DebugDisplay.AddTextLine("Try auto-connext...");
+			DebugDisplay.AddTextLine("Try auto-connect...");
 			
 			// Try to display the saved SSID that the autoConnect method will use:
 			//snprintf(buf, 22, "SSID: %s", wifiManager->getConfigPortalSSID().c_str());
-			//snprintf(buf, 22, "SSID: %s", WiFi.SSID().c_str());
+			//WiFi.mode(WIFI_STA);
+			//WiFi.begin();
+			//snprintf(buf, 22, "Saved SSID: %s", WiFi.SSID().c_str());
 			//DebugDisplay.AddTextLine(buf);
-			
-			DebugDisplay.Update();
+			//DebugDisplay.Update();
 
 		}
 		_PL("Config portal auto-connect");
@@ -108,15 +109,14 @@ bool ESP32WiFiClass::EnterConfigPortal()
 	char buf[32];
 	bool success = false;
 
-	//server->end();
-
+	// Replaced by callback function added to WiFiManager:
 	//if (CSSMStatus.DebugDisplayStatus)
 	//{
 	//	DebugDisplay.AddTextLine("Start config portal");
 	//	DebugDisplay.AddTextLine("MRS CSSM 192.168.4.1");
 	//	DebugDisplay.Update();
-
 	//}
+
 	_PL("On-demand config portal start");
 	wifiManager->resetSettings();
 	delay(1000);
@@ -139,8 +139,7 @@ bool ESP32WiFiClass::EnterConfigPortal()
 		DebugDisplay.Update();
 	}
 
-	//DONE: Kills server, so need to restart or re-initialize it...
-	//AsyncElegantOTA.restart();
+	//DONE: Entering the config protal kills the server, so need to restart or re-initialize it...
 	if (success)
 	{
 		server->on("/", HTTP_GET, [](AsyncWebServerRequest* request) {
@@ -173,4 +172,3 @@ void ESP32WiFiClass::configModeCallback(AsyncWiFiManager* myAsynchWiFiManager)
 }
 
 ESP32WiFiClass ESP32WiFi;
-

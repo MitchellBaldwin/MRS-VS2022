@@ -50,6 +50,7 @@ bool CSSMSensorData::Init()
 	// Update: Using ESP32 efuse calibration data:
 	// With 5.00 V supplied, system displays 6.48 V with neutral gain
 	//ESP32VIN.Init(0, 10000, "V");
+	// so adjust megain to 10000 * 5.0 / 6.48 = 7716
 	ESP32VIN.Init(0, 7716, "V");
 
 	CSSMStatus.BME280Status = ENVData.Init();

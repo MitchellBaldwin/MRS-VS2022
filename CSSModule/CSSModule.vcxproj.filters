@@ -46,9 +46,6 @@
     <Filter Include="src\_micro-api-readonly\libraries\ESPAsyncWebServer-master">
       <UniqueIdentifier>{b69ef10d-2cf6-4341-8921-c103228b4121}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\_micro-api-readonly\libraries\FS">
-      <UniqueIdentifier>{fcd814fe-86ac-4fb1-8625-41cd39620d9e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\AsyncTCP-master">
       <UniqueIdentifier>{08f33049-e2a8-428e-ae55-78c6ab239fa3}</UniqueIdentifier>
     </Filter>
@@ -94,6 +91,15 @@
     <Filter Include="src\_micro-api-readonly\libraries\AsyncElegantOTA">
       <UniqueIdentifier>{577a7488-38cf-4625-a063-2a923c48b57b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\_micro-api-readonly\libraries\FS">
+      <UniqueIdentifier>{126ec376-476e-40ae-897c-56a000b9d685}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\_micro-api-readonly\libraries\LittleFS">
+      <UniqueIdentifier>{f51a7f6a-eac8-43b6-adc2-31c4de9e73f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\_micro-api-readonly\libraries\ESP32">
+      <UniqueIdentifier>{075b34b6-7886-4f07-bfb6-13e4e9ebed9d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\arduino folders read me.txt">
@@ -122,9 +128,6 @@
     </None>
     <None Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\ESPAsyncWebServer-master\src\edit.htm">
       <Filter>src\_micro-api-readonly\libraries\ESPAsyncWebServer-master</Filter>
-    </None>
-    <None Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\FS\library.properties">
-      <Filter>src\_micro-api-readonly\libraries\FS</Filter>
     </None>
     <None Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\AsyncTCP-master\library.json">
       <Filter>src\_micro-api-readonly\libraries\AsyncTCP-master</Filter>
@@ -176,6 +179,15 @@
     </None>
     <None Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\AsyncElegantOTA\library.properties">
       <Filter>src\_micro-api-readonly\libraries\AsyncElegantOTA</Filter>
+    </None>
+    <None Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\FS\library.properties">
+      <Filter>src\_micro-api-readonly\libraries\FS</Filter>
+    </None>
+    <None Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\LittleFS\library.properties">
+      <Filter>src\_micro-api-readonly\libraries\LittleFS</Filter>
+    </None>
+    <None Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\ESP32\library.properties">
+      <Filter>src\_micro-api-readonly\libraries\ESP32</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -390,12 +402,6 @@
     <ClCompile Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\ESPAsyncWebServer-master\src\WebServer.cpp">
       <Filter>src\_micro-api-readonly\libraries\ESPAsyncWebServer-master</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\FS\src\FS.cpp">
-      <Filter>src\_micro-api-readonly\libraries\FS</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\FS\src\vfs_api.cpp">
-      <Filter>src\_micro-api-readonly\libraries\FS</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\AsyncTCP-master\src\AsyncTCP.cpp">
       <Filter>src\_micro-api-readonly\libraries\AsyncTCP-master</Filter>
     </ClCompile>
@@ -476,6 +482,15 @@
     </ClCompile>
     <ClCompile Include="src\ESP32WiFi.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\FS\src\FS.cpp">
+      <Filter>src\_micro-api-readonly\libraries\FS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\FS\src\vfs_api.cpp">
+      <Filter>src\_micro-api-readonly\libraries\FS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\LittleFS\src\LittleFS.cpp">
+      <Filter>src\_micro-api-readonly\libraries\LittleFS</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -743,15 +758,6 @@
     <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\ESPAsyncWebServer-master\src\WebResponseImpl.h">
       <Filter>src\_micro-api-readonly\libraries\ESPAsyncWebServer-master</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\FS\src\FS.h">
-      <Filter>src\_micro-api-readonly\libraries\FS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\FS\src\FSImpl.h">
-      <Filter>src\_micro-api-readonly\libraries\FS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\FS\src\vfs_api.h">
-      <Filter>src\_micro-api-readonly\libraries\FS</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\AsyncTCP-master\src\AsyncTCP.h">
       <Filter>src\_micro-api-readonly\libraries\AsyncTCP-master</Filter>
     </ClInclude>
@@ -851,6 +857,21 @@
     <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\AsyncElegantOTA\src\Hash.h">
       <Filter>src\_micro-api-readonly\libraries\AsyncElegantOTA</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\FS\src\FS.h">
+      <Filter>src\_micro-api-readonly\libraries\FS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\FS\src\FSImpl.h">
+      <Filter>src\_micro-api-readonly\libraries\FS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\FS\src\vfs_api.h">
+      <Filter>src\_micro-api-readonly\libraries\FS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\LittleFS\src\LittleFS.h">
+      <Filter>src\_micro-api-readonly\libraries\LittleFS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\ESP32\src\dummy.h">
+      <Filter>src\_micro-api-readonly\libraries\ESP32</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\ESPAsyncWiFiManager-master\keywords.txt">
@@ -918,6 +939,9 @@
     </Text>
     <Text Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\AsyncElegantOTA\keywords.txt">
       <Filter>src\_micro-api-readonly\libraries\AsyncElegantOTA</Filter>
+    </Text>
+    <Text Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\ESP32\keywords.txt">
+      <Filter>src\_micro-api-readonly\libraries\ESP32</Filter>
     </Text>
   </ItemGroup>
 </Project>
