@@ -4,6 +4,11 @@
  Author:	Mitchell Baldwin	copyright 2023
 
  Main executable for the Mobile Robot System Remote Controller Master Communications Computer (MRS RC MCC)
+ Controller: ESP32 TTGO T-Display
+
+ Configuration notes:
+	Board: ESP32 Dev Module
+	TFT_eSPI setup: #include <User_Setups/Setup25_TTGO_T_Display.h>
 
  v1.0	Initial release
  v1.1	
@@ -19,7 +24,7 @@
 // Scheduler
 Scheduler mainScheduler;
 
-constexpr auto NormalHeartbeatLEDTogglePeriodMicros = 1000;		// 1 s on, 1 s off
+constexpr auto NormalHeartbeatLEDTogglePeriodMicros = 1000;		// 1 s on, 1 s off; indicates normal heartbeat
 constexpr auto NoSerialHeartbeatLEDTogglePeriodMicros = 500;
 
 void ToggleBuiltinLEDCallback();

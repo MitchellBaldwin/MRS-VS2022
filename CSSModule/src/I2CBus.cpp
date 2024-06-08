@@ -59,5 +59,33 @@ bool I2CBusClass::MaxDeviceCountExceeded()
 	return maxDeviceCountExceeded;
 }
 
+String I2CBusClass::GetActiveI2CAddressesString()
+{
+	char buf[32];
+	snprintf(buf, 31, "I2C %02X %02X %02X %02X %02X %02X %02X %02X",
+		I2CBus.ActiveI2CDeviceAddresses[0],
+		I2CBus.ActiveI2CDeviceAddresses[1],
+		I2CBus.ActiveI2CDeviceAddresses[2],
+		I2CBus.ActiveI2CDeviceAddresses[3],
+		I2CBus.ActiveI2CDeviceAddresses[4],
+		I2CBus.ActiveI2CDeviceAddresses[5],
+		I2CBus.ActiveI2CDeviceAddresses[6],
+		I2CBus.ActiveI2CDeviceAddresses[7]);
+	
+	return String(buf);
+}
+
+String I2CBusClass::Get1st4ActiveI2CAddressesString()
+{
+	char buf[32];
+	snprintf(buf, 31, "I2C %02X %02X %02X %02X",
+		I2CBus.ActiveI2CDeviceAddresses[0],
+		I2CBus.ActiveI2CDeviceAddresses[1],
+		I2CBus.ActiveI2CDeviceAddresses[2],
+		I2CBus.ActiveI2CDeviceAddresses[3]);
+
+	return String(buf);
+}
+
 I2CBusClass I2CBus;
 

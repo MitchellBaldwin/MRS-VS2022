@@ -35,6 +35,9 @@ class I2CBusClass
 		bool ScanAddress(uint8_t address);
 		void Scan();
 		bool MaxDeviceCountExceeded();
+
+		String GetActiveI2CAddressesString();
+		String Get1st4ActiveI2CAddressesString();
 };
 
 extern I2CBusClass I2CBus;

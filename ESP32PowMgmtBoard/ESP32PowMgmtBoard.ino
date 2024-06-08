@@ -5,6 +5,12 @@
 
  Main executable for the Mobile Robot System Remote Controller Power Control Module (MRS RC PCM)
 
+ Controller: ESP32 TTGO T-Display
+
+ Configuration notes: 
+	Board: ESP32 Dev Module
+	TFT_eSPI setup: #include <User_Setups/Setup25_TTGO_T_Display.h>
+
  v1.0	Initial release
  v1.1	
  v1.2	
@@ -36,68 +42,68 @@ TFT_eSPI tft = TFT_eSPI();
 Scheduler MainScheduler;	// Main task scheduler
 
 constexpr byte LED_BUILTIN = 0x02;
-//constexpr auto HeartbeatLEDToggleInterval = 1000;
+constexpr auto HeartbeatLEDToggleInterval = 1000;
 
-//void ToggleBuiltinLEDCallback();
-//Task HeartbeatLEDTask(HeartbeatLEDToggleInterval* TASK_MILLISECOND, TASK_FOREVER, &ToggleBuiltinLEDCallback, &MainScheduler, false);
+void ToggleBuiltinLEDCallback();
+Task HeartbeatLEDTask(HeartbeatLEDToggleInterval* TASK_MILLISECOND, TASK_FOREVER, &ToggleBuiltinLEDCallback, &MainScheduler, false);
 
 #include <esp_adc_cal.h>
-constexpr byte VIN_PIN = 34;				// TTGO T-Display supply voltage sense pin
+constexpr byte VEXT_PIN = 36;				// Conditioned external supply plug voltage sense pin
+constexpr byte VBBAT_PIN = 34;				// Internal TTGO T-Display supply voltage sense pin
+constexpr byte VBAT_PIN = 32;				// Conditioned DIYM cell voltage sense pin
 int Vref = 1100;							// Default reference voltage for supply voltage measurement
 constexpr auto MeasureVinInterval = 1000;
 
 void MeasureVinCallback();
-Task MeasureVinTask(MeasureVinInterval* TASK_MILLISECOND, TASK_FOREVER, &MeasureVinCallback, &MainScheduler, false);
+Task MeasureVinTask((MeasureVinInterval * TASK_MILLISECOND), TASK_FOREVER, &MeasureVinCallback, &MainScheduler, false);
 
 void setup() 
 {
 	char buf[32];
 	
-	//pinMode(LED_BUILTIN, OUTPUT);
 	_PL();
-	_PLH(LED_BUILTIN);
 
-	//HeartbeatLEDTask.enable();
-
-	SetupADC();
-	MeasureVinTask.enable();
+	pinMode(LED_BUILTIN, OUTPUT);
+	sprintf(buf, "Heartbeat LED on GPIO%02X", LED_BUILTIN);
+	_PL(buf);
+	HeartbeatLEDTask.enable();
 
 	tft.init();
 	tft.setRotation(2);
 	tft.fillScreen(TFT_BLACK);
 	
+	SetupADC();
+	MeasureVinTask.enable();
+
 	//tft.setCursor();	// Used with 'printxx' statements; not needed when using drawString()
 	tft.setTextSize(1);
 	tft.setTextColor(TFT_RED, TFT_BLACK, false);
 	tft.setTextDatum(TC_DATUM);
 	tft.drawString("MRSRC PCM", tft.width() / 2, 2);
 
-	// Measure & display supply voltage:
-	uint16_t v = analogRead(VIN_PIN);
-	float supply_voltage = ((float)v / 4095.0) * 2.0 * 3.3 * (Vref / 1000.0);
-	tft.setCursor(2, tft.height() / 2);
-	tft.setTextSize(2);
-	tft.setTextColor(TFT_YELLOW);
-	//tft.setTextDatum(CL_DATUM);
-	tft.printf("%5.2F V", supply_voltage);
+	//// Measure & display supply voltage:
+	//uint16_t v = analogRead(VIN_PIN);
+	//float supply_voltage = ((float)v / 4095.0) * 2.0 * 3.3 * (Vref / 1000.0);
+	//tft.setCursor(2, tft.height() / 2);
+	//tft.setTextSize(2);
+	//tft.setTextColor(TFT_YELLOW);
+	////tft.setTextDatum(CL_DATUM);
+	//tft.printf("%5.2F V", supply_voltage);
 	
-	//tft.setCursor(2, tft.height() / 2 + 24);
 	tft.setTextSize(1);
 	tft.setTextColor(TFT_GREENYELLOW);
 	tft.setTextDatum(CL_DATUM);	//DONE: setTextDatum has NO AFFECT on print() output; print() effectively uses default TL_DATUM
 	uint8_t mac[6];
 	WiFi.macAddress(mac);
-	//tft.printf("MAC:%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 	sprintf(buf, "MAC:%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 	tft.drawString(buf, 2, tft.height() / 2 + 24);
 
-	//tft.setCursor(2, tft.height() / 2 + 24);
 	tft.setTextColor(TFT_GREEN);
 	tft.setTextDatum(CL_DATUM);	//DONE: setTextDatum has NO AFFECT on print() output
-	//tft.printf("IP: %s", WiFi.localIP().toString());
 	sprintf(buf, "IP: %s", WiFi.localIP().toString());
 	tft.drawString(buf, 2, tft.height() / 2 + 32);
 
+	// Draw rectangle at screen bounds to aid framing physical display to panel:
 	tft.drawRect(0, 0, tft.getViewportWidth(), tft.getViewportHeight(), TFT_DARKCYAN);
 }
 
@@ -109,6 +115,8 @@ void loop()
 void ToggleBuiltinLEDCallback()
 {
 	digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+	// DEBUG code:
+	_PL("Heartbeat callback");
 }
 
 void SetupADC()
@@ -136,18 +144,59 @@ void SetupADC()
 
 void MeasureVinCallback()
 {
-	// Measure & display supply voltage:
-	uint16_t v = analogRead(VIN_PIN);
-	float supply_voltage = ((float)v / 4095.0) * 2.0 * 3.3 * (Vref / 1000.0);
-	tft.setCursor(2, tft.height() / 2);
-	tft.setTextSize(2);
-	tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);	//DONE: Does bgfill = true work with the print() method? -> Yes, newly printed text clears the background
-	tft.printf("%5.2F V", supply_voltage);
-
-	// Debug code:
 	char buf[32];
-	sprintf(buf, "%6.2F V", supply_voltage);
-	_PL(buf);
+	int16_t cursorY = tft.height() / 2;
+	tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);	//DONE: Does bgfill = true work with the print() method? -> Yes, newly printed text clears the background
+
+	// Measure & display backup battery voltage:
+	tft.setTextDatum(BL_DATUM);
+	tft.setTextSize(2);
+	tft.drawString("V", 2, cursorY);
+	int32_t cursorX = tft.textWidth("V", 2) + 1;
+	tft.setTextSize(1);
+	tft.drawString("BBAT", cursorX, cursorY);	// Subscript
+	uint16_t rawADC = analogRead(VBBAT_PIN);
+	float supply_voltage = ((float)rawADC / 4095.0) * 2.0 * 3.3 * (Vref / 1000.0);
+	tft.setTextSize(2);
+	tft.setTextDatum(BR_DATUM);
+	sprintf(buf, "%5.2F V", supply_voltage);
+	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
+
+	// Measure & display internal battery voltage:
+	tft.setTextDatum(BL_DATUM);
+	tft.setTextSize(2);
+	cursorY -= 20;
+	tft.drawString("V", 2, cursorY);
+	cursorX = tft.textWidth("V", 2) + 1;
+	tft.setTextSize(1);
+	tft.drawString("BAT", cursorX, cursorY);	// Subscript
+	rawADC = analogRead(VBAT_PIN);
+	//supply_voltage = ((float)rawADC / 4095.0) * 2.0 * 3.3 * (Vref / 1000.0);
+	supply_voltage = ((float)rawADC / 4095.0) * 17.03 * (Vref / 1000.0);
+	tft.setTextSize(2);
+	tft.setTextDatum(BR_DATUM);
+	sprintf(buf, "%5.2F V", supply_voltage);
+	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
+
+	// Measure & display external supply voltage:
+	tft.setTextDatum(BL_DATUM);
+	tft.setTextSize(2);
+	cursorY -= 20;
+	tft.drawString("V", 2, cursorY);
+	cursorX = tft.textWidth("V", 2) + 1;
+	tft.setTextSize(1);
+	tft.drawString("EXT", cursorX, cursorY);	// Subscript
+	rawADC = analogRead(VEXT_PIN);
+	//supply_voltage = ((float)rawADC / 4095.0) * 2.0 * 3.3 * (Vref / 1000.0);
+	supply_voltage = ((float)rawADC / 4095.0) * 5.649 * (Vref / 1000.0);
+	tft.setTextSize(2);
+	tft.setTextDatum(BR_DATUM);
+	sprintf(buf, "%5.2F V", supply_voltage);
+	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
+
+	//// Debug code:
+	//sprintf(buf, "%6.2F V", supply_voltage);
+	//_PL(buf);
 
 	// Test functionality of the backlight pin:
 	//digitalWrite(TFT_BL, !digitalRead(TFT_BL));

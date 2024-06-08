@@ -248,16 +248,7 @@ void setup()
 
 	I2CBus.Init();
 	I2CBus.Scan();
-	snprintf(buf, 31, "I2C %02X %02X %02X %02X %02X %02X %02X %02X",
-		I2CBus.ActiveI2CDeviceAddresses[0],
-		I2CBus.ActiveI2CDeviceAddresses[1],
-		I2CBus.ActiveI2CDeviceAddresses[2],
-		I2CBus.ActiveI2CDeviceAddresses[3],
-		I2CBus.ActiveI2CDeviceAddresses[4],
-		I2CBus.ActiveI2CDeviceAddresses[5],
-		I2CBus.ActiveI2CDeviceAddresses[6],
-		I2CBus.ActiveI2CDeviceAddresses[7]);
-	_PL(buf);
+	_PL(I2CBus.GetActiveI2CAddressesString().c_str());
 
 #ifdef _ROBOX
 	OSBArray.Init(OSB_NUM_LEVELS, OSB_LEVELS);
