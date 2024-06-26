@@ -1,7 +1,7 @@
 /*	LocalDisplayClass - Base class for implementing paged graphical display interface for
 *	Arduino and ESP32 based embedded control systems.
 *
-*	Mitchell Baldwin copyright 2023-2024
+*	Mitchell Baldwin copyright 2023
 *
 */
 

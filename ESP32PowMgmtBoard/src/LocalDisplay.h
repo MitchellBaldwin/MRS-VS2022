@@ -6,7 +6,7 @@
 *		System (SYS)	Default summary od system, POW, COM and I/O ststus
 *		Power (POW)		Power supply, battery status
 *
-*	Mitchell Baldwin copyright 2023-2024
+*	Mitchell Baldwin copyright 2023
 *
 *	v 0.00:	Initial command set
 *	v

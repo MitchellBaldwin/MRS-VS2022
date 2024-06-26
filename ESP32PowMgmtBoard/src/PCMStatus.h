@@ -1,18 +1,17 @@
-/*	CSSMStatus.h
-*	CSSMStatusClass - Base class for module level status and parameters
+/*	PCMStatus.h
+*	PCMStatusClass - Base class for module level status and parameters
 *
 *
 *
 *
-*	Mitchell Baldwin copyright 2023-2024
+*	Mitchell Baldwin copyright 2024
 *
 *	v 0.0:	Initial commit
 *	v 0.1:
 *
 */
-
-#ifndef _CSSMSTATUS_h
-#define _CSSMSTATUS_h
+#ifndef _PCMSTATUS_h
+#define _PCMSTATUS_h
 
 #if defined(ARDUINO) && ARDUINO >= 100
 	#include "arduino.h"
@@ -20,27 +19,15 @@
 	#include "WProgram.h"
 #endif
 
-class CSSMStatusClass
+class PCMStatusClass
 {
  protected:
 
 
  public:
-	 
-	 // Control Stick Steering Module firmware version:
+	 // Power Control Module firmware version:
 	 uint8_t MajorVersion = 1;
-	 uint8_t MinorVersion = 2;
-
-	 enum DriveModes
-	 {
-		 DRV,
-		 HDG,
-		 WPT,
-		 SEQ,
-
-		 NoDriveMode
-	 };
-	 DriveModes DriveMode = DriveModes::DRV;
+	 uint8_t MinorVersion = 0;
 
 	 enum ComModes
 	 {
@@ -51,23 +38,23 @@ class CSSMStatusClass
 		 NoComs
 	 };
 	 ComModes ComMode = ComModes::IDCPktSerial;
-	 
+
 	 bool UART0Status = false;
 	 bool UART1Status = false;
 	 bool UART2Status = false;
 
 	 bool WiFiStatus = false;
-	 
+
 	 bool LocalDisplayStatus = false;
 	 bool DebugDisplayStatus = false;
-	 
+
 	 bool BME280Status = false;
-	 bool IMUStatus = false;
 
 	 void Init();
+
 };
 
-extern CSSMStatusClass CSSMStatus;
+extern PCMStatusClass PCMStatus;
 
 #endif
 

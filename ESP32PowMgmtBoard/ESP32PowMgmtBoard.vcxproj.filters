@@ -258,6 +258,12 @@
     <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\SPIFFS\src\SPIFFS.cpp">
       <Filter>src\_micro-api-readonly\libraries\SPIFFS</Filter>
     </ClCompile>
+    <ClCompile Include="src\I2CBus.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PCMStatus.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="__vm\.ESP32PowMgmtBoard.vsarduino.h">
@@ -496,6 +502,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\SPIFFS\src\SPIFFS.h">
       <Filter>src\_micro-api-readonly\libraries\SPIFFS</Filter>
+    </ClInclude>
+    <ClInclude Include="src\I2CBus.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PCMStatus.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -4,7 +4,7 @@
 *
 *
 *
-*	Mitchell Baldwin copyright 2023
+*	Mitchell Baldwin copyright 2023-2024
 *
 *	v 0.00:	Initial data structure
 *	v

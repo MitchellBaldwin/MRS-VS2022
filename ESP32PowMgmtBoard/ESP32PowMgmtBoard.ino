@@ -23,6 +23,7 @@
 TFT_eSPI tft = TFT_eSPI();
 
 #include "src\DEBUG Macros.h"
+#include "src\PCMStatus.h"
 
 #include <TaskSchedulerSleepMethods.h>
 #include <TaskSchedulerDeclarations.h>
@@ -45,7 +46,7 @@ constexpr byte LED_BUILTIN = 0x02;
 constexpr auto HeartbeatLEDToggleInterval = 1000;
 
 void ToggleBuiltinLEDCallback();
-Task HeartbeatLEDTask(HeartbeatLEDToggleInterval* TASK_MILLISECOND, TASK_FOREVER, &ToggleBuiltinLEDCallback, &MainScheduler, false);
+Task HeartbeatLEDTask((HeartbeatLEDToggleInterval * TASK_MILLISECOND), TASK_FOREVER, &ToggleBuiltinLEDCallback, &MainScheduler, false);
 
 #include <esp_adc_cal.h>
 constexpr byte VEXT_PIN = 36;				// Conditioned external supply plug voltage sense pin
@@ -57,6 +58,8 @@ constexpr auto MeasureVinInterval = 1000;
 void MeasureVinCallback();
 Task MeasureVinTask((MeasureVinInterval * TASK_MILLISECOND), TASK_FOREVER, &MeasureVinCallback, &MainScheduler, false);
 
+#include "src\I2CBus.h"
+
 void setup() 
 {
 	char buf[32];
@@ -67,6 +70,10 @@ void setup()
 	sprintf(buf, "Heartbeat LED on GPIO%02X", LED_BUILTIN);
 	_PL(buf);
 	HeartbeatLEDTask.enable();
+
+	I2CBus.Init();
+	I2CBus.Scan();
+	_PL(I2CBus.GetActiveI2CAddressesString().c_str());
 
 	tft.init();
 	tft.setRotation(2);
@@ -81,15 +88,6 @@ void setup()
 	tft.setTextDatum(TC_DATUM);
 	tft.drawString("MRSRC PCM", tft.width() / 2, 2);
 
-	//// Measure & display supply voltage:
-	//uint16_t v = analogRead(VIN_PIN);
-	//float supply_voltage = ((float)v / 4095.0) * 2.0 * 3.3 * (Vref / 1000.0);
-	//tft.setCursor(2, tft.height() / 2);
-	//tft.setTextSize(2);
-	//tft.setTextColor(TFT_YELLOW);
-	////tft.setTextDatum(CL_DATUM);
-	//tft.printf("%5.2F V", supply_voltage);
-	
 	tft.setTextSize(1);
 	tft.setTextColor(TFT_GREENYELLOW);
 	tft.setTextDatum(CL_DATUM);	//DONE: setTextDatum has NO AFFECT on print() output; print() effectively uses default TL_DATUM
@@ -103,6 +101,10 @@ void setup()
 	sprintf(buf, "IP: %s", WiFi.localIP().toString());
 	tft.drawString(buf, 2, tft.height() / 2 + 32);
 
+	tft.setTextColor(TFT_CYAN);
+	tft.setTextDatum(CL_DATUM);	//DONE: setTextDatum has NO AFFECT on print() output
+	tft.drawString(I2CBus.Get1st6ActiveI2CAddressesString(), 2, tft.height() / 2 + 40);
+
 	// Draw rectangle at screen bounds to aid framing physical display to panel:
 	tft.drawRect(0, 0, tft.getViewportWidth(), tft.getViewportHeight(), TFT_DARKCYAN);
 }
@@ -115,8 +117,6 @@ void loop()
 void ToggleBuiltinLEDCallback()
 {
 	digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-	// DEBUG code:
-	_PL("Heartbeat callback");
 }
 
 void SetupADC()
