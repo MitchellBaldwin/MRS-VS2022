@@ -50,6 +50,7 @@ public:
 	void Init(int offset, int gainNumerator, int gainDenominator, int averageInterval = 8);
 	void Init(int offset, int gainNumerator, int gainDenominator, String units, int averageInterval = 8);
 
+	//void AddReading();
 	void AddReading(int rawValue);
 	int GetRawValue();
 	int GetAverageRawValue();

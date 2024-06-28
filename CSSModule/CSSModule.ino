@@ -203,7 +203,7 @@ Task UpdateDebugDisplayTask(UpdateDebugDisplayInterval* TASK_MILLISECOND, TASK_F
 
 constexpr long SendCSSMPacketInterval = 100;
 void SendCSSMPacketCallback();
-Task SendCSSMPacketTask(SendCSSMPacketInterval* TASK_MILLISECOND, TASK_FOREVER, &SendCSSMPacketCallback, &MainScheduler, false);
+Task SendCSSMPacketTask((SendCSSMPacketInterval * TASK_MILLISECOND), TASK_FOREVER, &SendCSSMPacketCallback, &MainScheduler, false);
 
 void setup()
 {
