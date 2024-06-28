@@ -12,11 +12,16 @@
 
 void LocalDisplayClass::DrawPageHeaderAndFooter()
 {
+	char upArrow[1] = { 0x18 };
+	char downArrow[1] = { 0x19 };
+
 	//tft.setCursor();	// Used with 'printxx' statements; not needed when using drawString()
 	tft.setTextSize(1);
 	tft.setTextColor(TFT_BLUE, TFT_BLACK, false);
 	tft.setTextDatum(TL_DATUM);
 	tft.drawString("MRSRC PCM", 2, 2);
+	sprintf(buf, "v%d.%d", PCMStatus.MajorVersion, PCMStatus.MinorVersion);
+	tft.drawString(buf, 2, 12);
 
 	tft.setTextDatum(TR_DATUM);
 	sprintf(buf, "%s", PageTitles[currentPage]);
@@ -50,16 +55,31 @@ void LocalDisplayClass::DrawSYSPage()
 		uint8_t mac[6];
 		WiFi.macAddress(mac);
 		sprintf(buf, "MAC:%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-		tft.drawString(buf, 2, tft.height() / 2 + 24);
+		tft.drawString(buf, 2, tft.height() / 2 + 30);
 
 		tft.setTextColor(TFT_GREEN);
 		tft.setTextDatum(CL_DATUM);
 		sprintf(buf, "IP: %s", WiFi.localIP().toString());
-		tft.drawString(buf, 2, tft.height() / 2 + 32);
+		tft.drawString(buf, 2, tft.height() / 2 + 40);
 
 		tft.setTextColor(TFT_CYAN);
+		tft.drawString(I2CBus.Get1st6ActiveI2CAddressesString(), 2, tft.height() / 2 + 50);
+
+		tft.setTextColor(TFT_LIGHTGREY);
+		sprintf(buf, "UART0 %s", PCMStatus.UART0Status ? "OK" : "NO");
+		tft.drawString(buf, 2, 30);
+
+		tft.setTextDatum(CR_DATUM);
+		sprintf(buf, "UART2 %s", PCMStatus.UART2Status ? "OK" : "NO");
+		tft.drawString(buf, tft.width() - 2, 30);
+
+		tft.setTextColor(TFT_PINK);
 		tft.setTextDatum(CL_DATUM);
-		tft.drawString(I2CBus.Get1st6ActiveI2CAddressesString(), 2, tft.height() / 2 + 40);
+		tft.drawString(ComModeHeadings[PCMStatus.ComMode], 2, 40);
+
+		tft.setTextColor(TFT_ORANGE);
+		sprintf(buf, "WiFi %s", PCMStatus.WiFiStatus ? "OK" : "NO");
+		tft.drawString(buf, 2, 50);
 
 		lastPage = currentPage;
 	}
@@ -138,9 +158,6 @@ bool LocalDisplayClass::Init()
 	tft.init();
 	tft.setRotation(2);
 	tft.fillScreen(TFT_BLACK);
-
-	////Test code:
-	//DrawSYSPage();
 
 	Control(LocalDisplayClass::SYSPage);
 

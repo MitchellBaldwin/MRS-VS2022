@@ -3,10 +3,10 @@
 *
 *
 *
-*	Mitchell Baldwin copyright 2022
+*	Mitchell Baldwin copyright 2022-2024
 *
 *	v 0.00:	Initial command set
-*	v
+*	v 0.10: Modified for use with TTGO T Display module (26 Jun 2024)
 *
 */
 
@@ -35,6 +35,10 @@ class I2CBusClass
 		bool ScanAddress(uint8_t address);
 		void Scan();
 		bool MaxDeviceCountExceeded();
+
+		String GetActiveI2CAddressesString();
+		String Get1st6ActiveI2CAddressesString();
+		String Get1st4ActiveI2CAddressesString();
 };
 
 extern I2CBusClass I2CBus;

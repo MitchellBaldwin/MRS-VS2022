@@ -67,7 +67,7 @@ Task UpdateLocalDisplayTask((LocalDisplayUpdateInterval * TASK_MILLISECOND), TAS
 #include "src\I2CBus.h"
 #include "PCMSensorData.h"
 
-void setup() 
+void setup()
 {
 	char buf[32];
 	

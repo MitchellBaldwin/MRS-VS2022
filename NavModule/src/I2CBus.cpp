@@ -3,21 +3,33 @@
 *
 *
 *
-*	Mitchell Baldwin copyright 2022
+*	Mitchell Baldwin copyright 2022-2024
 *
 */
 
 #include "I2CBus.h"
 #include <Wire.h>
 
+//#include "DEBUG Macros.h"
+
+// Using the TTGO T Display pin 22 is used for the built-in LED,
+//so we must re-map SCL to another pin:
+
+const uint8_t sda = 21;
+const uint8_t scl = 27;
+
 void I2CBusClass::Init()
 {
-	Wire.begin();
-
+	Wire.begin(sda, scl);
 }
 
 bool I2CBusClass::ScanAddress(uint8_t address)
 {
+	////Debug code:
+	//char buf[32];
+	//snprintf(buf, 31, "Scanning I2C %02X", address);
+	//_PL(buf)
+
 	Wire.beginTransmission(address);
 	if (Wire.endTransmission() == 0x00)
 	{
@@ -57,6 +69,48 @@ void I2CBusClass::Scan()
 bool I2CBusClass::MaxDeviceCountExceeded()
 {
 	return maxDeviceCountExceeded;
+}
+
+String I2CBusClass::GetActiveI2CAddressesString()
+{
+	char buf[32];
+	snprintf(buf, 31, "I2C %02X %02X %02X %02X %02X %02X %02X %02X",
+		I2CBus.ActiveI2CDeviceAddresses[0],
+		I2CBus.ActiveI2CDeviceAddresses[1],
+		I2CBus.ActiveI2CDeviceAddresses[2],
+		I2CBus.ActiveI2CDeviceAddresses[3],
+		I2CBus.ActiveI2CDeviceAddresses[4],
+		I2CBus.ActiveI2CDeviceAddresses[5],
+		I2CBus.ActiveI2CDeviceAddresses[6],
+		I2CBus.ActiveI2CDeviceAddresses[7]);
+	
+	return String(buf);
+}
+
+String I2CBusClass::Get1st6ActiveI2CAddressesString()
+{
+	char buf[32];
+	snprintf(buf, 31, "I2C %02X %02X %02X %02X %02X %02X",
+		I2CBus.ActiveI2CDeviceAddresses[0],
+		I2CBus.ActiveI2CDeviceAddresses[1],
+		I2CBus.ActiveI2CDeviceAddresses[2],
+		I2CBus.ActiveI2CDeviceAddresses[3],
+		I2CBus.ActiveI2CDeviceAddresses[4],
+		I2CBus.ActiveI2CDeviceAddresses[5]);
+
+	return String(buf);
+}
+
+String I2CBusClass::Get1st4ActiveI2CAddressesString()
+{
+	char buf[32];
+	snprintf(buf, 31, "I2C %02X %02X %02X %02X",
+		I2CBus.ActiveI2CDeviceAddresses[0],
+		I2CBus.ActiveI2CDeviceAddresses[1],
+		I2CBus.ActiveI2CDeviceAddresses[2],
+		I2CBus.ActiveI2CDeviceAddresses[3]);
+
+	return String(buf);
 }
 
 I2CBusClass I2CBus;

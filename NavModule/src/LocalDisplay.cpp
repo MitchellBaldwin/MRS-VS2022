@@ -1,30 +1,41 @@
-/*	LocalDisplayClass - Base class for implementing paged graphical display interface for
-*	Arduino and ESP32 based embedded control systems.
+/*	LocalDisplayClass - Class for implementing paged graphical display interface for
+*	ESP32 based MRS RC Power Control Module
 *
-*	Mitchell Baldwin copyright 2023
-*
+*	Mitchell Baldwin copyright 2023-2024
 */
 
 #include "LocalDisplay.h"
-#include "CSSMStatus.h"
 #include "I2CBus.h"
-#include "CSSMSensorData.h"
+#include "NMStatus.h"
+#include "NMControls.h"
+
 #include <WiFi.h>
 
 void LocalDisplayClass::DrawPageHeaderAndFooter()
 {
-	display.clearDisplay();
-	display.cp437();
-	display.setTextSize(1);
-	snprintf(buf, 22, "MRS CSS %s%s", DriveModeHeadings[CSSMStatus.DriveMode], PageTitles[currentPage]);
-	display.setCursor(0, 0);
-	display.write(buf);
-	snprintf(buf, 22, "v%d.%d", CSSMStatus.MajorVersion, CSSMStatus.MinorVersion);
-	display.setCursor(0, 8);
-	display.write(buf);
+	char upArrow[1] = { 0x18 };
+	char downArrow[1] = { 0x19 };
 
-	display.setCursor(0, 56);
-	display.write(PageMenus[currentPage]);
+	//tft.setCursor();	// Used with 'printxx' statements; not needed when using drawString()
+	tft.setTextSize(1);
+	tft.setTextColor(TFT_BLUE, TFT_BLACK, false);
+	tft.setTextDatum(TL_DATUM);
+	tft.drawString("MRSRC NM", 2, 2);
+	sprintf(buf, "v%d.%d", NMStatus.MajorVersion, NMStatus.MinorVersion);
+	tft.drawString(buf, 2, 12);
+
+	tft.setTextDatum(TR_DATUM);
+	sprintf(buf, "%s", PageTitles[currentPage]);
+	tft.drawString(buf, tft.width() - 2, 2);
+
+	// Draw footer:
+	tft.setTextDatum(BC_DATUM);
+	tft.setTextColor(TFT_MAGENTA, TFT_BLACK, false);
+	sprintf(buf, "%s", PageMenus[currentPage]);
+	tft.drawString(buf, tft.width() / 2, tft.height() - 2);
+
+	// Draw rectangle at screen bounds to aid framing physical display to panel:
+	tft.drawRect(0, 0, tft.getViewportWidth(), tft.getViewportHeight(), TFT_DARKCYAN);
 }
 
 void LocalDisplayClass::DrawSYSPage()
@@ -38,77 +49,118 @@ void LocalDisplayClass::DrawSYSPage()
 
 		char upArrow[1] = { 0x18 };
 		char downArrow[1] = { 0x19 };
-		sprintf(buf, "U0 %s", CSSMStatus.UART0Status ? upArrow : downArrow);
-		display.setCursor(0, 40);
-		display.write(buf, 4);
-		sprintf(buf, "U2 %s", CSSMStatus.UART2Status ? upArrow : downArrow);
-		display.setCursor(32, 40);
-		display.write(buf, 4);
-		sprintf(buf, "ENV%s", CSSMStatus.BME280Status ? upArrow : downArrow);
-		display.setCursor(64, 40);
-		display.write(buf, 4);
-		//sprintf(buf, "IMU%s", CSSMStatus.IMUStatus ? upArrow : downArrow);
-		sprintf(buf, "WiFi%s", CSSMStatus.WiFiStatus ? upArrow : downArrow);
-		display.setCursor(92, 40);
-		display.write(buf, 5);
-		display.setCursor(0, 48);
-		snprintf(buf, 22, "I2C %02X %02X %02X %02X %02X %02X",
-			I2CBus.ActiveI2CDeviceAddresses[0],
-			I2CBus.ActiveI2CDeviceAddresses[1],
-			I2CBus.ActiveI2CDeviceAddresses[2],
-			I2CBus.ActiveI2CDeviceAddresses[3],
-			I2CBus.ActiveI2CDeviceAddresses[4],
-			I2CBus.ActiveI2CDeviceAddresses[5]);
-		display.write(buf);
+
+		tft.setTextSize(1);
+		tft.setTextColor(TFT_GREENYELLOW);
+		tft.setTextDatum(CL_DATUM);	//DONE: setTextDatum has NO AFFECT on print() output; print() effectively uses default TL_DATUM
+		uint8_t mac[6];
+		WiFi.macAddress(mac);
+		sprintf(buf, "MAC:%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+		tft.drawString(buf, 2, tft.height() / 2 + 30);
+
+		tft.setTextColor(TFT_GREEN);
+		tft.setTextDatum(CL_DATUM);
+		sprintf(buf, "IP: %s", WiFi.localIP().toString());
+		tft.drawString(buf, 2, tft.height() / 2 + 40);
+
+		tft.setTextColor(TFT_CYAN);
+		tft.drawString(I2CBus.Get1st6ActiveI2CAddressesString(), 2, tft.height() / 2 + 50);
+
+		tft.setTextColor(TFT_LIGHTGREY);
+		sprintf(buf, "UART0 %s", NMStatus.UART0Status ? "OK" : "NO");
+		tft.drawString(buf, 2, 30);
+
+		tft.setTextDatum(CR_DATUM);
+		sprintf(buf, "UART2 %s", NMStatus.UART2Status ? "OK" : "NO");
+		tft.drawString(buf, tft.width() - 2, 30);
+
+		tft.setTextColor(TFT_PINK);
+		tft.setTextDatum(CL_DATUM);
+		tft.drawString(ComModeHeadings[NMStatus.ComMode], 2, 40);
+
+		tft.setTextColor(TFT_ORANGE);
+		sprintf(buf, "WiFi %s", NMStatus.WiFiStatus ? "OK" : "NO");
+		tft.drawString(buf, 2, 50);
 
 		lastPage = currentPage;
 	}
 
 	// Update dynamic displays:
-	display.fillRect(0, 16, 128, 8, SSD1306_BLACK);
-	snprintf(buf, 22, "THR %+6.1f%%", SensorData.GetThrottle());
-	display.setCursor(0, 16);
-	display.write(buf);
-	snprintf(buf, 22, "HDG %+04d", SensorData.HDGEncoderSetting);
-	display.setCursor(79, 16);
-	display.write(buf);
-	//display.fillRect(0, 24, 128, 8, 0x0000);
-	//snprintf(buf, 22, "L/R %+04d     L/R %+04d", 0, 0);
-	//display.setCursor(0, 24);
-	//display.write(buf);
 
-	display.fillRect(0, 32, 128, 8, SSD1306_BLACK);
-	snprintf(buf, 22, "KP %04d %s", SensorData.GetKBRaw(), SensorData.GetKPString("%#5.2f"));
-	display.setCursor(0, 32);
-	display.write(buf);
+	tft.setCursor(10, tft.height() / 2);
+	tft.setTextSize(2);
+	tft.setTextColor(TFT_YELLOW);
+	tft.setTextDatum(CL_DATUM);
+	tft.print("5.00 V");
 
-	display.display();
-}
-
-void LocalDisplayClass::DrawPOWPage()
-{
-	currentPage = POW;
-
-	if (lastPage != currentPage)
+	sprintf(buf, "%03D", NMControls.HDGSetting);
+	//_PL(buf);
+	tft.setTextColor(TFT_ORANGE, TFT_BLACK, true);
+	tft.setTextDatum(TL_DATUM);
+	tft.drawString(buf, tft.width() - tft.textWidth(buf) - 1, tft.height() - 9);
+	if (NMControls.HDGSelected)
 	{
-		DrawPageHeaderAndFooter();
-
-		display.setCursor(0, 40);
-
-		display.setCursor(64, 40);
-
-		display.setCursor(0, 48);
-
-		lastPage = currentPage;
+		tft.drawRect(tft.width() - tft.textWidth(buf) - 2, tft.height() - 11, tft.textWidth(buf) + 2, 11, TFT_WHITE);
+	}
+	else
+	{
+		tft.drawRect(tft.width() - tft.textWidth(buf) - 2, tft.height() - 11, tft.textWidth(buf) + 2, 11, TFT_BLACK);
 	}
 
-	// Update dynamic displays:
-	display.fillRect(0, 32, 128, 8, SSD1306_BLACK);
-	snprintf(buf, 22, "VIN %s", SensorData.GetESP32VINString("%#5.2f"));
-	display.setCursor(0, 32);
-	display.write(buf);
+	// Test OSB arrays:
+	constexpr byte LOSBAnalogPin = 34;
+	constexpr byte ROSBAnalogPin = 35;
 
-	display.display();
+	tft.setTextColor(TFT_CYAN, TFT_BLACK, true);
+	tft.setTextDatum(CL_DATUM);
+	uint16_t OSBADC = analogRead(LOSBAnalogPin);
+	sprintf(buf, "LOSB: %04D", OSBADC);
+	tft.drawString(buf, 2, tft.height() - 24);
+	OSBADC = analogRead(ROSBAnalogPin);
+	sprintf(buf, "ROSB: %04D", OSBADC);
+	tft.drawString(buf, tft.width() - tft.textWidth(buf), tft.height() - 24);
+	
+	//int16_t cursorY = tft.height() / 2;
+	//tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);	//DONE: Does bgfill = true work with the print() method? -> Yes, newly printed text clears the background
+	//
+	//// Measure & display backup battery voltage:
+	//tft.setTextDatum(BL_DATUM);
+	//tft.setTextSize(2);
+	//tft.drawString("V", 2, cursorY);
+	//int32_t cursorX = tft.textWidth("V", 2) + 1;
+	//tft.setTextSize(1);
+	//tft.drawString("BBAT", cursorX, cursorY);	// Subscript
+	//tft.setTextSize(2);
+	//tft.setTextDatum(BR_DATUM);
+	////sprintf(buf, "%5.2F V", SensorData.VBBat);
+	////tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
+
+	//// Measure & display internal battery voltage:
+	//tft.setTextDatum(BL_DATUM);
+	//tft.setTextSize(2);
+	//cursorY -= 20;
+	//tft.drawString("V", 2, cursorY);
+	//cursorX = tft.textWidth("V", 2) + 1;
+	//tft.setTextSize(1);
+	//tft.drawString("BAT", cursorX, cursorY);	// Subscript
+	//tft.setTextSize(2);
+	//tft.setTextDatum(BR_DATUM);
+	////sprintf(buf, "%5.2F V", SensorData.VBat);
+	////tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
+
+	//// Measure & display external supply voltage:
+	//tft.setTextDatum(BL_DATUM);
+	//tft.setTextSize(2);
+	//cursorY -= 20;
+	//tft.drawString("V", 2, cursorY);
+	//cursorX = tft.textWidth("V", 2) + 1;
+	//tft.setTextSize(1);
+	//tft.drawString("EXT", cursorX, cursorY);	// Subscript
+	//tft.setTextSize(2);
+	//tft.setTextDatum(BR_DATUM);
+	////sprintf(buf, "%5.2F V", SensorData.VExt);
+	////tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
+
 }
 
 void LocalDisplayClass::DrawCOMPage()
@@ -117,288 +169,31 @@ void LocalDisplayClass::DrawCOMPage()
 
 	if (lastPage != currentPage)
 	{
-		DrawPageHeaderAndFooter();
-
-		snprintf(buf, 22, "Mode: %s", ComModeHeadings[CSSMStatus.ComMode]);
-		display.setCursor(0, 16);
-		display.write(buf);
-
-		snprintf(buf, 22, "IP: %s", WiFi.localIP().toString());
-		display.setCursor(0, 24);
-		display.write(buf);
-
-		uint8_t mac[6];
-		WiFi.macAddress(mac);
-		snprintf(buf, 22, "MAC:%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-		display.setCursor(0, 40);
-		display.write(buf);
-
-		display.setCursor(0, 48);
-
-		lastPage = currentPage;
-	}
-
-	// Update dynamic displays:
-
-	display.display();
-}
-
-void LocalDisplayClass::DrawI2CPage()
-{
-	currentPage = I2C;
-
-	if (lastPage != currentPage)
-	{
 		// Clear display and redraw static elements of the page format:
 		DrawPageHeaderAndFooter();
 
-		display.setCursor(0, 40);
-
-		display.setCursor(64, 40);
-
-		display.setCursor(0, 48);
-		snprintf(buf, 22, "I2C %02X %02X %02X %02X %02X %02X",
-			I2CBus.ActiveI2CDeviceAddresses[0],
-			I2CBus.ActiveI2CDeviceAddresses[1],
-			I2CBus.ActiveI2CDeviceAddresses[2],
-			I2CBus.ActiveI2CDeviceAddresses[3],
-			I2CBus.ActiveI2CDeviceAddresses[4],
-			I2CBus.ActiveI2CDeviceAddresses[5]);
-		display.write(buf);
+		char upArrow[1] = { 0x18 };
+		char downArrow[1] = { 0x19 };
 
 		lastPage = currentPage;
 	}
 
-	// Update dynamic displays:
-
-	display.display();
-}
-
-void LocalDisplayClass::DrawENVPage()
-{
-	currentPage = ENV;
-
-	if (lastPage != currentPage)
-	{
-		DrawPageHeaderAndFooter();
-
-		display.setCursor(0, 40);
-
-		display.setCursor(64, 40);
-
-		display.setCursor(0, 48);
-
-		lastPage = currentPage;
-	}
-
-	// Update dynamic displays:
-	display.fillRect(0, 24, 128, 8, SSD1306_BLACK);
-	display.setCursor(8, 24);
-	String OutString = String("Tatm  ") + SensorData.ENVData.GetTchipString();
-	display.write(OutString.c_str());
-
-	display.fillRect(0, 32, 128, 8, SSD1306_BLACK);
-	display.setCursor(8, 32);
-	OutString = String("Pbaro ") + SensorData.ENVData.GetPbaroString();
-	display.write(OutString.c_str());
-
-	display.fillRect(0, 40, 128, 8, SSD1306_BLACK);
-	display.setCursor(8, 40);
-	OutString = String("RH    ") + SensorData.ENVData.GetRHString();
-	display.write(OutString.c_str());
-
-	display.display();
-}
-
-void LocalDisplayClass::DrawIMUPage()
-{
-	currentPage = IMU;
-
-	if (lastPage != currentPage)
-	{
-		DrawPageHeaderAndFooter();
-
-		display.setCursor(0, 40);
-
-		display.setCursor(64, 40);
-
-		display.setCursor(0, 48);
-
-		lastPage = currentPage;
-	}
-
-	// Update dynamic displays:
-
-	display.display();
-}
-
-void LocalDisplayClass::DrawDRVPage()
-{
-	currentPage = DRV;
-
-	if (lastPage != currentPage)
-	{
-		DrawPageHeaderAndFooter();
-
-		display.setCursor(0, 40);
-
-		display.setCursor(64, 40);
-
-		display.setCursor(0, 48);
-
-		lastPage = currentPage;
-	}
-
-	// Update dynamic displays:
-	display.fillRect(0, 16, 128, 8, SSD1306_BLACK);
-	snprintf(buf, 22, "THR %+6.1f%%", SensorData.GetThrottle());
-	display.setCursor(0, 16);
-	display.write(buf);
-	snprintf(buf, 22, "HDG %+04d", SensorData.HDGEncoderSetting);
-	display.setCursor(79, 16);
-	display.write(buf);
-
-	display.display();
-}
-
-void LocalDisplayClass::DrawHDGPage()
-{
-	currentPage = HDG;
-
-	if (lastPage != currentPage)
-	{
-		DrawPageHeaderAndFooter();
-
-		display.setCursor(0, 40);
-
-		display.setCursor(64, 40);
-
-		display.setCursor(0, 48);
-
-		lastPage = currentPage;
-	}
-
-	// Update dynamic displays:
-	display.fillRect(0, 16, 128, 8, SSD1306_BLACK);
-	snprintf(buf, 22, "THR %+6.1f%%", SensorData.GetThrottle());
-	display.setCursor(0, 16);
-	display.write(buf);
-	snprintf(buf, 22, "HDG %+04d", SensorData.HDGEncoderSetting);
-	display.setCursor(79, 16);
-	display.write(buf);
-
-	display.fillRect(0, 24, 128, 8, SSD1306_BLACK);
-	snprintf(buf, 22, "CRS %+04d", SensorData.CRSEncoderSetting);
-	display.setCursor(79, 24);
-	display.write(buf);
-
-	display.display();
-}
-
-void LocalDisplayClass::DrawWPTPage()
-{
-	currentPage = WPT;
-
-	if (lastPage != currentPage)
-	{
-		DrawPageHeaderAndFooter();
-
-		display.setCursor(0, 40);
-
-		display.setCursor(64, 40);
-
-		display.setCursor(0, 48);
-
-		lastPage = currentPage;
-	}
-
-	// Update dynamic displays:
-
-	display.display();
-}
-
-void LocalDisplayClass::DrawSEQPage()
-{
-	currentPage = SEQ;
-
-	if (lastPage != currentPage)
-	{
-		DrawPageHeaderAndFooter();
-
-		display.setCursor(0, 40);
-
-		display.setCursor(64, 40);
-
-		display.setCursor(0, 48);
-
-		lastPage = currentPage;
-	}
-
-	// Update dynamic displays:
-
-	display.display();
 }
 
 void LocalDisplayClass::DrawNONEPage()
 {
 	currentPage = NONE;
-	display.clearDisplay();
+	tft.fillScreen(TFT_BLACK);
 	lastPage = NONE;
-	display.display();
 }
 
-LocalDisplayClass::LocalDisplayClass()
+bool LocalDisplayClass::Init()
 {
-	display = Adafruit_SSD1306(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
-}
+	tft.init();
+	tft.setRotation(0);
+	tft.fillScreen(TFT_BLACK);
 
-bool LocalDisplayClass::Init(uint8_t address)
-{
-	// SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
-	if (!display.begin(SSD1306_SWITCHCAPVCC, address))
-	{
-		#ifdef _DEBUG_
-		_PP(F("\nSSD1306 initialization failed; "));
-		snprintf(buf, 31, "Firmware version: %02d.%02d", CSSMStatus.MajorVersion, CSSMStatus.MinorVersion);
-		_PL(buf);
-		#endif
-		return false;
-	}
-	display.clearDisplay();
-	display.setCursor(0, 0);
-	display.cp437();
-	display.setTextSize(1);
-	display.setTextColor(SSD1306_WHITE);
-
-	display.display();
-
-	return true;
-}
-
-bool LocalDisplayClass::Test()
-{
-	Wire.beginTransmission(I2CAddress);
-	bool error = Wire.endTransmission();
-	if (error) return false;
-
-	display.clearDisplay();					// Clear the buffer
-	display.setTextSize(1);					// Normal 1:1 pixel scale
-	display.setTextColor(SSD1306_WHITE);	// Draw white text
-	display.setCursor(0, 0);				// Start at top-left corner
-	display.cp437(true);					// Use full 256 char 'Code Page 437' font
-
-	// If all the characters will not fit on the display then the
-	// library will draw what it can and the rest will be clipped.
-	int16_t charCode = 0x30;				// ASCII '0'
-	for (int16_t i = 0x00; i < 0x10; i++)
-		for (int16_t j = 0x00; j < 0x0A; j++)
-		{
-			charCode = j + 0x30;
-			if (charCode == '\n')	display.write(' ');
-			else					display.write(charCode);
-		}
-	display.display();
-	//delay(2000); // Pause for 2 seconds
+	Control(LocalDisplayClass::SYSPage);
 
 	return true;
 }
@@ -410,33 +205,8 @@ void LocalDisplayClass::Update()
 	case SYS:
 		DrawSYSPage();
 		break;
-	case POW:
-		DrawPOWPage();
-		break;
 	case COM:
 		DrawCOMPage();
-		break;
-	case I2C:
-		DrawI2CPage();
-		break;
-	case ENV:
-		DrawENVPage();
-		break;
-	case IMU:
-		DrawIMUPage();
-		break;
-	
-	case DRV:
-		DrawDRVPage();
-		break;
-	case HDG:
-		DrawHDGPage();
-		break;
-	case WPT:
-		DrawWPTPage();
-		break;
-	case SEQ:
-		DrawSEQPage();
 		break;
 
 	default:
@@ -451,90 +221,19 @@ void LocalDisplayClass::Control(uint8_t command)
 	case Clear:
 		DrawNONEPage();
 		break;
-	case Refresh:
-		lastPage = Pages::NONE;		// Will not refresh if currentPage == NONE...
-		display.clearDisplay();		// This might fix refreshing when currentPage == NONE
-		Update();
-		break;
+
 	case SYSPage:
 		DrawSYSPage();
 		break;
-	case POWPage:
-		DrawPOWPage();
-		break;
-	case COMPage:
-		DrawCOMPage();
-		break;
-	case I2CScan:
-		I2CBus.Scan();
-		DrawI2CPage();
-		break;
-	case I2CPage:
-		DrawI2CPage();
-		break;
-	case ENVPage:
-		DrawENVPage();
-		break;
-	case IMUPage:
-		DrawIMUPage();
-		break;
 
-	case DRVPage:
-		DrawDRVPage();
-		break;
-	case HDGPage:
-		DrawHDGPage();
-		break;
-	case WPTPage:
-		DrawWPTPage();
-		break;
-	case SEQPage:
-		DrawSEQPage();
-		break;
-
-	case Commands::Prev:
-		if (currentPage == Pages::SYS)
-		{
-			currentPage = Pages::NONE;
-		}
-		else if (currentPage > Pages::SYS)
-		{
-			currentPage = (Pages)((byte)currentPage - 1);
-		}
-		else
-		{
-			currentPage = Pages::NONE;
-		}
-		Update();
-		break;
-	case Next:
-		if (currentPage == Pages::NONE)
-		{
-			currentPage = Pages::SYS;
-		}
-		else if (currentPage < Pages::IMU)
-		{
-			currentPage = (Pages)((byte)currentPage + 1);
-		}
-		else
-		{
-			currentPage = Pages::NONE;
-		}
-		Update();
-		break;
 	default:
-		return;
+		break;
 	}
 }
 
-bool LocalDisplayClass::IsOnSYSPage()
+LocalDisplayClass::Pages LocalDisplayClass::GetCurrentPage()
 {
-	if (currentPage == SYS)
-	{
-		return true;
-	}
-	return false;
+	return currentPage;
 }
 
 LocalDisplayClass LocalDisplay;
-
