@@ -5,6 +5,12 @@
 
  Main executable for the Mobile Robot System Remote Controller Control Stick Steering Module (MRS RC CSSM)
 
+ Controller: DOIT ESP32 DEVKIT V1
+
+ Configuration notes:
+	Board: DOIT ESP32 DEVKIT V1
+	TFT_eSPI setup: [None; using Adafruit GFX libraries with monochrome oLED displays]
+
  v1.0	Initial release
  v1.1	Added support for ladder button arrays
  v1.2	Added WiFi and OTA programming support

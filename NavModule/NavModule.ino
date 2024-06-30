@@ -8,7 +8,9 @@
  Controller: DOIT ESP32 DEVKIT V1
 
  Configuration notes:
-	Board: DOIT ESP32 DEVKIT V1
+	Board:			DOIT ESP32 DEVKIT V1
+	Display:		HiLetgo ILI9341 2.8" SPI TFT LCD Display Touch Panel 240X320
+					http://www.lcdwiki.com/2.8inch_SPI_Module_ILI9341_SKU:MSP2807
 	TFT_eSPI setup: #include <User_Setups/Setup42_ILI9341_ESP32.h>
 
  v1.0	Initial release
@@ -20,9 +22,6 @@
 #include "src\DEBUG Macros.h"
 
 #include <WiFi.h>
-
-#include <TFT_eSPI.h>
-//TFT_eSPI tft = TFT_eSPI();
 
 #include "src/NMControls.h"
 constexpr byte RightRockerSwitchPin = 0x04;		// GPIO04
@@ -83,39 +82,9 @@ void setup()
 	//pinMode(LED_BUILTIN, OUTPUT);
 	//HeartbeatLEDTask.enable();
 
-	//tft.init();
-	//tft.setRotation(0);
-	//tft.fillScreen(TFT_BLACK);
-
-	//tft.setTextSize(1);
-	//tft.setTextColor(TFT_RED, TFT_BLACK, false);
-	//tft.setTextDatum(TL_DATUM);
-	//tft.drawString("MRS RC NM", 2, 2);
-
-	//tft.setCursor(10, tft.height() / 2);
-	//tft.setTextSize(2);
-	//tft.setTextColor(TFT_YELLOW);
-	//tft.setTextDatum(CL_DATUM);
-	//tft.print("5.00 V");
-
-	//tft.setCursor(2, tft.height() / 2 + 16);
-	//tft.setTextSize(1);
-	//tft.setTextColor(TFT_GREEN);
-	//tft.setTextDatum(CL_DATUM);
-	//uint8_t mac[6];
-	//WiFi.macAddress(mac);
-	//tft.printf("MAC:%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-
-	//tft.setCursor(2, tft.height() / 2 + 24);
-	//tft.printf("IP: %s", WiFi.localIP().toString());
-
-	//tft.drawRect(0, 0, tft.getViewportWidth(), tft.getViewportHeight(), TFT_DARKCYAN);
-
 	I2CBus.Init();
 	I2CBus.Scan();
 	_PL(I2CBus.GetActiveI2CAddressesString().c_str());
-	//tft.setCursor(2, tft.height() / 2 + 48);
-	//tft.printf(I2CBus.GetActiveI2CAddressesString().c_str());
 
 	NMControls.Init(RightRockerSwitchPin, HDGEncoderI2CAddress, CRSEncoderI2CAddress);
 	
@@ -131,58 +100,20 @@ void loop()
 	MainScheduler.execute();
 }
 
-void ToggleBuiltinLEDCallback()
-{
-	digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-}
-
+// GPIO02 is in use for the TFT display board
+//void ToggleBuiltinLEDCallback()
+//{
+//	digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+//}
+//
 void ReadControlsCallback()
 {
 	NMControls.Update();
 	
-	char buf[64];
-	
-	//// Test encoder buttons:
-	//if (NMControls.HDGButtonWasPressed())
-	//{
-	//	_PL("HDG button pressed");
-	//	NMControls.ToggleHDGSelected();
-	//}
-	//if (NMControls.CRSButtonWasPressed())
-	//{
-	//	_PL("CRS button pressed");
-	//	NMControls.ToggleCRSSelected();
-	//}
-	
-	//// Test OSB arrays:
-	//tft.setTextColor(TFT_CYAN, TFT_BLACK, true);
-	//tft.setTextDatum(CL_DATUM);
-	//uint16_t OSBADC = analogRead(LOSBAnalogPin);
-	//sprintf(buf, "LOSB: %04D", OSBADC);
-	//tft.drawString(buf, 2, tft.height() - 24);
-	//OSBADC = analogRead(ROSBAnalogPin);
-	//sprintf(buf, "ROSB: %04D", OSBADC);
-	//tft.drawString(buf, tft.width() - tft.textWidth(buf), tft.height() - 24);
-
 }
 
 void UpdateDisplayCallback()
 {
 	LocalDisplay.Update();
 
-	//char buf[64];
-	
-	//sprintf(buf, "%03D", NMControls.HDGSetting);
-	////_PL(buf);
-	//tft.setTextColor(TFT_ORANGE, TFT_BLACK, true);
-	//tft.setTextDatum(TL_DATUM);
-	//tft.drawString(buf, tft.width() - tft.textWidth(buf) - 1, tft.height() - 9);
-	//if (NMControls.HDGSelected)
-	//{
-	//	tft.drawRect(tft.width() - tft.textWidth(buf) - 2, tft.height() - 11, tft.textWidth(buf) + 2, 11, TFT_WHITE);
-	//}
-	//else
-	//{
-	//	tft.drawRect(tft.width() - tft.textWidth(buf) - 2, tft.height() - 11, tft.textWidth(buf) + 2, 11, TFT_BLACK);
-	//}
 }

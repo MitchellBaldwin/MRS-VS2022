@@ -2,8 +2,10 @@
 *	ESP32 based MRS RC Navigation Module
 *
 *	Pages supported:
-*		System (SYS)	Default summary of navigation systems, power and I/O status
-*		Comms (COM)		Communications with MRS RC MCC
+*		System		(SYS)	Default summary of navigation systems, power and I/O status
+*		Navigation	(NAV)	Primary navigation display
+*		Comms		(COM)	Communications with MRS RC MCC
+*		Debug		(DBG)	Development and debugging
 *
 *	Mitchell Baldwin copyright 2023-2024
 *
@@ -24,19 +26,26 @@
 #include "NMStatus.h"
 #include <TFT_eSPI.h>
 
+constexpr byte MaxFonts = 4;
+constexpr byte LEDPin = 27;
+constexpr byte InitialBrightness = 127;
+
 class LocalDisplayClass
 {
 public:
 	enum Pages
 	{
 		SYS,
+		NAV,
 		COM,
+		DBG,
 
 		NONE
 	};
 
 protected:
 	char buf[64];
+	byte Brightness = InitialBrightness;
 
 	TFT_eSPI tft = TFT_eSPI();
 
@@ -45,14 +54,18 @@ protected:
 
 	const char* PageTitles[NONE] =
 	{
-		"  System",
-		"   Comms",
+		"    System",
+		"Navigation",
+		"     Comms",
+		"     Debug",
 	};
 
 	const char* PageMenus[NONE] =
 	{
-		"DbNx  DRVm       LoNx",	// Rotary menu for the SYS page: select next DebugDisplay page, enter DRIVE mode, select next LoaclDisplay page
-		"SYSp  Mode       LoNx",	// OSB menu for the COM page: select SYS page, select current drive DriveMode page, 
+		"                 Next",	// Rotary menu for the SYS page: select next LoaclDisplay page
+		"                 Next",	// Rotary menu for the NAV page: select next LoaclDisplay page
+		"                 Next",	// Rotary menu for the COM page: select next LoaclDisplay page
+		"                 Next",	// Rotary menu for the DBG page: select next LoaclDisplay page
 	};
 
 	const char* ComModeHeadings[NMStatusClass::ComModes::NoComs] =
@@ -64,7 +77,9 @@ protected:
 
 	void DrawPageHeaderAndFooter();
 	void DrawSYSPage();
+	void DrawNAVPage();
 	void DrawCOMPage();
+	void DrawDBGPage();
 
 	void DrawNONEPage();
 
@@ -74,7 +89,9 @@ public:
 		Clear,
 		Refresh,
 		SYSPage,
+		NAVPage,
 		COMPage,
+		DBGPage,
 		I2CScan,
 
 		Prev,
@@ -85,7 +102,10 @@ public:
 
 	bool Init();
 
-	bool Test();
+	void SetBrightness(byte brightness);
+
+	bool TestFonts();
+
 	void Update();
 	void Control(uint8_t command);
 	Pages GetCurrentPage();

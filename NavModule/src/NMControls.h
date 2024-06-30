@@ -34,6 +34,8 @@ protected:
 	byte RightRockerSwitchPin = 0x04;
 	byte HDGEncoderI2CAddress = 0x36;
 	byte CRSEncoderI2CAddress = 0x37;
+	byte BRTEncoderI2CAddress = 0x38;
+	byte TRREncoderI2CAddress = 0x39;
 
 	ezButton* RightRockerSwitch;
 	Adafruit_seesaw HDGEncoder;
@@ -42,13 +44,23 @@ protected:
 	Adafruit_seesaw CRSEncoder;
 	bool CRSButtonState = false;
 	seesaw_NeoPixel CRSNeoPix = seesaw_NeoPixel(1, SS_NEOPIX, NEO_GRB + NEO_KHZ800);
+	Adafruit_seesaw BRTEncoder;
+	bool BRTButtonState = false;
+	seesaw_NeoPixel BRTNeoPix = seesaw_NeoPixel(1, SS_NEOPIX, NEO_GRB + NEO_KHZ800);
+	Adafruit_seesaw TRREncoder;
+	bool TRRButtonState = false;
+	seesaw_NeoPixel TRRNeoPix = seesaw_NeoPixel(1, SS_NEOPIX, NEO_GRB + NEO_KHZ800);
 
 public:
 	int32_t RightRockerSwitchState = 0;
-	int32_t HDGSetting = 0;
+	int32_t HDGSetting = 0;			// Selected Heading (HDG); bottom right rotary encoder
 	bool HDGSelected = false;
-	int32_t CRSSetting = 0;
+	int32_t CRSSetting = 0;			// Selected Course (CRS); bottom left rotary encoder
 	bool CRSSelected = false;
+	int32_t BRTSetting = 127;		// Display brightness (BRT) setting; top left rotary encoder
+	bool BRTSelected = false;
+	int32_t TRRSetting = 0;			// Top right rotary encoder; function TBD
+	bool TRRSelected = false;
 
 	void Init();
 	void Init(byte rightRockerSwitchPin, byte hdgEncoderI2CAddress, byte crsEncoderI2CAddress);
@@ -58,6 +70,10 @@ public:
 	void ToggleHDGSelected();
 	bool CRSButtonWasPressed();
 	void ToggleCRSSelected();
+	bool BRTButtonWasPressed();
+	void ToggleBRTSelected();
+	bool TRRButtonWasPressed();
+	void ToggleTRRSelected();
 
 	uint32_t ColorWheel(byte WheelPos);
 };

@@ -1,5 +1,5 @@
 /*	LocalDisplayClass - Class for implementing paged graphical display interface for
-*	ESP32 based MRS RC Power Control Module
+*	ESP32 based MRS RC Navigation Module
 *
 *	Mitchell Baldwin copyright 2023-2024
 */
@@ -20,13 +20,16 @@ void LocalDisplayClass::DrawPageHeaderAndFooter()
 	tft.setTextSize(1);
 	tft.setTextColor(TFT_BLUE, TFT_BLACK, false);
 	tft.setTextDatum(TL_DATUM);
-	tft.drawString("MRSRC NM", 2, 2);
-	sprintf(buf, "v%d.%d", NMStatus.MajorVersion, NMStatus.MinorVersion);
-	tft.drawString(buf, 2, 12);
+	tft.drawString("MRS RC NM", 2, 2, 1);
+
+	////Test code:
+	//tft.drawString(upArrow, 2, 12);	// Displays nothing...
 
 	tft.setTextDatum(TR_DATUM);
 	sprintf(buf, "%s", PageTitles[currentPage]);
 	tft.drawString(buf, tft.width() - 2, 2);
+	sprintf(buf, "v%d.%d", NMStatus.MajorVersion, NMStatus.MinorVersion);
+	tft.drawString(buf, tft.width() - 2, 12);
 
 	// Draw footer:
 	tft.setTextDatum(BC_DATUM);
@@ -34,8 +37,11 @@ void LocalDisplayClass::DrawPageHeaderAndFooter()
 	sprintf(buf, "%s", PageMenus[currentPage]);
 	tft.drawString(buf, tft.width() / 2, tft.height() - 2);
 
-	// Draw rectangle at screen bounds to aid framing physical display to panel:
-	tft.drawRect(0, 0, tft.getViewportWidth(), tft.getViewportHeight(), TFT_DARKCYAN);
+	//Test code:
+	TestFonts();
+	
+	//// Draw rectangle at screen bounds to aid framing physical display to panel:
+	//tft.drawRect(0, 0, tft.getViewportWidth(), tft.getViewportHeight(), TFT_DARKCYAN);
 }
 
 void LocalDisplayClass::DrawSYSPage()
@@ -94,20 +100,49 @@ void LocalDisplayClass::DrawSYSPage()
 	tft.print("5.00 V");
 
 	sprintf(buf, "%03D", NMControls.HDGSetting);
-	//_PL(buf);
+	tft.setTextSize(1);
 	tft.setTextColor(TFT_ORANGE, TFT_BLACK, true);
-	tft.setTextDatum(TL_DATUM);
-	tft.drawString(buf, tft.width() - tft.textWidth(buf) - 1, tft.height() - 9);
+	tft.setTextDatum(BR_DATUM);
+	tft.drawString(buf, tft.width() - 1, tft.height() - 1);
+	//tft.setTextDatum(TL_DATUM);
+	//tft.drawString(buf, tft.width() - tft.textWidth(buf) - 1, tft.height() - 9);
 	if (NMControls.HDGSelected)
 	{
-		tft.drawRect(tft.width() - tft.textWidth(buf) - 2, tft.height() - 11, tft.textWidth(buf) + 2, 11, TFT_WHITE);
+		tft.drawRect(tft.width() - tft.textWidth(buf) - 2, tft.height() - 11, tft.textWidth(buf) + 2, 11, TFT_GOLD);
 	}
 	else
 	{
 		tft.drawRect(tft.width() - tft.textWidth(buf) - 2, tft.height() - 11, tft.textWidth(buf) + 2, 11, TFT_BLACK);
 	}
 
+	sprintf(buf, "%03D", NMControls.CRSSetting);
+	tft.setTextSize(1);
+	tft.setTextColor(TFT_ORANGE, TFT_BLACK, true);
+	tft.setTextDatum(BL_DATUM);
+	tft.drawString(buf, 1, tft.height() - 1);
+	if (NMControls.CRSSelected)
+	{
+		tft.drawRect(0, tft.height() - 11, tft.textWidth(buf) + 2, 11, TFT_GOLD);
+	}
+	else
+	{
+		tft.drawRect(0, tft.height() - 11, tft.textWidth(buf) + 2, 11, TFT_BLACK);
+	}
+
+	sprintf(buf, "BRT: %03D", NMControls.BRTSetting);
+	tft.setTextSize(1);
+	tft.setTextColor(TFT_SILVER, TFT_BLACK, true);
+	tft.setTextDatum(TL_DATUM);
+	tft.drawString(buf, 2, 12);
+
+	//sprintf(buf, "%03D", NMControls.TRRSetting);
+	//tft.setTextSize(1);
+	//tft.setTextColor(TFT_SILVER, TFT_BLACK, true);
+	//tft.setTextDatum(TR_DATUM);
+	//tft.drawString(buf, tft.width() - 50, 12);
+
 	// Test OSB arrays:
+	//TODO: Sset up OSB arrays either in the main NavModule code block or in NMControls
 	constexpr byte LOSBAnalogPin = 34;
 	constexpr byte ROSBAnalogPin = 35;
 
@@ -120,46 +155,23 @@ void LocalDisplayClass::DrawSYSPage()
 	sprintf(buf, "ROSB: %04D", OSBADC);
 	tft.drawString(buf, tft.width() - tft.textWidth(buf), tft.height() - 24);
 	
-	//int16_t cursorY = tft.height() / 2;
-	//tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);	//DONE: Does bgfill = true work with the print() method? -> Yes, newly printed text clears the background
-	//
-	//// Measure & display backup battery voltage:
-	//tft.setTextDatum(BL_DATUM);
-	//tft.setTextSize(2);
-	//tft.drawString("V", 2, cursorY);
-	//int32_t cursorX = tft.textWidth("V", 2) + 1;
-	//tft.setTextSize(1);
-	//tft.drawString("BBAT", cursorX, cursorY);	// Subscript
-	//tft.setTextSize(2);
-	//tft.setTextDatum(BR_DATUM);
-	////sprintf(buf, "%5.2F V", SensorData.VBBat);
-	////tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
 
-	//// Measure & display internal battery voltage:
-	//tft.setTextDatum(BL_DATUM);
-	//tft.setTextSize(2);
-	//cursorY -= 20;
-	//tft.drawString("V", 2, cursorY);
-	//cursorX = tft.textWidth("V", 2) + 1;
-	//tft.setTextSize(1);
-	//tft.drawString("BAT", cursorX, cursorY);	// Subscript
-	//tft.setTextSize(2);
-	//tft.setTextDatum(BR_DATUM);
-	////sprintf(buf, "%5.2F V", SensorData.VBat);
-	////tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
+}
 
-	//// Measure & display external supply voltage:
-	//tft.setTextDatum(BL_DATUM);
-	//tft.setTextSize(2);
-	//cursorY -= 20;
-	//tft.drawString("V", 2, cursorY);
-	//cursorX = tft.textWidth("V", 2) + 1;
-	//tft.setTextSize(1);
-	//tft.drawString("EXT", cursorX, cursorY);	// Subscript
-	//tft.setTextSize(2);
-	//tft.setTextDatum(BR_DATUM);
-	////sprintf(buf, "%5.2F V", SensorData.VExt);
-	////tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
+void LocalDisplayClass::DrawNAVPage()
+{
+	currentPage = NAV;
+
+	if (lastPage != currentPage)
+	{
+		// Clear display and redraw static elements of the page format:
+		DrawPageHeaderAndFooter();
+
+
+		lastPage = currentPage;
+	}
+
+	// Update dynamic displays:
 
 }
 
@@ -172,11 +184,27 @@ void LocalDisplayClass::DrawCOMPage()
 		// Clear display and redraw static elements of the page format:
 		DrawPageHeaderAndFooter();
 
-		char upArrow[1] = { 0x18 };
-		char downArrow[1] = { 0x19 };
 
 		lastPage = currentPage;
 	}
+
+	// Update dynamic displays:
+
+}
+
+void LocalDisplayClass::DrawDBGPage()
+{
+	currentPage = DBG;
+
+	if (lastPage != currentPage)
+	{
+		// Clear display and redraw static elements of the page format:
+		DrawPageHeaderAndFooter();
+
+		lastPage = currentPage;
+	}
+
+	// Update dynamic displays:
 
 }
 
@@ -189,6 +217,9 @@ void LocalDisplayClass::DrawNONEPage()
 
 bool LocalDisplayClass::Init()
 {
+	pinMode(LEDPin, OUTPUT);
+	SetBrightness(Brightness);
+	
 	tft.init();
 	tft.setRotation(0);
 	tft.fillScreen(TFT_BLACK);
@@ -198,15 +229,45 @@ bool LocalDisplayClass::Init()
 	return true;
 }
 
+void LocalDisplayClass::SetBrightness(byte brightness)
+{
+	Brightness = brightness;
+	analogWrite(LEDPin, Brightness);
+}
+
+bool LocalDisplayClass::TestFonts()
+{
+	tft.setTextDatum(TL_DATUM);
+	tft.setTextColor(TFT_GOLD, TFT_BLACK, true);
+	for (byte i = 1; i <= MaxFonts; ++i)
+	{
+		tft.setTextSize(1);
+		sprintf(buf, "Font %d", i);
+		tft.drawString(buf, 1, 50 + 20 * i, i);
+
+	}
+	
+	return true;
+}
+
 void LocalDisplayClass::Update()
 {
+	Brightness = NMControls.BRTSetting;
+	SetBrightness(Brightness);
+	
 	switch (currentPage)
 	{
 	case SYS:
 		DrawSYSPage();
 		break;
+	case NAV:
+		DrawCOMPage();
+		break;
 	case COM:
 		DrawCOMPage();
+		break;
+	case DBG:
+		DrawDBGPage();
 		break;
 
 	default:
@@ -221,9 +282,17 @@ void LocalDisplayClass::Control(uint8_t command)
 	case Clear:
 		DrawNONEPage();
 		break;
-
 	case SYSPage:
 		DrawSYSPage();
+		break;
+	case NAVPage:
+		DrawDBGPage();
+		break;
+	case COMPage:
+		DrawDBGPage();
+		break;
+	case DBGPage:
+		DrawDBGPage();
 		break;
 
 	default:
