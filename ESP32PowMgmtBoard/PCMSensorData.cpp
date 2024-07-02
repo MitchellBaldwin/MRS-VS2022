@@ -47,8 +47,14 @@ bool PCMSensorData::Init()
 
 void PCMSensorData::Update()
 {
+	// Primary 18650 battery voltage scale adjustment (20240701)
+	// System measures and displays 1.61 V while externally measured reading is 4.2 V
+	// Primary battery sense circuit includes an op amp scaling buffer having a nominal gain of 0.60 (22k + 33k voltage divider (?))
+	// 
 	uint16_t rawADC = analogRead(VBatSensePin);
-	VBat = ((float)rawADC / 4095.0) * 2.0 * 3.3 * (Vref / 1000.0);
+	//VBat = ((float)rawADC / 4095.0) * 2.0 * 3.3 * (Vref / 1000.0);
+	//VBat = ((float)rawADC / 4095.0) * 6.6 * (Vref / 1000.0);
+	VBat = ((float)rawADC / 4095.0) * 17.325 * (Vref / 1000.0);
 	rawADC = analogRead(VBBatSensePin);
 	VBBat = ((float)rawADC / 4095.0) * 2.0 * 3.3 * (Vref / 1000.0);
 	rawADC = analogRead(VExtSensePin);

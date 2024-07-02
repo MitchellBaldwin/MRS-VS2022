@@ -6,32 +6,46 @@
 #include "NMControls.h"
 #include "DEBUG Macros.h"
 
+/// <summary>
+/// Init() - Initialize Navigation Module controls class using default pin assignments and device addresses
+/// </summary>
 void NMControlsClass::Init()
 {
-	RightRockerSwitch = new ezButton(RightRockerSwitchPin);
+	Init(DefaultRightRockerSwitchPin, DefaultHDGEncoderI2CAddress, DefaultCRSEncoderI2CAddress, DefaultBRTEncoderI2CAddress, DefaultTRREncoderI2CAddress, DefaultLOSBSensePin, DefaultROSBSensePin);
+}
 
-	if (!HDGEncoder.begin(HDGEncoderI2CAddress) || !HDGNeoPix.begin(HDGEncoderI2CAddress))
+void NMControlsClass::Init(
+	byte rightRockerSwitchPin,
+	byte hdgEncoderI2CAddress,
+	byte crsEncoderI2CAddress,
+	byte brtEncoderI2CAddress,
+	byte trrEncoderI2CAddress,
+	byte losbSensePin,
+	byte rosbSensePin)
+{
+	// Set up OSB arrays:
+	LOSBSensePin = losbSensePin;
+	ROSBSensePin = rosbSensePin;
+	LOSBArray.Init(losbSensePin, LOSB_NUM_LEVELS, LOSB_LEVELS);
+	ROSBArray.Init(rosbSensePin, ROSB_NUM_LEVELS, ROSB_LEVELS);
+
+	RightRockerSwitch = new ezButton(rightRockerSwitchPin);
+
+	if (!HDGEncoder.begin(hdgEncoderI2CAddress) || !HDGNeoPix.begin(hdgEncoderI2CAddress))
 	{
-		sprintf(buf, "HDG encoder not found at %02X", HDGEncoderI2CAddress);
+		sprintf(buf, "HDG encoder not found at %02X", hdgEncoderI2CAddress);
 		_PL(buf);
-		//tft.setCursor(2, tft.height() / 2 + 56);
-		//tft.printf(buf);
 	}
 	else
 	{
-		sprintf(buf, "HDG encoder started at 0x%02X; ", HDGEncoderI2CAddress);
+		sprintf(buf, "HDG encoder started at 0x%02X; ", hdgEncoderI2CAddress);
 		_PP(buf);
-		//tft.setCursor(2, tft.height() / 2 + 56);
-		//tft.printf(buf);
 
 		uint32_t afssVersion = ((HDGEncoder.getVersion() >> 0x10) & 0xFFFF);
 		sprintf(buf, "ver: %d", afssVersion);
 		_PL(buf);
-		//tft.setCursor(3 * tft.width() / 4, tft.height() / 2 + 56);
-		//tft.printf(buf);
 
 		HDGNeoPix.setPixelColor(0, HDGNeoPix.Color(0x00, 0x00, 0x08));
-		//HDGNeoPix.setBrightness(0);
 		HDGNeoPix.show();
 
 		HDGEncoder.pinMode(SS_BUTTON, INPUT_PULLUP);
@@ -43,14 +57,14 @@ void NMControlsClass::Init()
 		//AFSS.enableEncoderInterrupt();
 	}
 
-	if (!CRSEncoder.begin(CRSEncoderI2CAddress) || !CRSNeoPix.begin(CRSEncoderI2CAddress))
+	if (!CRSEncoder.begin(crsEncoderI2CAddress) || !CRSNeoPix.begin(crsEncoderI2CAddress))
 	{
-		sprintf(buf, "CRS encoder not found at %02X", CRSEncoderI2CAddress);
+		sprintf(buf, "CRS encoder not found at %02X", crsEncoderI2CAddress);
 		_PL(buf);
 	}
 	else
 	{
-		sprintf(buf, "CRS encoder started at 0x%02X; ", CRSEncoderI2CAddress);
+		sprintf(buf, "CRS encoder started at 0x%02X; ", crsEncoderI2CAddress);
 		_PP(buf);
 
 		uint32_t afssVersion = ((CRSEncoder.getVersion() >> 0x10) & 0xFFFF);
@@ -64,14 +78,14 @@ void NMControlsClass::Init()
 		CRSSetting = 0 - CRSEncoder.getEncoderPosition();
 	}
 
-	if (!BRTEncoder.begin(BRTEncoderI2CAddress) || !BRTNeoPix.begin(BRTEncoderI2CAddress))
+	if (!BRTEncoder.begin(brtEncoderI2CAddress) || !BRTNeoPix.begin(brtEncoderI2CAddress))
 	{
-		sprintf(buf, "BRT encoder not found at %02X", BRTEncoderI2CAddress);
+		sprintf(buf, "BRT encoder not found at %02X", brtEncoderI2CAddress);
 		_PL(buf);
 	}
 	else
 	{
-		sprintf(buf, "BRT encoder started at 0x%02X; ", BRTEncoderI2CAddress);
+		sprintf(buf, "BRT encoder started at 0x%02X; ", brtEncoderI2CAddress);
 		_PP(buf);
 
 		uint32_t afssVersion = ((BRTEncoder.getVersion() >> 0x10) & 0xFFFF);
@@ -82,18 +96,17 @@ void NMControlsClass::Init()
 		BRTNeoPix.show();
 
 		BRTEncoder.pinMode(SS_BUTTON, INPUT_PULLUP);
-		//BRTSetting = 0 - BRTEncoder.getEncoderPosition();
 		BRTEncoder.setEncoderPosition(BRTSetting);
 	}
 
-	if (!TRREncoder.begin(TRREncoderI2CAddress) || !TRRNeoPix.begin(TRREncoderI2CAddress))
+	if (!TRREncoder.begin(trrEncoderI2CAddress) || !TRRNeoPix.begin(trrEncoderI2CAddress))
 	{
-		sprintf(buf, "TRR encoder not found at %02X", TRREncoderI2CAddress);
+		sprintf(buf, "TRR encoder not found at %02X", trrEncoderI2CAddress);
 		_PL(buf);
 	}
 	else
 	{
-		sprintf(buf, "TRR encoder started at 0x%02X; ", TRREncoderI2CAddress);
+		sprintf(buf, "TRR encoder started at 0x%02X; ", trrEncoderI2CAddress);
 		_PP(buf);
 
 		uint32_t afssVersion = ((TRREncoder.getVersion() >> 0x10) & 0xFFFF);
@@ -107,26 +120,32 @@ void NMControlsClass::Init()
 		TRRSetting = 0 - TRREncoder.getEncoderPosition();
 	}
 
-
-}
-
-void NMControlsClass::Init(byte rightRockerSwitchPin, byte hdgEncoderI2CAddress, byte crsEncoderI2CAddress)
-{
-	RightRockerSwitchPin = rightRockerSwitchPin;
-	HDGEncoderI2CAddress = hdgEncoderI2CAddress;
-	CRSEncoderI2CAddress = crsEncoderI2CAddress;
-
-	Init();
 }
 
 void NMControlsClass::Update()
 {
+	// Check for OSB press:
+	LeftOSBADCReading = analogRead(LOSBSensePin);
+	RightOSBADCReading = analogRead(ROSBSensePin);
+	OSBArrayClass::OSBs osb = (OSBArrayClass::OSBs)LOSBArray.GetOSBPress();
+	if (osb != OSBArrayClass::OSBs::NoOsb)
+	{
+		NewLOSBPress = true;
+		LastLOSBPressed = osb;
+	}
+	osb = (OSBArrayClass::OSBs)ROSBArray.GetOSBPress();
+	if (osb != OSBArrayClass::OSBs::NoOsb)
+	{
+		NewROSBPress = true;
+		LastROSBPressed = osb;
+	}
+	
+	// Read right rocker switch state:
 	//TODO: Turning on the right rocker switch, which directly connects the port pin to GND, dims the display
 	//Check: change in current draw when right rocker switch is turned on and off
 	//Check: how ezButton handles internal pullup resistor settings
 	//Try: reversing the sense such that turning the right rocker switch on connects the port pin to 3.3 V
 	//instead of GND
-	
 	RightRockerSwitch->loop();
 	int newState = RightRockerSwitch->getState();
 	newState = newState ? 0 : 1;					// Need to reverse sense of state for rocker switch
@@ -136,6 +155,7 @@ void NMControlsClass::Update()
 		_PL(RightRockerSwitchState);
 	}
 
+	// Read encoders and check for encoder button presses:
 	//TODO: Test debounce
 	if (!HDGEncoder.digitalRead(SS_BUTTON))
 	{
@@ -163,7 +183,6 @@ void NMControlsClass::Update()
 		ToggleHDGSelected();
 	}
 
-	//TODO: Test debounce
 	if (!CRSEncoder.digitalRead(SS_BUTTON))
 	{
 		CRSButtonState = true;
@@ -209,6 +228,11 @@ void NMControlsClass::Update()
 		BRTSetting = newBRTSetting;
 	}
 
+	if (BRTButtonWasPressed())
+	{
+		ToggleBRTSelected();
+	}
+
 	if (!TRREncoder.digitalRead(SS_BUTTON))
 	{
 		TRRButtonState = true;
@@ -228,6 +252,32 @@ void NMControlsClass::Update()
 		TRRSetting = newTRRSetting;
 	}
 
+}
+
+OSBArrayClass::OSBs NMControlsClass::NewLOSBKeyWasPressed()
+{
+	if (NewLOSBPress)
+	{
+		NewLOSBPress = false;
+		return LastLOSBPressed;	
+	}
+	else
+	{
+		return OSBArrayClass::OSBs::NoOsb;
+	}
+}
+
+OSBArrayClass::OSBs NMControlsClass::NewROSBKeyWasPressed()
+{
+	if (NewROSBPress)
+	{
+		NewROSBPress = false;
+		return LastROSBPressed;
+	}
+	else
+	{
+		return OSBArrayClass::OSBs::NoOsb;
+	}
 }
 
 bool NMControlsClass::HDGButtonWasPressed()
@@ -301,6 +351,12 @@ bool NMControlsClass::TRRButtonWasPressed()
 void NMControlsClass::ToggleTRRSelected()
 {
 	TRRSelected = !TRRSelected;
+}
+
+void NMControlsClass::SetLocalDisplayBrightness(byte brightness)
+{
+	BRTSetting = brightness;
+	BRTEncoder.setEncoderPosition(BRTSetting);
 }
 
 uint32_t NMControlsClass::ColorWheel(byte WheelPos)

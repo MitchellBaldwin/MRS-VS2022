@@ -20,24 +20,59 @@
 #endif
 
 #include <ezButton.h>
+constexpr byte DefaultRightRockerSwitchPin = 0x04;	// GPIO04
+
 #include <seesaw_neopixel.h>
 #include <Adafruit_seesaw.h>
-
 constexpr byte SS_BUTTON = 0x18;
 constexpr byte SS_NEOPIX = 0x06;
+
+constexpr byte DefaultHDGEncoderI2CAddress = 0x36;
+constexpr byte DefaultCRSEncoderI2CAddress = 0x37;
+constexpr byte DefaultBRTEncoderI2CAddress = 0x38;
+constexpr byte DefaultTRREncoderI2CAddress = 0x39;
+
+#include "OSBArray.h"
+constexpr byte DefaultLOSBSensePin = 0x22;			// GPIO34	(ADC1 CH6)
+constexpr byte DefaultROSBSensePin = 0x23;			// GPIO35	(ADC1 CH7)
+
+constexpr uint8_t LOSB_NUM_BUTTONS = 4;
+constexpr uint8_t LOSB_NUM_LEVELS = LOSB_NUM_BUTTONS + 1;
+constexpr uint16_t LOSB_LEVELS[LOSB_NUM_LEVELS] =
+{
+  0,
+  800,
+  1600,
+  2400,
+  3200
+};
+
+constexpr uint8_t ROSB_NUM_BUTTONS = 4;
+constexpr uint8_t ROSB_NUM_LEVELS = ROSB_NUM_BUTTONS + 1;
+constexpr uint16_t ROSB_LEVELS[ROSB_NUM_LEVELS] =
+{
+  0,
+  800,
+  1600,
+  2400,
+  3200
+};
+
 
 class NMControlsClass
 {
 protected:
 	char buf[64];
 
-	byte RightRockerSwitchPin = 0x04;
-	byte HDGEncoderI2CAddress = 0x36;
-	byte CRSEncoderI2CAddress = 0x37;
-	byte BRTEncoderI2CAddress = 0x38;
-	byte TRREncoderI2CAddress = 0x39;
+	OSBArrayClass LOSBArray;
+	OSBArrayClass ROSBArray;
+	byte LOSBSensePin = DefaultLOSBSensePin;
+	byte ROSBSensePin = DefaultROSBSensePin;
+	OSBArrayClass::OSBs LastLOSBPressed = OSBArrayClass::OSBs::NoOsb;
+	OSBArrayClass::OSBs LastROSBPressed = OSBArrayClass::OSBs::NoOsb;
 
 	ezButton* RightRockerSwitch;
+
 	Adafruit_seesaw HDGEncoder;
 	bool HDGButtonState = false;
 	seesaw_NeoPixel HDGNeoPix = seesaw_NeoPixel(1, SS_NEOPIX, NEO_GRB + NEO_KHZ800);
@@ -52,7 +87,13 @@ protected:
 	seesaw_NeoPixel TRRNeoPix = seesaw_NeoPixel(1, SS_NEOPIX, NEO_GRB + NEO_KHZ800);
 
 public:
+	int LeftOSBADCReading = 0;
+	int RightOSBADCReading = 0;
+	bool NewLOSBPress = false;
+	bool NewROSBPress = false;
+
 	int32_t RightRockerSwitchState = 0;
+
 	int32_t HDGSetting = 0;			// Selected Heading (HDG); bottom right rotary encoder
 	bool HDGSelected = false;
 	int32_t CRSSetting = 0;			// Selected Course (CRS); bottom left rotary encoder
@@ -63,9 +104,20 @@ public:
 	bool TRRSelected = false;
 
 	void Init();
-	void Init(byte rightRockerSwitchPin, byte hdgEncoderI2CAddress, byte crsEncoderI2CAddress);
+	void Init(
+		byte rightRockerSwitchPin,
+		byte hdgEncoderI2CAddress,
+		byte crsEncoderI2CAddress,
+		byte brtEncoderI2CAddress,
+		byte trrEncoderI2CAddress,
+		byte losbSensePin,
+		byte rosbSensePin);
+	
 	void Update();
 
+	OSBArrayClass::OSBs NewLOSBKeyWasPressed();
+	OSBArrayClass::OSBs NewROSBKeyWasPressed();
+	
 	bool HDGButtonWasPressed();
 	void ToggleHDGSelected();
 	bool CRSButtonWasPressed();
@@ -74,6 +126,8 @@ public:
 	void ToggleBRTSelected();
 	bool TRRButtonWasPressed();
 	void ToggleTRRSelected();
+
+	void SetLocalDisplayBrightness(byte brightness);
 
 	uint32_t ColorWheel(byte WheelPos);
 };

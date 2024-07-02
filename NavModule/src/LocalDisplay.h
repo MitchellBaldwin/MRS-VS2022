@@ -7,6 +7,14 @@
 *		Comms		(COM)	Communications with MRS RC MCC
 *		Debug		(DBG)	Development and debugging
 *
+	Display: HiLetgo ILI9341 2.8" SPI TFT LCD Display Touch Panel 240X320
+*		TFT_MISO 19  // (leave TFT SDO disconnected if other SPI devices share MISO)
+*		TFT_MOSI 23
+*		TFT_SCLK 18
+*		TFT_CS   15  // Chip select control pin
+*		TFT_DC    2  // Data Command control pin
+*		TFT_RST   4  // Reset pin (could connect to RST pin)
+*
 *	Mitchell Baldwin copyright 2023-2024
 *
 *	v 0.00:	Initial command set
@@ -86,6 +94,7 @@ protected:
 public:
 	enum Commands
 	{
+		NoCommand,
 		Clear,
 		Refresh,
 		SYSPage,

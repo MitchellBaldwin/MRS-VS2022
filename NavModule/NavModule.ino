@@ -24,13 +24,16 @@
 #include <WiFi.h>
 
 #include "src/NMControls.h"
-constexpr byte RightRockerSwitchPin = 0x04;		// GPIO04
-constexpr byte HDGEncoderI2CAddress = 0x36;
-constexpr byte CRSEncoderI2CAddress = 0x37;
+//constexpr byte RightRockerSwitchPin = 0x04;		// GPIO04
+//
+//constexpr byte HDGEncoderI2CAddress = 0x36;
+//constexpr byte CRSEncoderI2CAddress = 0x37;
+//constexpr byte BRTEncoderI2CAddress = 0x38;
+//constexpr byte TRREncoderI2CAddress = 0x39;
 
-#include "src/OSBArray.h"
-constexpr byte LOSBAnalogPin = 34;
-constexpr byte ROSBAnalogPin = 35;
+//#include "src/OSBArray.h"
+//constexpr byte LOSBAnalogPin = 0x22;			// GPIO34	(ADC1 CH6)
+//constexpr byte ROSBAnalogPin = 0x23;			// GPIO35	(ADC1 CH7)
 
 #include "src/I2CBus.h"
 
@@ -86,7 +89,7 @@ void setup()
 	I2CBus.Scan();
 	_PL(I2CBus.GetActiveI2CAddressesString().c_str());
 
-	NMControls.Init(RightRockerSwitchPin, HDGEncoderI2CAddress, CRSEncoderI2CAddress);
+	NMControls.Init();
 	
 	NMStatus.LocalDisplayStatus = LocalDisplay.Init();
 	
@@ -106,6 +109,7 @@ void loop()
 //	digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
 //}
 //
+
 void ReadControlsCallback()
 {
 	NMControls.Update();
@@ -114,6 +118,6 @@ void ReadControlsCallback()
 
 void UpdateDisplayCallback()
 {
-	LocalDisplay.Update();
-
+	//LocalDisplay.Update();
+	LocalDisplay.Control(LocalDisplayClass::Commands::NoCommand);
 }

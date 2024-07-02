@@ -26,11 +26,12 @@ class OSBArrayClass
 {
 protected:
 	ezAnalogKeypad* OSBArray;
-	byte OSBArraySensePin;
+	byte OSBArraySensePin = 0x24;		// Pin 36 (ADC1 CH0); Default analog input pin for OSB resistor ladder voltage measurement
 
 public:
 	enum OSBs
 	{
+		NoOsb = 0,
 		OSB1 = 1,
 		OSB2,
 		OSB3,
@@ -41,9 +42,11 @@ public:
 		OSB8
 	};
 	
+	OSBArrayClass();	// Default constructor
 	OSBArrayClass(byte sensePin);
 	~OSBArrayClass();
 	void Init(uint8_t numLevels, const uint16_t levels[]);
+	void Init(uint8_t sensePin, uint8_t numLevels, const uint16_t levels[]);
 	byte GetOSBPress();
 };
 
