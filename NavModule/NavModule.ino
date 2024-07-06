@@ -21,19 +21,14 @@
 */
 #include "src\DEBUG Macros.h"
 
+#include <HardwareSerial.h>
+HardwareSerial USBSerial(0);	// Uses the same UART device as "Serial" but does not allow use of "Serial"?
+HardwareSerial IDCSerial(2);	// UART for inter-device communication & control
+
 #include <WiFi.h>
 
+#include "src/NMStatus.h"
 #include "src/NMControls.h"
-//constexpr byte RightRockerSwitchPin = 0x04;		// GPIO04
-//
-//constexpr byte HDGEncoderI2CAddress = 0x36;
-//constexpr byte CRSEncoderI2CAddress = 0x37;
-//constexpr byte BRTEncoderI2CAddress = 0x38;
-//constexpr byte TRREncoderI2CAddress = 0x39;
-
-//#include "src/OSBArray.h"
-//constexpr byte LOSBAnalogPin = 0x22;			// GPIO34	(ADC1 CH6)
-//constexpr byte ROSBAnalogPin = 0x23;			// GPIO35	(ADC1 CH7)
 
 #include "src/I2CBus.h"
 
@@ -70,6 +65,7 @@ void UpdateDisplayCallback();
 Task UpdateDisplayTask((UpdateDisplayInterval * TASK_MILLISECOND), TASK_FOREVER, &UpdateDisplayCallback, &MainScheduler, false);
 
 #include "src\LocalDisplay.h"
+//#include "src\MFCD.h"
 
 void setup()
 {
@@ -85,6 +81,26 @@ void setup()
 	//pinMode(LED_BUILTIN, OUTPUT);
 	//HeartbeatLEDTask.enable();
 
+	USBSerial.begin(115200);
+	if (!USBSerial)
+	{
+		NMStatus.UART0Status = false;
+	}
+	else
+	{
+		NMStatus.UART0Status = true;
+	}
+
+	IDCSerial.begin(115200);
+	if (!IDCSerial)
+	{
+		NMStatus.UART2Status = false;
+	}
+	else
+	{
+		NMStatus.UART2Status = true;
+	}
+
 	I2CBus.Init();
 	I2CBus.Scan();
 	_PL(I2CBus.GetActiveI2CAddressesString().c_str());
@@ -92,6 +108,7 @@ void setup()
 	NMControls.Init();
 	
 	NMStatus.LocalDisplayStatus = LocalDisplay.Init();
+	//NMStatus.LocalDisplayStatus = MFCD.Init();
 	
 	ReadControlsTask.enable();
 	UpdateDisplayTask.enable();
@@ -120,4 +137,5 @@ void UpdateDisplayCallback()
 {
 	//LocalDisplay.Update();
 	LocalDisplay.Control(LocalDisplayClass::Commands::NoCommand);
+	//MFCD.Update();
 }

@@ -75,6 +75,11 @@ void LocalDisplayClass::DrawSYSPage()
 		sprintf(buf, "WiFi %s", NMStatus.WiFiStatus ? "OK" : "NO");
 		tft.drawString(buf, 40, 70);
 
+		tft.setTextDatum(TR_DATUM);
+		sprintf(buf, "ESP-NOW %s", NMStatus.ESPNOWStatus ? "OK" : "NO");
+		tft.drawString(buf, tft.width() - 40, 70);
+
+		tft.setTextDatum(TL_DATUM);
 		tft.setTextColor(TFT_GREENYELLOW);
 		uint8_t mac[6];
 		WiFi.macAddress(mac);
@@ -114,7 +119,7 @@ void LocalDisplayClass::DrawSYSPage()
 	tft.drawString(buf, tft.width() - 1, tft.height() - 1);
 	if (NMControls.HDGSelected)
 	{
-		tft.drawRect(tft.width() - tft.textWidth(buf) - 2, tft.height() - 11, tft.textWidth(buf) + 2, 11, TFT_GOLD);
+		tft.drawRect(tft.width() - tft.textWidth(buf) - 2, tft.height() - 11, tft.textWidth(buf) + 2, 11, TFT_CYAN);
 	}
 	else
 	{
@@ -201,10 +206,66 @@ void LocalDisplayClass::DrawDBGPage()
 		// Clear display and redraw static elements of the page format:
 		DrawPageHeaderAndFooter();
 
+		tft.setTextColor(TFT_CYAN, TFT_BLACK, true);
+		tft.setTextDatum(TL_DATUM);
+
+		sprintf(buf, "%s %d core", ESP.getChipModel(), ESP.getChipCores());
+		tft.drawString(buf, 40, 50, 1);
+		sprintf(buf, "CPU v%d %d MHz", ESP.getChipRevision(), ESP.getCpuFreqMHz());
+		tft.drawString(buf, 40, 60, 1);
+
+		uint8_t mac[6];
+		esp_efuse_mac_get_default(mac);		// Returns the same MAC as does WiFi.madAddress(uint8_t*)
+		sprintf(buf, "efuse MAC %02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+		tft.drawString(buf, 40, 70, 1);
+		WiFi.macAddress(mac);
+		sprintf(buf, "WiFi  MAC %02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+		tft.drawString(buf, 40, 80, 1);
+		
+		sprintf(buf, "Heap (free/total) %d / %d", ESP.getFreeHeap(), ESP.getHeapSize());
+		tft.drawString(buf, 40, 100, 1);
+		sprintf(buf, "Prog (used/free) %d / %d", ESP.getSketchSize(), ESP.getFreeSketchSpace());
+		tft.drawString(buf, 40, 110, 1);
+		if (ESP.getPsramSize() > 0)
+		{
+			sprintf(buf, "PSRAM: %d/%d", ESP.getFreePsram(), ESP.getPsramSize());
+		}
+		else
+		{
+			sprintf(buf, "No PSRAM");
+		}
+		tft.drawString(buf, 40, 120, 1);
+		
+		sprintf(buf, "SSID: %s %d dBm", WiFi.SSID().c_str(), WiFi.RSSI());
+		tft.drawString(buf, 40, 140, 1);
+		sprintf(buf, "IP: %s", WiFi.localIP().toString());
+		tft.drawString(buf, 40, 150, 1);
+
+		TestFonts();
+		
 		lastPage = currentPage;
 	}
 
 	// Update dynamic displays:
+	sprintf(buf, "BRT: %03D", NMControls.BRTSetting);
+	tft.setTextSize(1);
+	tft.setTextColor(TFT_SILVER, TFT_BLACK, true);
+	tft.setTextDatum(TL_DATUM);
+	tft.drawString(buf, 40, 16);
+
+	sprintf(buf, "TRR: %03D", NMControls.TRRSetting);
+	tft.setTextSize(1);
+	tft.setTextColor(TFT_SILVER, TFT_BLACK, true);
+	tft.setTextDatum(TR_DATUM);
+	tft.drawString(buf, tft.width() - 40, 16);
+
+	// Test OSB arrays:
+	tft.setTextColor(TFT_CYAN, TFT_BLACK, true);
+	tft.setTextDatum(CL_DATUM);
+	sprintf(buf, "LOSB: %04D", NMControls.LeftOSBADCReading);
+	tft.drawString(buf, 2, tft.height() - 24);
+	sprintf(buf, "ROSB: %04D", NMControls.RightOSBADCReading);
+	tft.drawString(buf, tft.width() - tft.textWidth(buf), tft.height() - 24);
 
 }
 
@@ -232,7 +293,6 @@ bool LocalDisplayClass::Init()
 void LocalDisplayClass::SetBrightness(byte brightness)
 {
 	NMControls.SetLocalDisplayBrightness(brightness);
-	//Brightness = brightness;
 	
 	//TODO: Try using ledc library
 	analogWrite(LEDPin, Brightness);
@@ -240,18 +300,18 @@ void LocalDisplayClass::SetBrightness(byte brightness)
 
 bool LocalDisplayClass::TestFonts()
 {
-	//TODO: change to display the font character set as a matrix
+	//DONE: change to display the font character set as a matrix
 	//char upArrow[1] = { 0x18 };
 	//char downArrow[1] = { 0x19 };
 	
 	tft.setTextDatum(TL_DATUM);
 	tft.setTextColor(TFT_GOLD, TFT_BLACK, true);
-	for (byte i = 0; i <= MaxFonts; ++i)
+	for (byte i = 0; i < 16; ++i)
 	{
-		tft.setTextSize(1);
-		sprintf(buf, "Font %d", i);
-		tft.drawString(buf, 1, 50 + 20 * i, i);
-
+		for (byte j = 0; j < 16; ++j)
+		{
+			tft.drawString(String((char)(i * 16 + j)), 40 + 8 * j, tft.height() / 2 + 10 * (i - 1));
+		}
 	}
 	
 	return true;
@@ -310,16 +370,16 @@ void LocalDisplayClass::Control(uint8_t command)
 		switch (NMControls.NewROSBKeyWasPressed())
 		{
 		case OSBArrayClass::OSBs::OSB4:
-			command = NAVPage;
+			command = NoCommand;
 			break;
 		case OSBArrayClass::OSBs::OSB3:
-			command = COMPage;
+			command = NoCommand;
 			break;
 		case OSBArrayClass::OSBs::OSB2:
-			command = SYSPage;
+			command = NoCommand;
 			break;
 		case OSBArrayClass::OSBs::OSB1:
-			command = DBGPage;
+			command = NoCommand;
 			break;
 
 		default:

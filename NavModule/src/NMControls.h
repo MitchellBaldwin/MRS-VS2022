@@ -41,10 +41,10 @@ constexpr uint8_t LOSB_NUM_LEVELS = LOSB_NUM_BUTTONS + 1;
 constexpr uint16_t LOSB_LEVELS[LOSB_NUM_LEVELS] =
 {
   0,
-  800,
-  1600,
-  2400,
-  3200
+  1090,
+  1680,
+  2330,
+  3100
 };
 
 constexpr uint8_t ROSB_NUM_BUTTONS = 4;
@@ -52,10 +52,10 @@ constexpr uint8_t ROSB_NUM_LEVELS = ROSB_NUM_BUTTONS + 1;
 constexpr uint16_t ROSB_LEVELS[ROSB_NUM_LEVELS] =
 {
   0,
-  800,
-  1600,
-  2400,
-  3200
+  1250,
+  1920,
+  2650,
+  3440
 };
 
 

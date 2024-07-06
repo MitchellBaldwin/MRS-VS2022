@@ -44,6 +44,7 @@ class NMStatusClass
 	 bool UART2Status = false;
 
 	 bool WiFiStatus = false;
+	 bool ESPNOWStatus = false;
 
 	 bool LocalDisplayStatus = false;
 	 bool DebugDisplayStatus = false;
