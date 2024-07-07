@@ -87,6 +87,23 @@ protected:
 	seesaw_NeoPixel TRRNeoPix = seesaw_NeoPixel(1, SS_NEOPIX, NEO_GRB + NEO_KHZ800);
 
 public:
+	enum Commands
+	{
+		NoCommand,
+		Clear,
+		Refresh,
+		SYSPage,
+		NAVPage,
+		COMPage,
+		DBGPage,
+		I2CScan,
+
+		Prev,
+		Next,
+
+		Last
+	};
+
 	int LeftOSBADCReading = 0;
 	int RightOSBADCReading = 0;
 	bool NewLOSBPress = false;

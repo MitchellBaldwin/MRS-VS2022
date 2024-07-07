@@ -428,6 +428,15 @@
     <ClInclude Include="src\NMStatus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\MFCD.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MFCDPage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SoftOSB.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="board.txt">
@@ -713,6 +722,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\NMStatus.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MFCD.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MFCDPage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SoftOSB.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

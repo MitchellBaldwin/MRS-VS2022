@@ -30,8 +30,10 @@
 class MFCDPageClass
 {
 protected:
+	char buf[64];
+
 	TFT_eSPI* tft = nullptr;
-	SoftOSBClass* OSBs[SoftOSBClass::OSBPositions::ROSB4];
+	SoftOSBClass* OSBs[SoftOSBClass::OSBPositions::ROSB4 + 1];
 	String Title;
 
 public:
@@ -41,6 +43,8 @@ public:
 
 	virtual void Draw();		// Draw / redraw entire page
 	virtual void Update();		// Update dynamic page content
+	void Control(SoftOSBClass::OSBPositions position);
+	NMControlsClass::Commands GetOBSCommand(SoftOSBClass::OSBPositions position);
 };
 
 //extern MFCDPageClass MFCDPage;

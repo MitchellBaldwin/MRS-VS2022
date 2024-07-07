@@ -34,7 +34,7 @@
 #include <TFT_eSPI.h>
 
 constexpr byte MFCDLEDPin = 27;
-constexpr byte InitialMFCDBrightness = 127;
+constexpr byte InitialMFCDBrightness = 0x7F;
 
 #include "MFCDPage.h"
 
@@ -53,7 +53,9 @@ public:
 
 
 protected:
-	TFT_eSPI* tft = new TFT_eSPI();
+	TFT_eSPI tft = TFT_eSPI();
+	byte Brightness = InitialMFCDBrightness;
+
 	MFCDPageClass* Pages[PageIDs::NONE];
 	MFCDPageClass* lastPage = nullptr;
 	MFCDPageClass* currentPage = nullptr;
@@ -63,7 +65,8 @@ public:
 	void Update();
 	void Control();
 	void ActivatePage(PageIDs page);
-	
+	void SetBrightness(byte brightness);
+
 };
 
 extern MFCDClass MFCD;

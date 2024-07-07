@@ -22,6 +22,7 @@
 #else
 	#include "WProgram.h"
 #endif
+#include "NMControls.h"
 
 class SoftOSBClass
 {
@@ -52,13 +53,17 @@ public:
 	typedef void (*OSBOnPressHandler)(void);	// Function pointer for OnPress event handler
 
 protected:
-	String Text;		// Primary label text identifying this OSB
 
 	OSBOnPressHandler onPressHandler = nullptr;
 
 public:
+	String LabelText;					// Primary label text identifying this OSB
+
+	NMControlsClass::Commands Command;	// Function associated with this OSB
+
 	SoftOSBClass();
 	SoftOSBClass(String text, OSBPositions position);
+	SoftOSBClass(String text, OSBPositions position, NMControlsClass::Commands command);
 	//SoftOSBClass(String text, OSBPositions position, OSBOnPressHandler handler);
 
 	bool Init();

@@ -64,14 +64,13 @@ constexpr uint64_t UpdateDisplayInterval = 100;	// ms
 void UpdateDisplayCallback();
 Task UpdateDisplayTask((UpdateDisplayInterval * TASK_MILLISECOND), TASK_FOREVER, &UpdateDisplayCallback, &MainScheduler, false);
 
-#include "src\LocalDisplay.h"
-//#include "src\MFCD.h"
+//#include "src\LocalDisplay.h"
+#include "src\MFCD.h"
 
 void setup()
 {
 	char buf[64];
 
-	_PL();
 
 //#ifdef LED_BUILTIN
 //	sprintf(buf, "Heartbeat LED: GPIO 0x%02X", LED_BUILTIN);
@@ -91,6 +90,8 @@ void setup()
 		NMStatus.UART0Status = true;
 	}
 
+	_PL();
+
 	IDCSerial.begin(115200);
 	if (!IDCSerial)
 	{
@@ -107,8 +108,8 @@ void setup()
 
 	NMControls.Init();
 	
-	NMStatus.LocalDisplayStatus = LocalDisplay.Init();
-	//NMStatus.LocalDisplayStatus = MFCD.Init();
+	//NMStatus.LocalDisplayStatus = LocalDisplay.Init();
+	NMStatus.LocalDisplayStatus = MFCD.Init();
 	
 	ReadControlsTask.enable();
 	UpdateDisplayTask.enable();
@@ -136,6 +137,6 @@ void ReadControlsCallback()
 void UpdateDisplayCallback()
 {
 	//LocalDisplay.Update();
-	LocalDisplay.Control(LocalDisplayClass::Commands::NoCommand);
-	//MFCD.Update();
+	//LocalDisplay.Control(LocalDisplayClass::Commands::NoCommand);
+	MFCD.Update();
 }

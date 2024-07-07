@@ -14,13 +14,20 @@ SoftOSBClass::SoftOSBClass()
 
 SoftOSBClass::SoftOSBClass(String text, OSBPositions position)
 {
-	Text = text;
+	LabelText = text;
 	Position = position;
+}
+
+SoftOSBClass::SoftOSBClass(String text, OSBPositions position, NMControlsClass::Commands command)
+{
+	LabelText = text;
+	Position = position;
+	Command = command;
 }
 
 //SoftOSBClass(String text, OSBPositions position, OSBOnPressHandler handler)
 //{
-//	Text = text;
+//	LabelText = text;
 //	Position = position;
 //	onPressHandler = handler;
 //}
@@ -28,7 +35,7 @@ SoftOSBClass::SoftOSBClass(String text, OSBPositions position)
 bool SoftOSBClass::Init()
 {
 
-
+	return true;
 }
 
 void SoftOSBClass::SetOnPressHandler(OSBOnPressHandler handler)
