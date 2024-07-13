@@ -4,7 +4,7 @@
 *
 *
 *
-*	Mitchell Baldwin copyright 2023
+*	Mitchell Baldwin copyright 2023-2024
 *
 *	v 0.00:	Initial data structure
 *	v
@@ -19,6 +19,7 @@
 	#include "WProgram.h"
 #endif
 
+
 #include <ezButton.h>
 constexpr byte DefaultRightRockerSwitchPin = 0x04;	// GPIO04
 
@@ -32,7 +33,8 @@ constexpr byte DefaultCRSEncoderI2CAddress = 0x37;
 constexpr byte DefaultBRTEncoderI2CAddress = 0x38;
 constexpr byte DefaultTRREncoderI2CAddress = 0x39;
 
-#include "OSBArray.h"
+//#include "OSBArray.h"
+#include "OSBSet.h"
 constexpr byte DefaultLOSBSensePin = 0x22;			// GPIO34	(ADC1 CH6)
 constexpr byte DefaultROSBSensePin = 0x23;			// GPIO35	(ADC1 CH7)
 
@@ -64,12 +66,12 @@ class NMControlsClass
 protected:
 	char buf[64];
 
-	OSBArrayClass LOSBArray;
-	OSBArrayClass ROSBArray;
-	byte LOSBSensePin = DefaultLOSBSensePin;
-	byte ROSBSensePin = DefaultROSBSensePin;
-	OSBArrayClass::OSBs LastLOSBPressed = OSBArrayClass::OSBs::NoOsb;
-	OSBArrayClass::OSBs LastROSBPressed = OSBArrayClass::OSBs::NoOsb;
+	//OSBArrayClass LOSBArray;
+	//OSBArrayClass ROSBArray;
+	//byte LOSBSensePin = DefaultLOSBSensePin;
+	//byte ROSBSensePin = DefaultROSBSensePin;
+	//OSBArrayClass::OSBs LastLOSBPressed = OSBArrayClass::OSBs::NoOsb;
+	//OSBArrayClass::OSBs LastROSBPressed = OSBArrayClass::OSBs::NoOsb;
 
 	ezButton* RightRockerSwitch;
 
@@ -104,10 +106,13 @@ public:
 		Last
 	};
 
-	int LeftOSBADCReading = 0;
-	int RightOSBADCReading = 0;
-	bool NewLOSBPress = false;
-	bool NewROSBPress = false;
+	//int LeftOSBADCReading = 0;
+	//int RightOSBADCReading = 0;
+	//bool NewLOSBPress = false;
+	//bool NewROSBPress = false;
+
+	OSBSet LOSBs;
+	OSBSet ROSBs;
 
 	int32_t RightRockerSwitchState = 0;
 
@@ -126,14 +131,12 @@ public:
 		byte hdgEncoderI2CAddress,
 		byte crsEncoderI2CAddress,
 		byte brtEncoderI2CAddress,
-		byte trrEncoderI2CAddress,
-		byte losbSensePin,
-		byte rosbSensePin);
+		byte trrEncoderI2CAddress);
 	
 	void Update();
 
-	OSBArrayClass::OSBs NewLOSBKeyWasPressed();
-	OSBArrayClass::OSBs NewROSBKeyWasPressed();
+	//OSBArrayClass::OSBs NewLOSBKeyWasPressed();
+	//OSBArrayClass::OSBs NewROSBKeyWasPressed();
 	
 	bool HDGButtonWasPressed();
 	void ToggleHDGSelected();

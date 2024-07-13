@@ -22,7 +22,7 @@
 #else
 	#include "WProgram.h"
 #endif
-#include "NMControls.h"
+#include "NMCommands.h"
 
 class SoftOSBClass
 {
@@ -37,18 +37,18 @@ public:
 	};
 	States State = States::Plain;
 
-	enum OSBPositions
-	{
-		LOSB1,
-		LOSB2,
-		LOSB3,
-		LOSB4,
-		ROSB1,
-		ROSB2,
-		ROSB3,
-		ROSB4,
-	};
-	OSBPositions Position;
+	//enum OSBPositions
+	//{
+	//	LOSB1,
+	//	LOSB2,
+	//	LOSB3,
+	//	LOSB4,
+	//	ROSB1,
+	//	ROSB2,
+	//	ROSB3,
+	//	ROSB4,
+	//};
+	//OSBPositions Position;
 
 	typedef void (*OSBOnPressHandler)(void);	// Function pointer for OnPress event handler
 
@@ -59,11 +59,11 @@ protected:
 public:
 	String LabelText;					// Primary label text identifying this OSB
 
-	NMControlsClass::Commands Command;	// Function associated with this OSB
+	NMCommands::Commands Command;		// Function associated with this OSB
 
 	SoftOSBClass();
-	SoftOSBClass(String text, OSBPositions position);
-	SoftOSBClass(String text, OSBPositions position, NMControlsClass::Commands command);
+	SoftOSBClass(String text);
+	SoftOSBClass(String text, NMCommands::Commands command);
 	//SoftOSBClass(String text, OSBPositions position, OSBOnPressHandler handler);
 
 	bool Init();

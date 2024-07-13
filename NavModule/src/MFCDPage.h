@@ -25,7 +25,9 @@
 #endif
 
 #include <TFT_eSPI.h>
-#include "SoftOSB.h"
+#include "OSBSet.h"
+#include "NMStatus.h"
+#include "NMControls.h"
 
 class MFCDPageClass
 {
@@ -33,7 +35,6 @@ protected:
 	char buf[64];
 
 	TFT_eSPI* tft = nullptr;
-	SoftOSBClass* OSBs[SoftOSBClass::OSBPositions::ROSB4 + 1];
 	String Title;
 
 public:
@@ -41,45 +42,50 @@ public:
 	MFCDPageClass(TFT_eSPI* parent_tft);
 	virtual bool Init(TFT_eSPI* parent_tft);
 
-	virtual void Draw();		// Draw / redraw entire page
-	virtual void Update();		// Update dynamic page content
-	void Control(SoftOSBClass::OSBPositions position);
-	NMControlsClass::Commands GetOBSCommand(SoftOSBClass::OSBPositions position);
+	virtual void Activate();		// Draw / redraw entire page, set up OSB labels & functions, etc.
+	virtual void Update();			// Update dynamic page content (only)
 };
-
-//extern MFCDPageClass MFCDPage;
 
 class NavigationPageClass : public MFCDPageClass
 {
 public:
 	virtual bool Init(TFT_eSPI* parent_tft);
-	virtual void Draw();
+	virtual void Activate();
 };
 
 class CommunicationsPageClass : public MFCDPageClass
 {
 public:
 	virtual bool Init(TFT_eSPI* parent_tft);
-	virtual void Draw();
+	virtual void Activate();
 };
 
 class SystemPageClass : public MFCDPageClass
 {
 public:
 	virtual bool Init(TFT_eSPI* parent_tft);
-	virtual void Draw();
+	virtual void Activate();
 };
 
 class DebugPageClass : public MFCDPageClass
 {
 public:
 	virtual bool Init(TFT_eSPI* parent_tft);
-	virtual void Draw();
+	virtual void Activate();
+};
+
+class NonePageClass : public MFCDPageClass
+{
+public:
+	virtual bool Init(TFT_eSPI* parent_tft);
+	virtual void Activate();
 };
 
 extern NavigationPageClass NavigationPage;
 extern CommunicationsPageClass CommunicationsPage;
 extern SystemPageClass SystemPage;
 extern DebugPageClass DebugPage;
+extern NonePageClass NonePage;
+
 #endif
 

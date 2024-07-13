@@ -11,7 +11,7 @@
 /// </summary>
 void NMControlsClass::Init()
 {
-	Init(DefaultRightRockerSwitchPin, DefaultHDGEncoderI2CAddress, DefaultCRSEncoderI2CAddress, DefaultBRTEncoderI2CAddress, DefaultTRREncoderI2CAddress, DefaultLOSBSensePin, DefaultROSBSensePin);
+	Init(DefaultRightRockerSwitchPin, DefaultHDGEncoderI2CAddress, DefaultCRSEncoderI2CAddress, DefaultBRTEncoderI2CAddress, DefaultTRREncoderI2CAddress);
 }
 
 void NMControlsClass::Init(
@@ -19,15 +19,16 @@ void NMControlsClass::Init(
 	byte hdgEncoderI2CAddress,
 	byte crsEncoderI2CAddress,
 	byte brtEncoderI2CAddress,
-	byte trrEncoderI2CAddress,
-	byte losbSensePin,
-	byte rosbSensePin)
+	byte trrEncoderI2CAddress)
 {
-	// Set up OSB arrays:
-	LOSBSensePin = losbSensePin;
-	ROSBSensePin = rosbSensePin;
-	LOSBArray.Init(losbSensePin, LOSB_NUM_LEVELS, LOSB_LEVELS);
-	ROSBArray.Init(rosbSensePin, ROSB_NUM_LEVELS, ROSB_LEVELS);
+	//// Set up OSB arrays:
+	//LOSBSensePin = losbSensePin;
+	//ROSBSensePin = rosbSensePin;
+	//LOSBArray.Init(losbSensePin, LOSB_NUM_LEVELS, LOSB_LEVELS);
+	//ROSBArray.Init(rosbSensePin, ROSB_NUM_LEVELS, ROSB_LEVELS);
+
+	LOSBs.Init(DefaultLOSBSensePin, LOSB_NUM_LEVELS, LOSB_LEVELS);
+	ROSBs.Init(DefaultROSBSensePin, ROSB_NUM_LEVELS, ROSB_LEVELS);
 
 	RightRockerSwitch = new ezButton(rightRockerSwitchPin);
 
@@ -124,21 +125,24 @@ void NMControlsClass::Init(
 
 void NMControlsClass::Update()
 {
-	// Check for OSB press:
-	LeftOSBADCReading = analogRead(LOSBSensePin);
-	RightOSBADCReading = analogRead(ROSBSensePin);
-	OSBArrayClass::OSBs osb = (OSBArrayClass::OSBs)LOSBArray.GetOSBPress();
-	if (osb != OSBArrayClass::OSBs::NoOsb)
-	{
-		NewLOSBPress = true;
-		LastLOSBPressed = osb;
-	}
-	osb = (OSBArrayClass::OSBs)ROSBArray.GetOSBPress();
-	if (osb != OSBArrayClass::OSBs::NoOsb)
-	{
-		NewROSBPress = true;
-		LastROSBPressed = osb;
-	}
+	LOSBs.Update();
+	ROSBs.Update();
+
+	//// Check for OSB press:
+	//LeftOSBADCReading = analogRead(LOSBSensePin);
+	//RightOSBADCReading = analogRead(ROSBSensePin);
+	//OSBArrayClass::OSBs osb = (OSBArrayClass::OSBs)LOSBArray.GetOSBPress();
+	//if (osb != OSBArrayClass::OSBs::NoOsb)
+	//{
+	//	NewLOSBPress = true;
+	//	LastLOSBPressed = osb;
+	//}
+	//osb = (OSBArrayClass::OSBs)ROSBArray.GetOSBPress();
+	//if (osb != OSBArrayClass::OSBs::NoOsb)
+	//{
+	//	NewROSBPress = true;
+	//	LastROSBPressed = osb;
+	//}
 	
 	// Read right rocker switch state:
 	//TODO: Turning on the right rocker switch, which directly connects the port pin to GND, dims the display
@@ -254,31 +258,31 @@ void NMControlsClass::Update()
 
 }
 
-OSBArrayClass::OSBs NMControlsClass::NewLOSBKeyWasPressed()
-{
-	if (NewLOSBPress)
-	{
-		NewLOSBPress = false;
-		return LastLOSBPressed;	
-	}
-	else
-	{
-		return OSBArrayClass::OSBs::NoOsb;
-	}
-}
+//OSBArrayClass::OSBs NMControlsClass::NewLOSBKeyWasPressed()
+//{
+//	if (NewLOSBPress)
+//	{
+//		NewLOSBPress = false;
+//		return LastLOSBPressed;	
+//	}
+//	else
+//	{
+//		return OSBArrayClass::OSBs::NoOsb;
+//	}
+//}
 
-OSBArrayClass::OSBs NMControlsClass::NewROSBKeyWasPressed()
-{
-	if (NewROSBPress)
-	{
-		NewROSBPress = false;
-		return LastROSBPressed;
-	}
-	else
-	{
-		return OSBArrayClass::OSBs::NoOsb;
-	}
-}
+//OSBArrayClass::OSBs NMControlsClass::NewROSBKeyWasPressed()
+//{
+//	if (NewROSBPress)
+//	{
+//		NewROSBPress = false;
+//		return LastROSBPressed;
+//	}
+//	else
+//	{
+//		return OSBArrayClass::OSBs::NoOsb;
+//	}
+//}
 
 bool NMControlsClass::HDGButtonWasPressed()
 {

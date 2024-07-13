@@ -7,13 +7,10 @@
 */
 
 #include "MFCD.h"
-#include "NMControls.h"
 #include "DEBUG Macros.h"
 
 bool MFCDClass::Init()
 {
-	//tft = new TFT_eSPI();
-
 	pinMode(MFCDLEDPin, OUTPUT);
 	SetBrightness(Brightness);
 
@@ -25,53 +22,56 @@ bool MFCDClass::Init()
 	Pages[PageIDs::COM] = &CommunicationsPage;
 	Pages[PageIDs::SYS] = &SystemPage;
 	Pages[PageIDs::DBG] = &DebugPage;
-	Pages[PageIDs::NONE] = nullptr;
+	Pages[PageIDs::NONE] = &NonePage;
 
 	NavigationPage.Init(&tft);
 	CommunicationsPage.Init(&tft);
 	SystemPage.Init(&tft);
 	DebugPage.Init(&tft);
-	//Pages[PageIDs::NONE]->Init(tft);
+	NonePage.Init(&tft);
 
 	currentPage = Pages[PageIDs::SYS];
 	lastPage = Pages[PageIDs::NONE];
 
-	currentPage->Draw();
+	currentPage->Activate();
 	
-	//char buf[64];
-	//tft.fillScreen(TFT_BLACK);
-
-	//tft.setTextSize(1);
-	//tft.setTextColor(TFT_BLUE, TFT_BLACK, false);
-	//tft.setTextDatum(TL_DATUM);
-	//sprintf(buf, "MRS RC NM v%d.%d", NMStatus.MajorVersion, NMStatus.MinorVersion);
-	//tft.drawString(buf, 2, 2, 1);
-
 	return true;
 }
 
 void MFCDClass::Update()
 {
-	// Map OSBArrayClass::OSBs to SoftOSBClass::Positions:
-	OSBArrayClass::OSBs osb = NMControls.NewLOSBKeyWasPressed();
+	OSBSet::OSBIDs osb = NMControls.LOSBs.NewOSBPressed();
 	
-	if (osb != OSBArrayClass::OSBs::NoOsb)
+	// If one of the buttons from the left OSB array was pressed, get the its associated command and execute accordingly:
+	if (osb != OSBSet::OSBIDs::NoOsb)
 	{
-		ActivatePage(PageIDs::NAV);
-		_PL(osb)
-		//osb = osb - OSBArrayClass::OSBs::OSB1;
-		switch (currentPage->GetOBSCommand((SoftOSBClass::OSBPositions)osb))
+		switch (NMControls.LOSBs.OSBInfo[osb]->Command)
 		{
-		case NMControlsClass::Commands::NAVPage:
+		case NMCommands::NAVPage:
 			ActivatePage(PageIDs::NAV);
 			break;
+		case NMCommands::COMPage:
+			ActivatePage(PageIDs::COM);
+			break;
+		case NMCommands::SYSPage:
+			ActivatePage(PageIDs::SYS);
+			break;
+		case NMCommands::DBGPage:
+			ActivatePage(PageIDs::DBG);
+			break;
 		default:
+			currentPage->Update();
 			break;
 		}
+	}
+	
+	osb = NMControls.ROSBs.NewOSBPressed();
+	// If one of the buttons from the right OSB array was pressed, get the its associated command and execute accordingly:
+	if (osb != OSBSet::OSBIDs::NoOsb)
+	{
 
 	}
 	
-	currentPage->Update();
 }
 
 void MFCDClass::Control()
@@ -83,7 +83,8 @@ void MFCDClass::ActivatePage(PageIDs page)
 	lastPage = currentPage;
 	currentPage = Pages[page];
 
-	currentPage->Draw();
+	// Should instead call currentPage->Activate()?
+	currentPage->Activate();
 
 }
 

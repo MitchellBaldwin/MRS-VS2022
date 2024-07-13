@@ -30,11 +30,36 @@
 	#include "WProgram.h"
 #endif
 
-#include "NMStatus.h"
+//#include "NMStatus.h"
 #include <TFT_eSPI.h>
 
 constexpr byte MFCDLEDPin = 27;
 constexpr byte InitialMFCDBrightness = 0x7F;
+
+//constexpr byte DefaultLOSBSensePin = 0x22;			// GPIO34	(ADC1 CH6)
+//constexpr byte DefaultROSBSensePin = 0x23;			// GPIO35	(ADC1 CH7)
+//
+//constexpr uint8_t LOSB_NUM_BUTTONS = 4;
+//constexpr uint8_t LOSB_NUM_LEVELS = LOSB_NUM_BUTTONS + 1;
+//constexpr uint16_t LOSB_LEVELS[LOSB_NUM_LEVELS] =
+//{
+//  0,
+//  1090,
+//  1680,
+//  2330,
+//  3100
+//};
+//
+//constexpr uint8_t ROSB_NUM_BUTTONS = 4;
+//constexpr uint8_t ROSB_NUM_LEVELS = ROSB_NUM_BUTTONS + 1;
+//constexpr uint16_t ROSB_LEVELS[ROSB_NUM_LEVELS] =
+//{
+//  0,
+//  1250,
+//  1920,
+//  2650,
+//  3440
+//};
 
 #include "MFCDPage.h"
 
@@ -51,7 +76,6 @@ public:
 		NONE
 	};
 
-
 protected:
 	TFT_eSPI tft = TFT_eSPI();
 	byte Brightness = InitialMFCDBrightness;
@@ -59,6 +83,9 @@ protected:
 	MFCDPageClass* Pages[PageIDs::NONE];
 	MFCDPageClass* lastPage = nullptr;
 	MFCDPageClass* currentPage = nullptr;
+
+	//OSBSet LOSBs;
+	//OSBSet ROSBs;
 
 public:
 	bool Init();

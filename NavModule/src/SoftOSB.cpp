@@ -12,16 +12,14 @@ SoftOSBClass::SoftOSBClass()
 {
 }
 
-SoftOSBClass::SoftOSBClass(String text, OSBPositions position)
+SoftOSBClass::SoftOSBClass(String text)
 {
 	LabelText = text;
-	Position = position;
 }
 
-SoftOSBClass::SoftOSBClass(String text, OSBPositions position, NMControlsClass::Commands command)
+SoftOSBClass::SoftOSBClass(String text, NMCommands::Commands command)
 {
 	LabelText = text;
-	Position = position;
 	Command = command;
 }
 

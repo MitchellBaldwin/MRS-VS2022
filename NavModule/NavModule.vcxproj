@@ -159,13 +159,13 @@
       <DeploymentContent>true</DeploymentContent>
     </ClCompile>
     <ClCompile Include="src\I2CBus.cpp" />
-    <ClCompile Include="src\LocalDisplay.cpp" />
     <ClCompile Include="src\Measurement.cpp" />
     <ClCompile Include="src\MFCD.cpp" />
     <ClCompile Include="src\MFCDPage.cpp" />
     <ClCompile Include="src\NMControls.cpp" />
     <ClCompile Include="src\NMStatus.cpp" />
     <ClCompile Include="src\OSBArray.cpp" />
+    <ClCompile Include="src\OSBSet.cpp" />
     <ClCompile Include="src\SoftOSB.cpp" />
     <None Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\FS\library.properties" />
     <None Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\SPIFFS\library.properties" />
@@ -285,13 +285,13 @@
     <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\TFT_eSPI\User_Setup_Select.h" />
     <ClInclude Include="src\DEBUG Macros.h" />
     <ClInclude Include="src\I2CBus.h" />
-    <ClInclude Include="src\LocalDisplay.h" />
     <ClInclude Include="src\Measurement.h" />
     <ClInclude Include="src\MFCD.h" />
     <ClInclude Include="src\MFCDPage.h" />
-    <ClInclude Include="src\NMControls.h" />
+    <ClInclude Include="src\NMCommands.h" />
     <ClInclude Include="src\NMStatus.h" />
     <ClInclude Include="src\OSBArray.h" />
+    <ClInclude Include="src\OSBSet.h" />
     <ClInclude Include="src\SoftOSB.h" />
     <ClInclude Include="__vm\.NavModule.vsarduino.h" />
   </ItemGroup>

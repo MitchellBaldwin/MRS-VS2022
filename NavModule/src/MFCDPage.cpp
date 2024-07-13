@@ -22,21 +22,17 @@ bool MFCDPageClass::Init(TFT_eSPI* parent_tft)
 {
 	tft = parent_tft;
 
-	OSBs[SoftOSBClass::OSBPositions::LOSB1] = new SoftOSBClass("NAV", SoftOSBClass::OSBPositions::LOSB1, NMControlsClass::Commands::NAVPage);
-	OSBs[SoftOSBClass::OSBPositions::LOSB2] = new SoftOSBClass("COM", SoftOSBClass::OSBPositions::LOSB2, NMControlsClass::Commands::COMPage);
-	OSBs[SoftOSBClass::OSBPositions::LOSB3] = new SoftOSBClass("SYS", SoftOSBClass::OSBPositions::LOSB3, NMControlsClass::Commands::SYSPage);
-	OSBs[SoftOSBClass::OSBPositions::LOSB4] = new SoftOSBClass("DBG", SoftOSBClass::OSBPositions::LOSB4, NMControlsClass::Commands::DBGPage);
-
-	//OSBs[SoftOSBClass::OSBPositions::ROSB1] = new SoftOSBClass("POW", SoftOSBClass::OSBPositions::ROSB1);
-	//OSBs[SoftOSBClass::OSBPositions::ROSB2] = new SoftOSBClass("CSS", SoftOSBClass::OSBPositions::ROSB2);
-	//OSBs[SoftOSBClass::OSBPositions::ROSB3] = new SoftOSBClass("MOD", SoftOSBClass::OSBPositions::ROSB3);
-	//OSBs[SoftOSBClass::OSBPositions::ROSB4] = new SoftOSBClass("ORD", SoftOSBClass::OSBPositions::ROSB4);
-
+	// Set up left OSB array (which stays constant for all, or at least most, pages):
+	// [Move to overrides of MFCDPageClass::Activate() if in the future the functions of the left OSBs become page-specific]
+	NMControls.LOSBs.InitOSB(OSBSet::OSBIDs::OSB1, "NAV", NMCommands::Commands::NAVPage);
+	NMControls.LOSBs.InitOSB(OSBSet::OSBIDs::OSB2, "COM", NMCommands::Commands::COMPage);
+	NMControls.LOSBs.InitOSB(OSBSet::OSBIDs::OSB3, "SYS", NMCommands::Commands::SYSPage);
+	NMControls.LOSBs.InitOSB(OSBSet::OSBIDs::OSB4, "DBG", NMCommands::Commands::DBGPage);
 
 	return true;
 }
 
-void MFCDPageClass::Draw()
+void MFCDPageClass::Activate()
 {
 	tft->fillScreen(TFT_BLACK);
 
@@ -50,25 +46,18 @@ void MFCDPageClass::Draw()
 	tft->drawString(Title, tft->width(), 2);
 
 	// Draw Fixed (left side) OSBs:
-	for (byte i = 0; i <= SoftOSBClass::OSBPositions::LOSB4; ++i)
+	tft->setTextDatum(CL_DATUM);
+	tft->setTextColor(TFT_GREENYELLOW);
+	for (byte osb = OSBSet::OSBIDs::OSB1; osb <= NMControls.LOSBs.OSBCount; ++osb)
 	{
-		if (OSBs[i] != nullptr)
-		{
-			tft->setTextDatum(CL_DATUM);
-			tft->setTextColor(TFT_GREENYELLOW);
-
-			tft->drawString(OSBs[i]->LabelText, 2, 50 + 70 * i, 2);
-
-		}
+		tft->drawString(NMControls.LOSBs.OSBInfo[osb]->LabelText, 2, 50 + 70 * (osb - 1), 2);
 	}
-
+	
 	// Draw page specific (right side) OSBs:
-	for (byte i = SoftOSBClass::OSBPositions::ROSB1; i <= SoftOSBClass::OSBPositions::ROSB4; ++i)
+	tft->setTextDatum(CR_DATUM);
+	for (byte osb = OSBSet::OSBIDs::OSB1; osb <= NMControls.ROSBs.OSBCount; ++osb)
 	{
-		tft->setTextDatum(CR_DATUM);
-		tft->setTextColor(TFT_PINK);
-
-		tft->drawString(OSBs[i]->LabelText, tft->width() - 1, 50 + 70 * (i - SoftOSBClass::OSBPositions::ROSB1), 2);
+		tft->drawString(NMControls.ROSBs.OSBInfo[osb]->LabelText, tft->width() - 2, 50 + 70 * (osb - 1), 2);
 	}
 }
 
@@ -76,29 +65,27 @@ void MFCDPageClass::Update()
 {
 }
 
-void MFCDPageClass::Control(SoftOSBClass::OSBPositions position)
-{
-}
-
-NMControlsClass::Commands MFCDPageClass::GetOBSCommand(SoftOSBClass::OSBPositions position)
-{
-	return OSBs[position]->Command;
-}
-
-//MFCDPageClass MFCDPage;
+//void MFCDPageClass::Control(SoftOSBClass::OSBPositions position)
+//{
+//}
+//
+//NMControlsClass::Commands MFCDPageClass::GetOBSCommand(SoftOSBClass::OSBPositions position)
+//{
+//	//return OSBs[position]->Command;
+//	return NMControlsClass::Commands::NoCommand;
+//}
 
 bool NavigationPageClass::Init(TFT_eSPI* parent_tft)
 {
 	MFCDPageClass::Init(parent_tft);
 	Title = "Navigation";
-	//OSBs[SoftOSBClass::OSBPositions::LOSB1]->SetOnPressHandler(&Draw);
 
 	return true;
 }
 
-void NavigationPageClass::Draw()
+void NavigationPageClass::Activate()
 {
-	MFCDPageClass::Draw();
+	MFCDPageClass::Activate();
 
 }
 
@@ -106,14 +93,13 @@ bool CommunicationsPageClass::Init(TFT_eSPI* parent_tft)
 {
 	MFCDPageClass::Init(parent_tft);
 	Title = "Comms";
-	//OSBs[SoftOSBClass::OSBPositions::LOSB2]->SetOnPressHandler(&CommunicationsPageClass::Draw);
 
 	return true;
 }
 
-void CommunicationsPageClass::Draw()
+void CommunicationsPageClass::Activate()
 {
-	MFCDPageClass::Draw();
+	MFCDPageClass::Activate();
 
 }
 
@@ -122,17 +108,18 @@ bool SystemPageClass::Init(TFT_eSPI* parent_tft)
 	MFCDPageClass::Init(parent_tft);
 	Title = "System";
 
-	OSBs[SoftOSBClass::OSBPositions::ROSB1] = new SoftOSBClass("POW", SoftOSBClass::OSBPositions::ROSB1);
-	OSBs[SoftOSBClass::OSBPositions::ROSB2] = new SoftOSBClass("CSS", SoftOSBClass::OSBPositions::ROSB2);
-	OSBs[SoftOSBClass::OSBPositions::ROSB3] = new SoftOSBClass("MOD", SoftOSBClass::OSBPositions::ROSB3);
-	OSBs[SoftOSBClass::OSBPositions::ROSB4] = new SoftOSBClass("ORD", SoftOSBClass::OSBPositions::ROSB4);
-
 	return true;
 }
 
-void SystemPageClass::Draw()
+void SystemPageClass::Activate()
 {
-	MFCDPageClass::Draw();
+	// Set up right OSB array for the SYS page:
+	NMControls.ROSBs.InitOSB(OSBSet::OSBIDs::OSB1, "POW");
+	NMControls.ROSBs.InitOSB(OSBSet::OSBIDs::OSB2, "CSS");
+	NMControls.ROSBs.InitOSB(OSBSet::OSBIDs::OSB3, "NOP");
+	NMControls.ROSBs.InitOSB(OSBSet::OSBIDs::OSB4, "NOP");
+
+	MFCDPageClass::Activate();
 
 	tft->setTextColor(TFT_GOLD, TFT_BLACK, false);
 	tft->setTextDatum(CC_DATUM);
@@ -143,19 +130,33 @@ bool DebugPageClass::Init(TFT_eSPI* parent_tft)
 {
 	MFCDPageClass::Init(parent_tft);
 	Title = "Debug";
-	//OSBs[SoftOSBClass::OSBPositions::LOSB4]->SetOnPressHandler(&DebugPageClass::Draw);
 
 	return true;
 }
 
-void DebugPageClass::Draw()
+void DebugPageClass::Activate()
 {
-	MFCDPageClass::Draw();
+	MFCDPageClass::Activate();
 
 }
 
+bool NonePageClass::Init(TFT_eSPI* parent_tft)
+{
+	MFCDPageClass::Init(parent_tft);
+	Title = "";
+
+	return true;
+}
+
+void NonePageClass::Activate()
+{
+	MFCDPageClass::Activate();
+
+}
 NavigationPageClass NavigationPage;
 CommunicationsPageClass CommunicationsPage;
 SystemPageClass SystemPage;
 DebugPageClass DebugPage;
+NonePageClass NonePage;
+
 
