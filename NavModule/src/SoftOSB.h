@@ -22,6 +22,7 @@
 #else
 	#include "WProgram.h"
 #endif
+#include "DEBUG Macros.h"
 #include "NMCommands.h"
 
 class SoftOSBClass

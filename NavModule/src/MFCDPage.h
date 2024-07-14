@@ -26,6 +26,7 @@
 
 #include <TFT_eSPI.h>
 #include "OSBSet.h"
+#include "I2CBus.h"
 #include "NMStatus.h"
 #include "NMControls.h"
 
@@ -42,8 +43,9 @@ public:
 	MFCDPageClass(TFT_eSPI* parent_tft);
 	virtual bool Init(TFT_eSPI* parent_tft);
 
-	virtual void Activate();		// Draw / redraw entire page, set up OSB labels & functions, etc.
-	virtual void Update();			// Update dynamic page content (only)
+	virtual void Activate();								// Draw / redraw entire page, set up OSB labels & functions, etc.
+	virtual void Update();									// Update dynamic page content (only)
+	virtual void Control(NMCommands::Commands command);		// Handle right OSB functions
 };
 
 class NavigationPageClass : public MFCDPageClass
@@ -65,6 +67,7 @@ class SystemPageClass : public MFCDPageClass
 public:
 	virtual bool Init(TFT_eSPI* parent_tft);
 	virtual void Activate();
+	virtual void Update();
 };
 
 class DebugPageClass : public MFCDPageClass
@@ -72,6 +75,10 @@ class DebugPageClass : public MFCDPageClass
 public:
 	virtual bool Init(TFT_eSPI* parent_tft);
 	virtual void Activate();
+	virtual void Update();
+	virtual void Control(NMCommands::Commands command);		// Handle right OSB functions
+
+	void TestFont();
 };
 
 class NonePageClass : public MFCDPageClass

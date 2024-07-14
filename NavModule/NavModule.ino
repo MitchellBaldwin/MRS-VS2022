@@ -138,5 +138,6 @@ void UpdateDisplayCallback()
 {
 	//LocalDisplay.Update();
 	//LocalDisplay.Control(LocalDisplayClass::Commands::NoCommand);
-	MFCD.Update();
+	//MFCD.Update();
+	MFCD.Control(NMCommands::NoCommand);
 }

@@ -40,42 +40,76 @@ bool MFCDClass::Init()
 
 void MFCDClass::Update()
 {
-	OSBSet::OSBIDs osb = NMControls.LOSBs.NewOSBPressed();
+	Brightness = NMControls.BRTSetting;
+	SetBrightness(Brightness);
 	
-	// If one of the buttons from the left OSB array was pressed, get the its associated command and execute accordingly:
-	if (osb != OSBSet::OSBIDs::NoOsb)
+	if (NMControls.BRTSelected)
 	{
-		switch (NMControls.LOSBs.OSBInfo[osb]->Command)
+		NMControls.ToggleBRTSelected();
+
+		if (Brightness >= 255)
 		{
-		case NMCommands::NAVPage:
-			ActivatePage(PageIDs::NAV);
-			break;
-		case NMCommands::COMPage:
-			ActivatePage(PageIDs::COM);
-			break;
-		case NMCommands::SYSPage:
-			ActivatePage(PageIDs::SYS);
-			break;
-		case NMCommands::DBGPage:
-			ActivatePage(PageIDs::DBG);
-			break;
-		default:
-			currentPage->Update();
-			break;
+			SetBrightness(0);
+		}
+		else if (Brightness > 191)
+		{
+			SetBrightness(255);
+		}
+		else if (Brightness > 127)
+		{
+			SetBrightness(192);
+		}
+		else if (Brightness > 63)
+		{
+			SetBrightness(128);
+		}
+		else if (Brightness >= 0)
+		{
+			SetBrightness(64);
 		}
 	}
-	
-	osb = NMControls.ROSBs.NewOSBPressed();
-	// If one of the buttons from the right OSB array was pressed, get the its associated command and execute accordingly:
-	if (osb != OSBSet::OSBIDs::NoOsb)
-	{
 
-	}
-	
+	currentPage->Update();
+
 }
 
-void MFCDClass::Control()
+void MFCDClass::Control(NMCommands::Commands command)
 {
+	OSBSet::OSBIDs losb = NMControls.LOSBs.NewOSBPressed();
+	OSBSet::OSBIDs rosb = NMControls.ROSBs.NewOSBPressed();
+	
+	// If one of the buttons from the left OSB array was pressed, get the its associated command and execute accordingly:
+	if (losb != OSBSet::OSBIDs::NoOsb)
+	{
+		command = NMControls.LOSBs.GetOSBPressCommand(losb);
+	}
+	else if (rosb != OSBSet::OSBIDs::NoOsb)
+	{
+		NMCommands::Commands pageSpecificCommand = NMControls.ROSBs.GetOSBPressCommand(rosb);
+		// Pass command to the current page to handle:
+		currentPage->Control(pageSpecificCommand);
+	}
+	
+	switch (command)
+	{
+	case NMCommands::NAVPage:
+		ActivatePage(PageIDs::NAV);
+		break;
+	case NMCommands::COMPage:
+		ActivatePage(PageIDs::COM);
+		break;
+	case NMCommands::SYSPage:
+		ActivatePage(PageIDs::SYS);
+		break;
+	case NMCommands::DBGPage:
+		ActivatePage(PageIDs::DBG);
+		break;
+	case NMCommands::NoCommand:
+		Update();
+		break;
+	default:
+		break;
+	}
 }
 
 void MFCDClass::ActivatePage(PageIDs page)
@@ -83,7 +117,6 @@ void MFCDClass::ActivatePage(PageIDs page)
 	lastPage = currentPage;
 	currentPage = Pages[page];
 
-	// Should instead call currentPage->Activate()?
 	currentPage->Activate();
 
 }

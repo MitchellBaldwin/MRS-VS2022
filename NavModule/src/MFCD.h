@@ -90,7 +90,7 @@ protected:
 public:
 	bool Init();
 	void Update();
-	void Control();
+	void Control(NMCommands::Commands command);
 	void ActivatePage(PageIDs page);
 	void SetBrightness(byte brightness);
 

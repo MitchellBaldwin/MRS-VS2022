@@ -52,6 +52,7 @@ void OSBSet::Update()
 	OSBIDs osb = GetOSBPress();
 	if (osb != OSBIDs::NoOsb)
 	{
+		osb = (OSBIDs)(OSBCount - osb + 1);	// Reverse the order of OSBs
 		NewOSBPress = true;
 		LastOSBPressed = osb;
 	}
