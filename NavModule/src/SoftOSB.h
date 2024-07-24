@@ -36,26 +36,23 @@ public:
 		Starred		= 0b00000100,
 
 	};
-	States State = States::Plain;
+	States State = States::Plain;	// Flags indicating current state of this OSB
 
-	//enum OSBPositions
-	//{
-	//	LOSB1,
-	//	LOSB2,
-	//	LOSB3,
-	//	LOSB4,
-	//	ROSB1,
-	//	ROSB2,
-	//	ROSB3,
-	//	ROSB4,
-	//};
-	//OSBPositions Position;
+	enum OSBCaps
+	{
+		NoCaps		= 0b00000000,
+		Boxable		= 0b00000001,
+		Invertable	= 0b00000010,
+		Starrable	= 0b00000100,
 
-	typedef void (*OSBOnPressHandler)(void);	// Function pointer for OnPress event handler
+	};
+	OSBCaps Caps = OSBCaps::NoCaps;
+
+	//typedef void (*OSBOnPressHandler)(void);	// Function pointer for OnPress event handler
 
 protected:
 
-	OSBOnPressHandler onPressHandler = nullptr;
+	//OSBOnPressHandler onPressHandler = nullptr;
 
 public:
 	String LabelText;					// Primary label text identifying this OSB
@@ -66,11 +63,12 @@ public:
 	SoftOSBClass(String text);
 	SoftOSBClass(String text, NMCommands::Commands command);
 	//SoftOSBClass(String text, OSBPositions position, OSBOnPressHandler handler);
+	SoftOSBClass(String text, NMCommands::Commands command, OSBCaps caps);
 
 	bool Init();
 
-	void SetOnPressHandler(OSBOnPressHandler handler);
-	void InvokeOnPressHandler();
+	//void SetOnPressHandler(OSBOnPressHandler handler);
+	//void InvokeOnPressHandler();
 };
 
 #endif

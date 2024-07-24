@@ -33,7 +33,7 @@ bool MFCDClass::Init()
 	currentPage = Pages[PageIDs::SYS];
 	lastPage = Pages[PageIDs::NONE];
 
-	currentPage->Activate();
+	currentPage->Activate(true);
 	
 	return true;
 }
@@ -85,6 +85,11 @@ void MFCDClass::Control(NMCommands::Commands command)
 	}
 	else if (rosb != OSBSet::OSBIDs::NoOsb)
 	{
+		if (NMControls.ROSBs.OSBInfo[rosb]->Caps & SoftOSBClass::OSBCaps::Boxable)
+		{
+			NMControls.ROSBs.OSBInfo[rosb]->State = (SoftOSBClass::States)(NMControls.ROSBs.OSBInfo[rosb]->State ^ SoftOSBClass::States::Boxed);
+			currentPage->DrawROSB(rosb);
+		}
 		NMCommands::Commands pageSpecificCommand = NMControls.ROSBs.GetOSBPressCommand(rosb);
 		// Pass command to the current page to handle:
 		currentPage->Control(pageSpecificCommand);
@@ -117,7 +122,7 @@ void MFCDClass::ActivatePage(PageIDs page)
 	lastPage = currentPage;
 	currentPage = Pages[page];
 
-	currentPage->Activate();
+	currentPage->Activate(true);
 
 }
 

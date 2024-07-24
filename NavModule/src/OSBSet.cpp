@@ -37,12 +37,21 @@ void OSBSet::Init(byte sensePin, uint8_t numLevels, const uint16_t levels[])
 void OSBSet::InitOSB(OSBIDs osbID, String text)
 {
 	OSBInfo[osbID]->LabelText = text;
+	OSBInfo[osbID]->State = SoftOSBClass::States::Plain;
+	OSBInfo[osbID]->Command = NMCommands::NoCommand;
 }
 
 void OSBSet::InitOSB(OSBIDs osbID, String text, NMCommands::Commands command)
 {
-	OSBInfo[osbID]->LabelText = text;
+	InitOSB(osbID, text);
 	OSBInfo[osbID]->Command = command;
+	OSBInfo[osbID]->Caps = SoftOSBClass::OSBCaps::NoCaps;
+}
+
+void OSBSet::InitOSB(OSBIDs osbID, String text, NMCommands::Commands command, SoftOSBClass::OSBCaps caps)
+{
+	InitOSB(osbID, text, command);
+	OSBInfo[osbID]->Caps = caps;
 }
 
 void OSBSet::Update()

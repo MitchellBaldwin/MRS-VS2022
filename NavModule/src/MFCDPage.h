@@ -43,38 +43,45 @@ public:
 	MFCDPageClass(TFT_eSPI* parent_tft);
 	virtual bool Init(TFT_eSPI* parent_tft);
 
-	virtual void Activate();								// Draw / redraw entire page, set up OSB labels & functions, etc.
+	virtual void Activate(bool reinitialize);				// Draw / redraw entire page, set up OSB labels & functions, etc.
 	virtual void Update();									// Update dynamic page content (only)
+	void UpdateNavRotaries();								// Update CRS & HDG setting displays
+	void UpdateTopRoraties();								// Update BRT & TRR setting displays
 	virtual void Control(NMCommands::Commands command);		// Handle right OSB functions
+	void DrawLOSB(OSBSet::OSBIDs osb);
+	void DrawROSB(OSBSet::OSBIDs osb);
 };
 
 class NavigationPageClass : public MFCDPageClass
 {
 public:
 	virtual bool Init(TFT_eSPI* parent_tft);
-	virtual void Activate();
+	virtual void Activate(bool reinitialize);
 };
 
 class CommunicationsPageClass : public MFCDPageClass
 {
 public:
 	virtual bool Init(TFT_eSPI* parent_tft);
-	virtual void Activate();
+	virtual void Activate(bool reinitialize);
 };
 
 class SystemPageClass : public MFCDPageClass
 {
 public:
 	virtual bool Init(TFT_eSPI* parent_tft);
-	virtual void Activate();
+	virtual void Activate(bool reinitialize);
 	virtual void Update();
 };
 
 class DebugPageClass : public MFCDPageClass
 {
+protected:
+	bool TestingFont = false;
+
 public:
 	virtual bool Init(TFT_eSPI* parent_tft);
-	virtual void Activate();
+	virtual void Activate(bool reinitialize);
 	virtual void Update();
 	virtual void Control(NMCommands::Commands command);		// Handle right OSB functions
 
@@ -85,7 +92,7 @@ class NonePageClass : public MFCDPageClass
 {
 public:
 	virtual bool Init(TFT_eSPI* parent_tft);
-	virtual void Activate();
+	virtual void Activate(bool reinitialize);
 };
 
 extern NavigationPageClass NavigationPage;

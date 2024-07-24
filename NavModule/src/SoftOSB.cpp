@@ -23,6 +23,13 @@ SoftOSBClass::SoftOSBClass(String text, NMCommands::Commands command)
 	Command = command;
 }
 
+SoftOSBClass::SoftOSBClass(String text, NMCommands::Commands command, OSBCaps caps)
+{
+	LabelText = text;
+	Command = command;
+	Caps = caps;
+}
+
 //SoftOSBClass(String text, OSBPositions position, OSBOnPressHandler handler)
 //{
 //	LabelText = text;
@@ -36,16 +43,16 @@ bool SoftOSBClass::Init()
 	return true;
 }
 
-void SoftOSBClass::SetOnPressHandler(OSBOnPressHandler handler)
-{
-	onPressHandler = handler;
-}
+//void SoftOSBClass::SetOnPressHandler(OSBOnPressHandler handler)
+//{
+//	onPressHandler = handler;
+//}
 
-void SoftOSBClass::InvokeOnPressHandler()
-{
-	if (onPressHandler != nullptr)
-	{
-		onPressHandler();
-	}
-}
+//void SoftOSBClass::InvokeOnPressHandler()
+//{
+//	if (onPressHandler != nullptr)
+//	{
+//		onPressHandler();
+//	}
+//}
 

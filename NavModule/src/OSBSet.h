@@ -65,6 +65,7 @@ public:
 	void Init(byte sensePin, uint8_t numLevels, const uint16_t levels[]);
 	void InitOSB(OSBIDs osbID, String text);
 	void InitOSB(OSBIDs osbID, String text, NMCommands::Commands command);
+	void InitOSB(OSBIDs osbID, String text, NMCommands::Commands command, SoftOSBClass::OSBCaps caps);
 
 	void Update();
 

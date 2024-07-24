@@ -26,15 +26,15 @@ bool MFCDPageClass::Init(TFT_eSPI* parent_tft)
 
 	// Set up left OSB array (which stays constant for all, or at least most, pages):
 	// [Move to overrides of MFCDPageClass::Activate() if in the future the functions of the left OSBs become page-specific]
-	NMControls.LOSBs.InitOSB(OSBSet::OSBIDs::OSB1, "NAV", NMCommands::Commands::NAVPage);
-	NMControls.LOSBs.InitOSB(OSBSet::OSBIDs::OSB2, "COM", NMCommands::Commands::COMPage);
-	NMControls.LOSBs.InitOSB(OSBSet::OSBIDs::OSB3, "SYS", NMCommands::Commands::SYSPage);
-	NMControls.LOSBs.InitOSB(OSBSet::OSBIDs::OSB4, "DBG", NMCommands::Commands::DBGPage);
+	NMControls.LOSBs.InitOSB(OSBSet::OSBIDs::OSB1, "NAV", NMCommands::Commands::NAVPage, SoftOSBClass::OSBCaps::NoCaps);
+	NMControls.LOSBs.InitOSB(OSBSet::OSBIDs::OSB2, "COM", NMCommands::Commands::COMPage, SoftOSBClass::OSBCaps::NoCaps);
+	NMControls.LOSBs.InitOSB(OSBSet::OSBIDs::OSB3, "SYS", NMCommands::Commands::SYSPage, SoftOSBClass::OSBCaps::NoCaps);
+	NMControls.LOSBs.InitOSB(OSBSet::OSBIDs::OSB4, "DBG", NMCommands::Commands::DBGPage, SoftOSBClass::OSBCaps::NoCaps);
 
 	return true;
 }
 
-void MFCDPageClass::Activate()
+void MFCDPageClass::Activate(bool reinitialize)
 {
 	tft->fillScreen(TFT_BLACK);
 
@@ -48,22 +48,26 @@ void MFCDPageClass::Activate()
 	tft->drawString(Title, tft->width(), 2);
 
 	// Draw Fixed (left side) OSBs:
-	tft->setTextDatum(CL_DATUM);
-	tft->setTextColor(TFT_GREENYELLOW);
 	for (byte osb = OSBSet::OSBIDs::OSB1; osb <= NMControls.LOSBs.OSBCount; ++osb)
 	{
-		tft->drawString(NMControls.LOSBs.OSBInfo[osb]->LabelText, 2, 50 + 70 * (osb - 1), 2);
+		DrawLOSB((OSBSet::OSBIDs)osb);
 	}
 	
 	// Draw page specific (right side) OSBs:
-	tft->setTextDatum(CR_DATUM);
 	for (byte osb = OSBSet::OSBIDs::OSB1; osb <= NMControls.ROSBs.OSBCount; ++osb)
 	{
-		tft->drawString(NMControls.ROSBs.OSBInfo[osb]->LabelText, tft->width() - 2, 50 + 70 * (osb - 1), 2);
+		DrawROSB((OSBSet::OSBIDs)osb);
 	}
 }
 
 void MFCDPageClass::Update()
+{
+	UpdateNavRotaries();
+	UpdateTopRoraties();
+
+}
+
+void MFCDPageClass::UpdateNavRotaries()
 {
 	sprintf(buf, "HDG: %03D", NMControls.HDGSetting);
 	tft->setTextSize(1);
@@ -92,7 +96,10 @@ void MFCDPageClass::Update()
 	{
 		tft->drawRect(0, tft->height() - 11, tft->textWidth(buf) + 2, 11, TFT_BLACK);
 	}
+}
 
+void MFCDPageClass::UpdateTopRoraties()
+{
 	sprintf(buf, "BRT: %03D", NMControls.BRTSetting);
 	tft->setTextSize(1);
 	tft->setTextColor(TFT_SILVER, TFT_BLACK, true);
@@ -104,11 +111,38 @@ void MFCDPageClass::Update()
 	tft->setTextColor(TFT_SILVER, TFT_BLACK, true);
 	tft->setTextDatum(TR_DATUM);
 	tft->drawString(buf, tft->width() - 40, 16);
-
 }
 
 void MFCDPageClass::Control(NMCommands::Commands command)
 {
+}
+
+void MFCDPageClass::DrawLOSB(OSBSet::OSBIDs osb)
+{
+	// Draw Fixed (left side) OSBs:
+	tft->setTextDatum(CL_DATUM);
+	tft->setTextColor(TFT_GREENYELLOW);
+	tft->drawString(NMControls.LOSBs.OSBInfo[osb]->LabelText, 2, 50 + 70 * (osb - 1), 2);
+}
+
+void MFCDPageClass::DrawROSB(OSBSet::OSBIDs osb)
+{
+	// Draw page specific (right side) OSB:
+	SoftOSBClass* osbInfo = NMControls.ROSBs.OSBInfo[osb];
+	int osbY = 50 + 70 * (osb - 1);
+	tft->setTextColor(TFT_GREENYELLOW);
+	tft->setTextDatum(CR_DATUM);
+	tft->drawString(osbInfo->LabelText, tft->width() - 2, osbY, 2);
+	if (osbInfo->State & SoftOSBClass::States::Boxed)
+	{
+		tft->drawRect(tft->width() - tft->textWidth(osbInfo->LabelText, 2) - 4, osbY - 8, tft->textWidth(osbInfo->LabelText, 2) + 2, 16, TFT_CYAN);
+	}
+	else
+	{
+		//TODO: Consider clearing OSB display area prior to drawing anything and as opposed to erasing the box graphics by 
+		//overwriting in the background color
+		tft->drawRect(tft->width() - tft->textWidth(osbInfo->LabelText, 2) - 4, osbY - 8, tft->textWidth(osbInfo->LabelText, 2) + 2, 16, TFT_BLACK);
+	}
 }
 
 bool NavigationPageClass::Init(TFT_eSPI* parent_tft)
@@ -119,9 +153,9 @@ bool NavigationPageClass::Init(TFT_eSPI* parent_tft)
 	return true;
 }
 
-void NavigationPageClass::Activate()
+void NavigationPageClass::Activate(bool reinitialize)
 {
-	MFCDPageClass::Activate();
+	MFCDPageClass::Activate(reinitialize);
 
 }
 
@@ -133,9 +167,9 @@ bool CommunicationsPageClass::Init(TFT_eSPI* parent_tft)
 	return true;
 }
 
-void CommunicationsPageClass::Activate()
+void CommunicationsPageClass::Activate(bool reinitialize)
 {
-	MFCDPageClass::Activate();
+	MFCDPageClass::Activate(reinitialize);
 
 }
 
@@ -147,15 +181,15 @@ bool SystemPageClass::Init(TFT_eSPI* parent_tft)
 	return true;
 }
 
-void SystemPageClass::Activate()
+void SystemPageClass::Activate(bool reinitialize)
 {
 	// Set up right OSB array for the SYS page:
-	NMControls.ROSBs.InitOSB(OSBSet::OSBIDs::OSB1, "POW", NMCommands::Commands::NoCommand);
-	NMControls.ROSBs.InitOSB(OSBSet::OSBIDs::OSB2, "CSS", NMCommands::Commands::NoCommand);
-	NMControls.ROSBs.InitOSB(OSBSet::OSBIDs::OSB3, "NOP", NMCommands::Commands::NoCommand);
-	NMControls.ROSBs.InitOSB(OSBSet::OSBIDs::OSB4, "NOP", NMCommands::Commands::NoCommand);
+	NMControls.ROSBs.InitOSB(OSBSet::OSBIDs::OSB1, "POW", NMCommands::Commands::NoCommand, SoftOSBClass::OSBCaps::NoCaps);
+	NMControls.ROSBs.InitOSB(OSBSet::OSBIDs::OSB2, "CSS", NMCommands::Commands::NoCommand, SoftOSBClass::OSBCaps::NoCaps);
+	NMControls.ROSBs.InitOSB(OSBSet::OSBIDs::OSB3, "NOP", NMCommands::Commands::NoCommand, SoftOSBClass::OSBCaps::NoCaps);
+	NMControls.ROSBs.InitOSB(OSBSet::OSBIDs::OSB4, "NOP", NMCommands::Commands::NoCommand, SoftOSBClass::OSBCaps::NoCaps);
 
-	MFCDPageClass::Activate();	// Note: Activate() draws all OSBs
+	MFCDPageClass::Activate(reinitialize);	// Note: Activate() draws all OSBs
 
 	tft->setTextSize(1);
 
@@ -224,50 +258,75 @@ bool DebugPageClass::Init(TFT_eSPI* parent_tft)
 	return true;
 }
 
-void DebugPageClass::Activate()
+void DebugPageClass::Activate(bool reinitialize)
 {
-	// Set up right OSB array for the SYS page:
-	NMControls.ROSBs.InitOSB(OSBSet::OSBIDs::OSB1, "FNT", NMCommands::Commands::TestFont);
-	NMControls.ROSBs.InitOSB(OSBSet::OSBIDs::OSB2, "NOP", NMCommands::Commands::NoCommand);
-	NMControls.ROSBs.InitOSB(OSBSet::OSBIDs::OSB3, "NOP", NMCommands::Commands::NoCommand);
-	NMControls.ROSBs.InitOSB(OSBSet::OSBIDs::OSB4, "NOP", NMCommands::Commands::NoCommand);
-
-	MFCDPageClass::Activate();
-
-	tft->setTextColor(TFT_CYAN, TFT_BLACK, true);
-	tft->setTextDatum(TL_DATUM);
-
-	sprintf(buf, "%s %d core", ESP.getChipModel(), ESP.getChipCores());
-	tft->drawString(buf, 40, 50, 1);
-	sprintf(buf, "CPU v%d %d MHz", ESP.getChipRevision(), ESP.getCpuFreqMHz());
-	tft->drawString(buf, 40, 60, 1);
-
-	uint8_t mac[6];
-	esp_efuse_mac_get_default(mac);		// Returns the same MAC as does WiFi.madAddress(uint8_t*)
-	sprintf(buf, "efuse MAC %02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-	tft->drawString(buf, 40, 70, 1);
-	WiFi.macAddress(mac);
-	sprintf(buf, "WiFi  MAC %02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-	tft->drawString(buf, 40, 80, 1);
-
-	sprintf(buf, "Heap (free/total) %d / %d", ESP.getFreeHeap(), ESP.getHeapSize());
-	tft->drawString(buf, 40, 100, 1);
-	sprintf(buf, "Prog (used/free) %d / %d", ESP.getSketchSize(), ESP.getFreeSketchSpace());
-	tft->drawString(buf, 40, 110, 1);
-	if (ESP.getPsramSize() > 0)
+	if (reinitialize)
 	{
-		sprintf(buf, "PSRAM: %d/%d", ESP.getFreePsram(), ESP.getPsramSize());
+		TestingFont = false;
+		
+		// Set up right OSB array for the SYS page:
+		NMControls.ROSBs.InitOSB(OSBSet::OSBIDs::OSB1, "FNT", NMCommands::Commands::TestFont, SoftOSBClass::OSBCaps::Boxable);
+		NMControls.ROSBs.InitOSB(OSBSet::OSBIDs::OSB2, "NOP", NMCommands::Commands::NoCommand, SoftOSBClass::OSBCaps::NoCaps);
+		NMControls.ROSBs.InitOSB(OSBSet::OSBIDs::OSB3, "NOP", NMCommands::Commands::NoCommand, SoftOSBClass::OSBCaps::NoCaps);
+		NMControls.ROSBs.InitOSB(OSBSet::OSBIDs::OSB4, "NOP", NMCommands::Commands::NoCommand, SoftOSBClass::OSBCaps::NoCaps);
+
+	}
+
+	MFCDPageClass::Activate(reinitialize);
+
+	if (TestingFont)
+	{
+		TestFont();
 	}
 	else
 	{
-		sprintf(buf, "No PSRAM");
-	}
-	tft->drawString(buf, 40, 120, 1);
+		tft->setTextColor(TFT_CYAN, TFT_BLACK, true);
+		tft->setTextDatum(TL_DATUM);
 
-	sprintf(buf, "SSID: %s %d dBm", WiFi.SSID().c_str(), WiFi.RSSI());
-	tft->drawString(buf, 40, 140, 1);
-	sprintf(buf, "IP: %s", WiFi.localIP().toString());
-	tft->drawString(buf, 40, 150, 1);
+		sprintf(buf, "%s %d core", ESP.getChipModel(), ESP.getChipCores());
+		tft->drawString(buf, 40, 50, 1);
+		sprintf(buf, "CPU v%d %d MHz", ESP.getChipRevision(), ESP.getCpuFreqMHz());
+		tft->drawString(buf, 40, 60, 1);
+
+		uint8_t mac[6];
+		esp_efuse_mac_get_default(mac);		// Returns the same MAC as does WiFi.madAddress(uint8_t*)
+		sprintf(buf, "efuse MAC %02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+		tft->drawString(buf, 40, 70, 1);
+		WiFi.macAddress(mac);
+		sprintf(buf, "WiFi  MAC %02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+		tft->drawString(buf, 40, 80, 1);
+
+		tft->setTextColor(TFT_ORANGE, TFT_BLACK, true);
+		sprintf(buf, "Heap  free: %d", ESP.getFreeHeap());
+		tft->drawString(buf, 40, 100, 1);
+		sprintf(buf, "     total: %d", ESP.getHeapSize());
+		tft->drawString(buf, 40, 110, 1);
+		sprintf(buf, "Prog  used: %d", ESP.getSketchSize());
+		tft->drawString(buf, 40, 120, 1);
+		sprintf(buf, "      free: %d", ESP.getFreeSketchSpace());
+		tft->drawString(buf, 40, 130, 1);
+		if (ESP.getPsramSize() > 0)
+		{
+			sprintf(buf, "PSRAM: %d/%d", ESP.getFreePsram(), ESP.getPsramSize());
+		}
+		else
+		{
+			sprintf(buf, "No PSRAM");
+		}
+		tft->drawString(buf, 40, 140, 1);
+
+		tft->setTextColor(TFT_SKYBLUE, TFT_BLACK, true);
+		sprintf(buf, "SSID: %s %d dBm", WiFi.SSID().c_str(), WiFi.RSSI());
+		tft->drawString(buf, 40, 160, 1);
+		sprintf(buf, "IP: %s", WiFi.localIP().toString());
+		tft->drawString(buf, 40, 170, 1);
+
+		for (int i = 0; i < MAX_TEXT_LINES; ++i)
+		{
+			tft->drawString(NMStatus.debugTextLines[i].c_str(), 40, 180 + i * 10);
+		}
+
+	}
 
 }
 
@@ -292,7 +351,15 @@ void DebugPageClass::Control(NMCommands::Commands command)
 	switch (command)
 	{
 	case NMCommands::TestFont:
-		TestFont();
+		if (NMControls.ROSBs.OSBInfo[OSBSet::OSBIDs::OSB1]->State & SoftOSBClass::States::Boxed)
+		{
+			TestingFont = true;
+		}
+		else
+		{
+			TestingFont = false;
+		}
+		Activate(false);
 		break;
 	default:
 		break;
@@ -307,7 +374,7 @@ void DebugPageClass::TestFont()
 	{
 		for (byte j = 0; j < 16; ++j)
 		{
-			tft->drawString(String((char)(i * 16 + j)), 56 + 8 * j, tft->height() / 2 + 10 * (i - 1));
+			tft->drawString(String((char)(i * 16 + j)), 56 + 8 * j, 40 + 10 * (i - 1));
 		}
 	}
 }
@@ -320,11 +387,12 @@ bool NonePageClass::Init(TFT_eSPI* parent_tft)
 	return true;
 }
 
-void NonePageClass::Activate()
+void NonePageClass::Activate(bool reinitialize)
 {
-	MFCDPageClass::Activate();
+	MFCDPageClass::Activate(reinitialize);
 
 }
+
 NavigationPageClass NavigationPage;
 CommunicationsPageClass CommunicationsPage;
 SystemPageClass SystemPage;

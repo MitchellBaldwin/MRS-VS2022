@@ -18,11 +18,12 @@
 #else
 	#include "WProgram.h"
 #endif
+constexpr uint8_t MAX_TEXT_LINES = 8;
 
 class NMStatusClass
 {
  protected:
-
+	 uint8_t curDebugTextLine = 0x00;
 
  public:
 	 // Navigation Module firmware version:
@@ -51,7 +52,11 @@ class NMStatusClass
 
 	 bool BME280Status = false;
 
+	 String debugTextLines[MAX_TEXT_LINES];
+	 
 	 void Init();
+	 void AddDebugTextLine(String newLine);
+	 void ClearDebugText();
 
 };
 
