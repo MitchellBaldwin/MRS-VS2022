@@ -26,6 +26,7 @@ void NMStatusClass::ClearDebugText()
 	{
 		debugTextLines[i] = "";
 	}
+	curDebugTextLine = 0;
 }
 
 NMStatusClass NMStatus;

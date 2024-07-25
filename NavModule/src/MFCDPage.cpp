@@ -155,6 +155,12 @@ bool NavigationPageClass::Init(TFT_eSPI* parent_tft)
 
 void NavigationPageClass::Activate(bool reinitialize)
 {
+	// Set up right OSB array for the SYS page:
+	NMControls.ROSBs.InitOSB(OSBSet::OSBIDs::OSB1, "MAP", NMCommands::Commands::NoCommand, SoftOSBClass::OSBCaps::Boxable);
+	NMControls.ROSBs.InitOSB(OSBSet::OSBIDs::OSB2, "WPT", NMCommands::Commands::NoCommand, SoftOSBClass::OSBCaps::NoCaps);
+	NMControls.ROSBs.InitOSB(OSBSet::OSBIDs::OSB3, "SEQ", NMCommands::Commands::NoCommand, SoftOSBClass::OSBCaps::NoCaps);
+	NMControls.ROSBs.InitOSB(OSBSet::OSBIDs::OSB4, "NOP", NMCommands::Commands::NoCommand, SoftOSBClass::OSBCaps::NoCaps);
+
 	MFCDPageClass::Activate(reinitialize);
 
 }
@@ -169,6 +175,12 @@ bool CommunicationsPageClass::Init(TFT_eSPI* parent_tft)
 
 void CommunicationsPageClass::Activate(bool reinitialize)
 {
+	// Set up right OSB array for the SYS page:
+	NMControls.ROSBs.InitOSB(OSBSet::OSBIDs::OSB1, "UART", NMCommands::Commands::NoCommand, SoftOSBClass::OSBCaps::NoCaps);
+	NMControls.ROSBs.InitOSB(OSBSet::OSBIDs::OSB2, "ENOW", NMCommands::Commands::NoCommand, SoftOSBClass::OSBCaps::NoCaps);
+	NMControls.ROSBs.InitOSB(OSBSet::OSBIDs::OSB3, "WiFi", NMCommands::Commands::NoCommand, SoftOSBClass::OSBCaps::NoCaps);
+	NMControls.ROSBs.InitOSB(OSBSet::OSBIDs::OSB4, "I2C", NMCommands::Commands::NoCommand, SoftOSBClass::OSBCaps::NoCaps);
+
 	MFCDPageClass::Activate(reinitialize);
 
 }
@@ -267,8 +279,8 @@ void DebugPageClass::Activate(bool reinitialize)
 		// Set up right OSB array for the SYS page:
 		NMControls.ROSBs.InitOSB(OSBSet::OSBIDs::OSB1, "FNT", NMCommands::Commands::TestFont, SoftOSBClass::OSBCaps::Boxable);
 		NMControls.ROSBs.InitOSB(OSBSet::OSBIDs::OSB2, "NOP", NMCommands::Commands::NoCommand, SoftOSBClass::OSBCaps::NoCaps);
-		NMControls.ROSBs.InitOSB(OSBSet::OSBIDs::OSB3, "NOP", NMCommands::Commands::NoCommand, SoftOSBClass::OSBCaps::NoCaps);
-		NMControls.ROSBs.InitOSB(OSBSet::OSBIDs::OSB4, "NOP", NMCommands::Commands::NoCommand, SoftOSBClass::OSBCaps::NoCaps);
+		NMControls.ROSBs.InitOSB(OSBSet::OSBIDs::OSB3, "CHP", NMCommands::Commands::CheckFreeHeap, SoftOSBClass::OSBCaps::NoCaps);
+		NMControls.ROSBs.InitOSB(OSBSet::OSBIDs::OSB4, "CLR", NMCommands::Commands::ClearDebugText, SoftOSBClass::OSBCaps::NoCaps);
 
 	}
 
@@ -359,6 +371,15 @@ void DebugPageClass::Control(NMCommands::Commands command)
 		{
 			TestingFont = false;
 		}
+		Activate(false);
+		break;
+	case NMCommands::ClearDebugText:
+		NMStatus.ClearDebugText();
+		Activate(false);
+		break;
+	case NMCommands::CheckFreeHeap:
+		sprintf(buf, "Heap  free: %d", ESP.getFreeHeap());
+		NMStatus.AddDebugTextLine(buf);
 		Activate(false);
 		break;
 	default:

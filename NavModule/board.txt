@@ -1,5 +1,6 @@
 # NavModule build property overrides
 #
 
-vm.settings.shorten-include-paths=false
+vm.settings.shorten-include-paths=true 
 vm.settings.use-single-backslashes=true
+#vm.build.compile-relative-paths-at-max-chars=1

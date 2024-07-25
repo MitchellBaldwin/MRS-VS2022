@@ -17,6 +17,8 @@ public:
 		I2CScan,
 
 		TestFont,
+		ClearDebugText,
+		CheckFreeHeap,
 		
 		Prev,
 		Next,
