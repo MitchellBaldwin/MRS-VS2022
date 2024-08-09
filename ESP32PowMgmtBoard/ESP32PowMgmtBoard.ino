@@ -96,7 +96,7 @@ void setup()
 	}
 
 	//Test code:
-	IDCSerial.println("TTGO T Displat UART2 test");
+	IDCSerial.println("TTGO T Display UART2 test");
 
 	_PL();
 
@@ -115,10 +115,12 @@ void setup()
 	if (LocalDisplay.Init())
 	{
 		PCMStatus.LocalDisplayStatus = true;
+		_PP("Local Display initialized successfully");
 	}
 	else
 	{
 		PCMStatus.LocalDisplayStatus = false;
+		_PP("Local Display initialization FAIL");
 	}
 	UpdateLocalDisplayTask.enable();
 

@@ -16,7 +16,7 @@
 //so we must re-map SCL to another pin:
 
 const uint8_t sda = 21;
-const uint8_t scl = 27;
+const uint8_t scl = 26;
 
 void I2CBusClass::Init()
 {
