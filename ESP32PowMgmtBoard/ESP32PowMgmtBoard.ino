@@ -12,7 +12,7 @@
 	TFT_eSPI setup: #include <User_Setups/Setup25_TTGO_T_Display.h>
 
  v1.0	Initial release
- v1.1	
+ v1.1	Updated I2C pin mapping
  v1.2	
  v1.3	
 
@@ -105,9 +105,19 @@ void setup()
 	_PL(buf);
 	HeartbeatLEDTask.enable();
 
-	I2CBus.Init();
-	I2CBus.Scan();
-	_PL(I2CBus.GetActiveI2CAddressesString().c_str());
+	// Default SCL definition is: static const uint8_t SCL = 22
+	// Using the TTGO T-Display pin 22 is used for the built-in LED, so we must re-map SCL to another pin
+	// GPIO26 is the default UART2TX pin, though, so consider using GPIO27 instead once the hardwars can
+	//be updated
+	if (I2CBus.Init(GPIO_NUM_21, GPIO_NUM_26))
+	{
+		I2CBus.Scan();
+		_PL(I2CBus.GetActiveI2CAddressesString().c_str());
+	}
+	else
+	{
+		_PL("Error initializing I2C bus...");
+	}
 
 	SensorData.Init();
 	UpdateSensorsTask.enable();

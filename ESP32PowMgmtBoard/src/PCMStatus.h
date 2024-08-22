@@ -1,13 +1,7 @@
 /*	PCMStatus.h
 *	PCMStatusClass - Base class for module level status and parameters
 *
-*
-*
-*
 *	Mitchell Baldwin copyright 2024
-*
-*	v 0.0:	Initial commit
-*	v 0.1:
 *
 */
 #ifndef _PCMSTATUS_h
@@ -27,7 +21,7 @@ class PCMStatusClass
  public:
 	 // Power Control Module firmware version:
 	 uint8_t MajorVersion = 1;
-	 uint8_t MinorVersion = 0;
+	 uint8_t MinorVersion = 1;
 
 	 enum ComModes
 	 {

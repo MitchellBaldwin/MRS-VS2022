@@ -12,15 +12,14 @@
 
 //#include "DEBUG Macros.h"
 
-// Using the TTGO T Display pin 22 is used for the built-in LED,
-//so we must re-map SCL to another pin:
-
-const uint8_t sda = 21;
-const uint8_t scl = 26;
-
-void I2CBusClass::Init()
+bool I2CBusClass::Init()
 {
-	Wire.begin(sda, scl);
+	return Wire.begin(DefaultSDA, DefaultSCL);
+}
+
+bool I2CBusClass::Init(int sdaPin, int sclPin)
+{
+	return Wire.begin(sdaPin, sclPin);
 }
 
 bool I2CBusClass::ScanAddress(uint8_t address)

@@ -22,6 +22,13 @@
 
 constexpr auto MaxI2CDeviceCount = 8;
 
+// Using the TTGO T-Display pin 22 is used for the built-in LED, so we must re-map SCL to another pin:
+// Default SCL definition is static const uint8_t SCL = 22
+// GPIO26 is the default UART2TX pin, though, so consider using GPIO27 instead
+
+constexpr int DefaultSDA = SDA;
+constexpr int DefaultSCL = SCL;
+
 class I2CBusClass
 {
 	protected:
@@ -31,7 +38,8 @@ class I2CBusClass
 		uint8_t I2CDeviceCount = 0;
 		uint8_t ActiveI2CDeviceAddresses[MaxI2CDeviceCount];
 
-		void Init();
+		bool Init();
+		bool Init(int sdaPin, int sclPin);
 		bool ScanAddress(uint8_t address);
 		void Scan();
 		bool MaxDeviceCountExceeded();
