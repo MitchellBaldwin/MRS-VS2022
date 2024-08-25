@@ -4,11 +4,11 @@
  Author:	Mitchell Baldwin	copyright 2023
 
  Main executable for the Mobile Robot System Remote Controller Master Communications Computer (MRS RC MCC)
- Controller: ESP32 TTGO T-Display
+ Controller: ESP32 LilyGO T-Display S3
 
  Configuration notes:
-	Board: ESP32 Dev Module
-	TFT_eSPI setup: #include <User_Setups/Setup25_TTGO_T_Display.h>
+	Board: LilyGo T-Display-S3
+	TFT_eSPI setup: #include <User_Setups/Setup206_LilyGo_T_Display_S3.h>
 
  v1.0	Initial release
  v1.1	
@@ -59,12 +59,12 @@ constexpr auto HeartbeatLED = 0x02;
 //constexpr auto DebugLEDPin = 0x04;
 
 #include <TFT_eSPI.h>
-
 TFT_eSPI tft = TFT_eSPI();
 
 void setup() 
 {
 	int HeartbeatLEDTogglePeriod = NormalHeartbeatLEDTogglePeriodMicros;
+	pinMode(HeartbeatLED, OUTPUT);
 
 	IDCSerial.begin(115200);
 	if (!IDCSerial)
@@ -78,11 +78,17 @@ void setup()
 		//_PL("IDCSerial initialized")
 	}
 
+	// Display power is not eanbled by default when the board is powered through the LiPo battery connector
+	//so must explicitly turn LCD power on:
+	pinMode(LCD_POWER_ON, OUTPUT);
+	digitalWrite(LCD_POWER_ON, HIGH);
+
 	tft.init();
 	tft.setRotation(1);
 	tft.fillScreen(TFT_BLACK);
-	tft.println("Testing...");
+	tft.println("Serial debug port disconnected...");
 
+	taskToggleBuiltinLED.enable();
 }
 
 void loop() 

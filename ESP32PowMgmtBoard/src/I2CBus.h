@@ -5,7 +5,7 @@
 *
 *	Mitchell Baldwin copyright 2022-2024
 *
-*	v 0.00:	Initial command set
+*	v 1.00:	Initial feature set
 *	v 0.10: Modified for use with TTGO T Display module (26 Jun 2024)
 *
 */

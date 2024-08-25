@@ -47,14 +47,14 @@ constexpr byte LED_BUILTIN = 0x02;
 constexpr auto HeartbeatLEDToggleInterval = 1000;
 
 void ToggleBuiltinLEDCallback();
-Task HeartbeatLEDTask((HeartbeatLEDToggleInterval * TASK_MILLISECOND), TASK_FOREVER, &ToggleBuiltinLEDCallback, &MainScheduler, false);
+Task HeartbeatLEDTask((HeartbeatLEDToggleInterval * TASK_MILLISECOND), TASK_FOREVER, &ToggleBuiltinLEDCallback, &MainScheduler, true);
 
 #include <HardwareSerial.h>
-HardwareSerial USBSerial(0);				// Uses the same UART device as "Serial" but does not allow use of "Serial"?
+//HardwareSerial USBSerial(0);				// Uses the same UART device as "Serial" but does not allow use of "Serial"?
 HardwareSerial IDCSerial(2);				// UART for inter-device communication & control
 
-constexpr byte UART2RX = 0x19;				// GPIO25; IDCSerial RX pin
-constexpr byte UART2TX = 0x1A;				// GPIO26; IDCSerial TX pin
+//constexpr byte UART2RX = 0x19;				// GPIO25; IDCSerial RX pin
+//constexpr byte UART2TX = 0x1A;				// GPIO26; IDCSerial TX pin
 
 constexpr auto SensorUpdateInterval = 1000;
 void UpdateSensorsCallback();
@@ -64,39 +64,41 @@ constexpr auto LocalDisplayUpdateInterval = 1000;
 void UpdateLocalDisplayCallback();
 Task UpdateLocalDisplayTask((LocalDisplayUpdateInterval * TASK_MILLISECOND), TASK_FOREVER, &UpdateLocalDisplayCallback, &MainScheduler, false);
 
-#include "src\I2CBus.h"
-#include "PCMSensorData.h"
+#include <I2CBus.h>
+#include "src/PCMSensorData.h"
 
 void setup()
 {
 	char buf[32];
 	
-	USBSerial.begin(115200);
-	if (!USBSerial)
-	{
-		PCMStatus.UART0Status = false;
-		//HeartbeatLEDTogglePeriod = NoSerialHeartbeatLEDToggleInterval;
-	}
-	else
-	{
-		PCMStatus.UART0Status = true;
-		//HeartbeatLEDTogglePeriod = NormalHeartbeatLEDToggleInterval;
-	}
+	//USBSerial.begin(115200);
+	//if (!USBSerial)
+	//{
+	//	PCMStatus.UART0Status = false;
+	//	//HeartbeatLEDTogglePeriod = NoSerialHeartbeatLEDToggleInterval;
+	//}
+	//else
+	//{
+	//	PCMStatus.UART0Status = true;
+	//	//HeartbeatLEDTogglePeriod = NormalHeartbeatLEDToggleInterval;
+	//}
 
-	IDCSerial.begin(115200, SERIAL_8N1, UART2RX, UART2TX);
-	if (!IDCSerial)
-	{
-		PCMStatus.UART2Status = false;
-		//HeartbeatLEDTogglePeriod = NoSerialHeartbeatLEDToggleInterval;
-	}
-	else
-	{
-		PCMStatus.UART2Status = true;
-		//HeartbeatLEDTogglePeriod = NormalHeartbeatLEDToggleInterval;
-	}
+	_PL("In setup()...");
+	
+	//IDCSerial.begin(115200, SERIAL_8N1, UART2RX, UART2TX);
+	//if (!IDCSerial)
+	//{
+	//	PCMStatus.UART2Status = false;
+	//	//HeartbeatLEDTogglePeriod = NoSerialHeartbeatLEDToggleInterval;
+	//}
+	//else
+	//{
+	//	PCMStatus.UART2Status = true;
+	//	//HeartbeatLEDTogglePeriod = NormalHeartbeatLEDToggleInterval;
+	//}
 
-	//Test code:
-	IDCSerial.println("TTGO T Display UART2 test");
+	////Test code:
+	//IDCSerial.println("TTGO T Display UART2 test");
 
 	_PL();
 
@@ -107,9 +109,9 @@ void setup()
 
 	// Default SCL definition is: static const uint8_t SCL = 22
 	// Using the TTGO T-Display pin 22 is used for the built-in LED, so we must re-map SCL to another pin
-	// GPIO26 is the default UART2TX pin, though, so consider using GPIO27 instead once the hardwars can
+	// GPIO26 is in use as the UART2TX pin, though, so change to use GPIO27 instead once the hardware can
 	//be updated
-	if (I2CBus.Init(GPIO_NUM_21, GPIO_NUM_26))
+	if (I2CBus.Init(GPIO_NUM_43, GPIO_NUM_44))
 	{
 		I2CBus.Scan();
 		_PL(I2CBus.GetActiveI2CAddressesString().c_str());

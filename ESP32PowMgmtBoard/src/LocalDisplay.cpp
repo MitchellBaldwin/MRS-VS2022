@@ -5,8 +5,8 @@
 */
 
 #include "LocalDisplay.h"
-#include "I2CBus.h"
-#include "..\PCMSensorData.h"
+#include <I2CBus.h>
+#include "PCMSensorData.h"
 
 #include <WiFi.h>
 
