@@ -17,58 +17,88 @@
 
  */
 
-#include <I2CBus.h>
 #include <TaskScheduler.h>
 //#include <TaskSchedulerDeclarations.h>
 //#include <TaskSchedulerSleepMethods.h>
 
-Scheduler mainScheduler;	// Main task scheduler
+Scheduler MainScheduler;	// Main task scheduler
 
 constexpr int HeartbeatLEDPin = GPIO_NUM_16;
 constexpr auto NormalHeartbeatLEDToggleInterval = 1000;		// 1 s on, 1 s off; indicates normal heartbeat
 constexpr auto NoSerialHeartbeatLEDToggleInterval = 500;
 
 void ToggleBuiltinLEDCallback();
-Task taskToggleBuiltinLED((NormalHeartbeatLEDToggleInterval * TASK_MILLISECOND), TASK_FOREVER, &ToggleBuiltinLEDCallback, &mainScheduler, false);
+Task ToggleBuiltinLEDTask((NormalHeartbeatLEDToggleInterval * TASK_MILLISECOND), TASK_FOREVER, &ToggleBuiltinLEDCallback, &MainScheduler, false);
 
-#include <TFT_eSPI.h>
-TFT_eSPI tft = TFT_eSPI();
+constexpr auto SensorUpdateInterval = 1000;
+void UpdateSensorsCallback();
+Task UpdateSensorsTask((SensorUpdateInterval* TASK_MILLISECOND), TASK_FOREVER, &UpdateSensorsCallback, &MainScheduler, false);
+
+constexpr auto LocalDisplayUpdateInterval = 1000;
+void UpdateLocalDisplayCallback();
+Task UpdateLocalDisplayTask((LocalDisplayUpdateInterval* TASK_MILLISECOND), TASK_FOREVER, &UpdateLocalDisplayCallback, &MainScheduler, false);
+
+#include "src/DEBUG Macros.h"
+#include <I2CBus.h>
+#include "src/PCMSensorData.h"
+#include "src/LocalDisplay.h"
 
 void setup()
 {
+	char buf[32];
+
+	_PL("");
+	
 	pinMode(HeartbeatLEDPin, OUTPUT);
+	sprintf(buf, "Heartbeat LED on GPIO%02X", HeartbeatLEDPin);
+	_PL(buf);
 
-	//// Test code:
-	//Serial.println("");
-	//Serial.println("In setup()");
+	if (I2CBus.Init(GPIO_NUM_43, GPIO_NUM_44))
+	{
+		I2CBus.Scan();
+		_PL(I2CBus.GetActiveI2CAddressesString());
+	}
+	else
+	{
+		_PL("Error initializing I2C bus...");
+	}
 
-	// Display power is not eanbled by default when the board is powered through the LiPo battery connector
-	//so must explicitly turn LCD power on:
-	pinMode(LCD_POWER_ON, OUTPUT);
-	digitalWrite(LCD_POWER_ON, HIGH);
+	SensorData.Init();
+	UpdateSensorsTask.enable();
 
-	tft.init();
-	tft.setRotation(1);
-	tft.fillScreen(TFT_BLACK);
-	tft.println("Serial debug port still connected?");
+	if (LocalDisplay.Init())
+	{
+		PCMStatus.LocalDisplayStatus = true;
+		_PP("Local Display initialized successfully");
+	}
+	else
+	{
+		PCMStatus.LocalDisplayStatus = false;
+		_PP("Local Display initialization FAIL");
+	}
+	UpdateLocalDisplayTask.enable();
 
-	//Serial.println("Serial debug port still connected?");
-
-	I2CBus.Init(GPIO_NUM_43, GPIO_NUM_44);
-	I2CBus.Scan();
-	tft.println(I2CBus.Get1st6ActiveI2CAddressesString());
-
-	taskToggleBuiltinLED.enable();
+	ToggleBuiltinLEDTask.enable();
 
 }
 
 void loop()
 {
-	mainScheduler.execute();
+	MainScheduler.execute();
 
 }
 
 void ToggleBuiltinLEDCallback()
 {
 	digitalWrite(HeartbeatLEDPin, !digitalRead(HeartbeatLEDPin));
+}
+
+void UpdateSensorsCallback()
+{
+	SensorData.Update();
+}
+
+void UpdateLocalDisplayCallback()
+{
+	LocalDisplay.Update();
 }

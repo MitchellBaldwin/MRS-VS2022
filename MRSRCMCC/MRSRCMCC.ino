@@ -55,7 +55,7 @@ uint8_t idcPacketType = 0x00;				// Initialize the type of command received
 void OnIDCPacket(const uint8_t* buffer, size_t size);
 void SendIDCPacket();
 
-constexpr auto HeartbeatLED = 0x02;
+constexpr int HeartbeatLEDPin = GPIO_NUM_16;
 //constexpr auto DebugLEDPin = 0x04;
 
 #include <TFT_eSPI.h>
@@ -64,7 +64,7 @@ TFT_eSPI tft = TFT_eSPI();
 void setup() 
 {
 	int HeartbeatLEDTogglePeriod = NormalHeartbeatLEDTogglePeriodMicros;
-	pinMode(HeartbeatLED, OUTPUT);
+	pinMode(HeartbeatLEDPin, OUTPUT);
 
 	IDCSerial.begin(115200);
 	if (!IDCSerial)
@@ -110,7 +110,7 @@ void loop()
 
 void ToggleBuiltinLEDCallback()
 {
-	digitalWrite(HeartbeatLED, !digitalRead(HeartbeatLED));
+	digitalWrite(HeartbeatLEDPin, !digitalRead(HeartbeatLEDPin));
 }
 
 void OnIDCPacket(const uint8_t* buffer, size_t size)
