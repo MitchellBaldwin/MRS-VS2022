@@ -12,10 +12,7 @@
 
 void LocalDisplayClass::DrawPageHeaderAndFooter()
 {
-	char upArrow[1] = { 0x18 };
-	char downArrow[1] = { 0x19 };
-
-	//tft.setCursor();	// Used with 'printxx' statements; not needed when using drawString()
+	// Draw header:
 	tft.setTextSize(1);
 	tft.setTextColor(TFT_BLUE, TFT_BLACK, false);
 	tft.setTextDatum(TL_DATUM);
@@ -33,8 +30,8 @@ void LocalDisplayClass::DrawPageHeaderAndFooter()
 	sprintf(buf, "%s", PageMenus[currentPage]);
 	tft.drawString(buf, tft.width() / 2, tft.height() - 2);
 
-	// Draw rectangle at screen bounds to aid framing physical display to panel:
-	tft.drawRect(0, 0, tft.getViewportWidth(), tft.getViewportHeight(), TFT_DARKCYAN);
+	//// Draw rectangle at screen bounds to aid framing physical display to panel:
+	//tft.drawRect(0, 0, tft.getViewportWidth(), tft.getViewportHeight(), TFT_DARKCYAN);
 }
 
 void LocalDisplayClass::DrawSYSPage()
@@ -45,9 +42,6 @@ void LocalDisplayClass::DrawSYSPage()
 	{
 		// Clear display and redraw static elements of the page format:
 		DrawPageHeaderAndFooter();
-
-		char upArrow[1] = { 0x18 };
-		char downArrow[1] = { 0x19 };
 
 		tft.setTextSize(1);
 		tft.setTextColor(TFT_GREENYELLOW);
@@ -71,7 +65,7 @@ void LocalDisplayClass::DrawSYSPage()
 
 		tft.setTextDatum(CR_DATUM);
 		sprintf(buf, "UART2 %s", PCMStatus.UART2Status ? "OK" : "NO");
-		tft.drawString(buf, tft.width() - 2, 30);
+		tft.drawString(buf, tft.width() / 2 - 2, 30);
 
 		tft.setTextColor(TFT_PINK);
 		tft.setTextDatum(CL_DATUM);
@@ -86,14 +80,29 @@ void LocalDisplayClass::DrawSYSPage()
 
 	// Update dynamic displays:
 
-	int16_t cursorY = tft.height() / 2;
+	int16_t cursorY = tft.height() - 20;
 	tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);	//DONE: Does bgfill = true work with the print() method? -> Yes, newly printed text clears the background
 	
 	// Measure & display backup battery voltage:
 	tft.setTextDatum(BL_DATUM);
 	tft.setTextSize(2);
-	tft.drawString("V", 2, cursorY);
-	int32_t cursorX = tft.textWidth("V", 2) + 1;
+	int32_t cursorX = tft.width() / 2 + 2;
+	tft.drawString("V", cursorX, cursorY);
+	cursorX += tft.textWidth("V", 2) + 1;
+	tft.setTextSize(1);
+	tft.drawString("MCU", cursorX, cursorY);	// Subscript
+	tft.setTextSize(2);
+	tft.setTextDatum(BR_DATUM);
+	sprintf(buf, "%5.2F V", SensorData.VMCU);
+	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
+
+	// Measure & display backup battery voltage:
+	tft.setTextDatum(BL_DATUM);
+	tft.setTextSize(2);
+	cursorX = tft.width() / 2 + 2;
+	cursorY -= 20;
+	tft.drawString("V", cursorX, cursorY);
+	cursorX += tft.textWidth("V", 2) + 1;
 	tft.setTextSize(1);
 	tft.drawString("BBAT", cursorX, cursorY);	// Subscript
 	tft.setTextSize(2);
@@ -101,12 +110,13 @@ void LocalDisplayClass::DrawSYSPage()
 	sprintf(buf, "%5.2F V", SensorData.VBBat);
 	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
 
-	// Measure & display internal battery voltage:
+	// Measure & display internal 18650 cell voltage:
 	tft.setTextDatum(BL_DATUM);
 	tft.setTextSize(2);
+	cursorX = tft.width() / 2 + 2;
 	cursorY -= 20;
-	tft.drawString("V", 2, cursorY);
-	cursorX = tft.textWidth("V", 2) + 1;
+	tft.drawString("V", cursorX, cursorY);
+	cursorX += tft.textWidth("V", 2) + 1;
 	tft.setTextSize(1);
 	tft.drawString("BAT", cursorX, cursorY);	// Subscript
 	tft.setTextSize(2);
@@ -114,12 +124,27 @@ void LocalDisplayClass::DrawSYSPage()
 	sprintf(buf, "%5.2F V", SensorData.VBat);
 	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
 
+	// Measure & display internally regulated (5 v) voltage:
+	tft.setTextDatum(BL_DATUM);
+	tft.setTextSize(2);
+	cursorX = tft.width() / 2 + 2;
+	cursorY -= 20;
+	tft.drawString("V", cursorX, cursorY);
+	cursorX += tft.textWidth("V", 2) + 1;
+	tft.setTextSize(1);
+	tft.drawString("5", cursorX, cursorY);	// Subscript
+	tft.setTextSize(2);
+	tft.setTextDatum(BR_DATUM);
+	sprintf(buf, "%5.2F V", SensorData.V5);
+	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
+
 	// Measure & display external supply voltage:
 	tft.setTextDatum(BL_DATUM);
 	tft.setTextSize(2);
+	cursorX = tft.width() / 2 + 2;
 	cursorY -= 20;
-	tft.drawString("V", 2, cursorY);
-	cursorX = tft.textWidth("V", 2) + 1;
+	tft.drawString("V", cursorX, cursorY);
+	cursorX += tft.textWidth("V", 2) + 1;
 	tft.setTextSize(1);
 	tft.drawString("EXT", cursorX, cursorY);	// Subscript
 	tft.setTextSize(2);
@@ -161,7 +186,8 @@ bool LocalDisplayClass::Init()
 	digitalWrite(LCD_POWER_ON, HIGH);
 
 	tft.init();
-	tft.setRotation(2);
+	tft.setRotation(3);
+
 	tft.fillScreen(TFT_BLACK);
 
 	Control(LocalDisplayClass::SYSPage);

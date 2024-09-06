@@ -30,7 +30,7 @@ void NMControlsClass::Init(
 	LOSBs.Init(DefaultLOSBSensePin, LOSB_NUM_LEVELS, LOSB_LEVELS);
 	ROSBs.Init(DefaultROSBSensePin, ROSB_NUM_LEVELS, ROSB_LEVELS);
 
-	RightRockerSwitch = new ezButton(rightRockerSwitchPin);
+	RightRockerSwitch = new ezButton(rightRockerSwitchPin, INPUT_PULLUP);
 
 	if (!HDGEncoder.begin(hdgEncoderI2CAddress) || !HDGNeoPix.begin(hdgEncoderI2CAddress))
 	{
@@ -128,28 +128,13 @@ void NMControlsClass::Update()
 	LOSBs.Update();
 	ROSBs.Update();
 
-	//// Check for OSB press:
-	//LeftOSBADCReading = analogRead(LOSBSensePin);
-	//RightOSBADCReading = analogRead(ROSBSensePin);
-	//OSBArrayClass::OSBs osb = (OSBArrayClass::OSBs)LOSBArray.GetOSBPress();
-	//if (osb != OSBArrayClass::OSBs::NoOsb)
-	//{
-	//	NewLOSBPress = true;
-	//	LastLOSBPressed = osb;
-	//}
-	//osb = (OSBArrayClass::OSBs)ROSBArray.GetOSBPress();
-	//if (osb != OSBArrayClass::OSBs::NoOsb)
-	//{
-	//	NewROSBPress = true;
-	//	LastROSBPressed = osb;
-	//}
-	
 	// Read right rocker switch state:
-	//TODO: Turning on the right rocker switch, which directly connects the port pin to GND, dims the display
-	//Check: change in current draw when right rocker switch is turned on and off
-	//Check: how ezButton handles internal pullup resistor settings
+	//DONE: Turning on the right rocker switch, which directly connects the port pin to GND, dims the display
+	//Check: change in current draw when right rocker switch is turned on and off -> current draw increases 30~35 mA
+	//Check: how ezButton handles internal pullup resistor settings - Defaults to INPUT_PULLUP
 	//Try: reversing the sense such that turning the right rocker switch on connects the port pin to 3.3 V
 	//instead of GND
+	// Solution: Changed to GPIO05 (see NOTE in NMControls.h)
 	RightRockerSwitch->loop();
 	int newState = RightRockerSwitch->getState();
 	newState = newState ? 0 : 1;					// Need to reverse sense of state for rocker switch
@@ -160,7 +145,8 @@ void NMControlsClass::Update()
 	}
 
 	// Read encoders and check for encoder button presses:
-	//TODO: Test debounce
+	//TODO: Test debounce; wrap encoder button function into ACEButton, which should take care of debouncing and other
+	//button conditioning and event handling needs
 	if (!HDGEncoder.digitalRead(SS_BUTTON))
 	{
 		HDGButtonState = true;
@@ -257,32 +243,6 @@ void NMControlsClass::Update()
 	}
 
 }
-
-//OSBArrayClass::OSBs NMControlsClass::NewLOSBKeyWasPressed()
-//{
-//	if (NewLOSBPress)
-//	{
-//		NewLOSBPress = false;
-//		return LastLOSBPressed;	
-//	}
-//	else
-//	{
-//		return OSBArrayClass::OSBs::NoOsb;
-//	}
-//}
-
-//OSBArrayClass::OSBs NMControlsClass::NewROSBKeyWasPressed()
-//{
-//	if (NewROSBPress)
-//	{
-//		NewROSBPress = false;
-//		return LastROSBPressed;
-//	}
-//	else
-//	{
-//		return OSBArrayClass::OSBs::NoOsb;
-//	}
-//}
 
 bool NMControlsClass::HDGButtonWasPressed()
 {

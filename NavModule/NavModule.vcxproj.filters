@@ -14,107 +14,107 @@
       <Extensions>xml;json;txt;rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="src">
-      <UniqueIdentifier>{8fde63ea-25a5-4ecc-92fe-006d51944aa1}</UniqueIdentifier>
+      <UniqueIdentifier>{65aebc0f-da91-4ba3-8928-e935c792dfc5}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly">
-      <UniqueIdentifier>{15bd527f-faab-4ae6-a96f-488cbd52a41a}</UniqueIdentifier>
+      <UniqueIdentifier>{9e229090-c679-411e-97b8-47c98acd89b1}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\core">
-      <UniqueIdentifier>{a8438af5-60d5-42f3-902d-337c7272ea7d}</UniqueIdentifier>
+      <UniqueIdentifier>{1b64b769-caf1-43c8-9f4d-f82cd523c13b}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\core\apps">
-      <UniqueIdentifier>{9f89b664-46ac-44e0-8186-fc5a1c818957}</UniqueIdentifier>
+      <UniqueIdentifier>{dfde7d9a-d7e6-4c3f-9ced-c4e8e008e096}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\core\apps\sntp">
-      <UniqueIdentifier>{985827da-bf47-4492-badb-373ff1e54ebe}</UniqueIdentifier>
+      <UniqueIdentifier>{8299290e-cb28-4839-814c-1e0c6d00bef4}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\core\libb64">
-      <UniqueIdentifier>{bc988775-eb12-4790-9f95-35ede93fc68f}</UniqueIdentifier>
+      <UniqueIdentifier>{9a3c35cc-8039-4843-82e2-a7d707ff4c24}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries">
-      <UniqueIdentifier>{6ebf999b-4324-456b-8bb0-e98c7bca75d9}</UniqueIdentifier>
+      <UniqueIdentifier>{abf30490-3e27-4853-83a5-1fc1023307cf}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\WiFi">
-      <UniqueIdentifier>{2ce5d64d-0b36-40a2-93d1-c18329057546}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\_micro-api-readonly\libraries\TFT_eSPI">
-      <UniqueIdentifier>{931104b7-7324-429b-9bee-ebbc7c0c3e1f}</UniqueIdentifier>
+      <UniqueIdentifier>{8897077d-bee4-4b22-abbc-ba53994885dc}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\TaskScheduler">
-      <UniqueIdentifier>{8ca52964-a94f-48bf-adaf-b1fedec84ffd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\_micro-api-readonly\libraries\SPI">
-      <UniqueIdentifier>{854773df-bea7-4f54-9647-10ac9d7fe601}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\_micro-api-readonly\libraries\FS">
-      <UniqueIdentifier>{51037873-2176-4b03-b8dc-32e11eb16063}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\_micro-api-readonly\libraries\SPIFFS">
-      <UniqueIdentifier>{d71d2596-b9f4-4859-9d94-4255122c333c}</UniqueIdentifier>
+      <UniqueIdentifier>{0137cad5-1d69-4d65-b3ef-8264a6417cc4}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\ezButton">
-      <UniqueIdentifier>{36af080c-6396-4d47-9bc8-5fb7e9383394}</UniqueIdentifier>
+      <UniqueIdentifier>{46e85d1f-c931-4c44-a676-f06687a7e1dc}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\Adafruit_seesaw_Library">
-      <UniqueIdentifier>{955da9d1-9727-4ef0-9d81-cee4840791df}</UniqueIdentifier>
+      <UniqueIdentifier>{a1939257-9837-4a77-965a-1c0f91943d50}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\Adafruit_BusIO">
-      <UniqueIdentifier>{8bff035a-b812-4568-b2d9-04b1097b4e09}</UniqueIdentifier>
+      <UniqueIdentifier>{c27daa2d-0125-4119-93e2-51f8ae1f4781}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\Wire">
-      <UniqueIdentifier>{d360670d-0515-426c-aad7-622b2fa7fdb7}</UniqueIdentifier>
+      <UniqueIdentifier>{37400d94-70b6-4df3-b8a7-773733a21466}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\ezAnalogKeypad">
-      <UniqueIdentifier>{d99b3623-05ee-4bf1-a8cb-2d30deacc96f}</UniqueIdentifier>
+      <UniqueIdentifier>{0d2a7de0-f768-4cb5-b463-039e1d2105ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\_micro-api-readonly\libraries\TFT_eSPI">
+      <UniqueIdentifier>{311c318e-a428-4d0c-8030-8178a616c57d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\_micro-api-readonly\libraries\SPI">
+      <UniqueIdentifier>{fd74a030-839e-4b9c-bb3d-e2e224fb7a58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\_micro-api-readonly\libraries\FS">
+      <UniqueIdentifier>{429a34a8-1de7-4aef-8fb3-749df74c56c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\_micro-api-readonly\libraries\SPIFFS">
+      <UniqueIdentifier>{e937c057-2536-4007-bc27-5e2eb64d6b73}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\movingAvg">
-      <UniqueIdentifier>{85bc7558-6fd6-4fd8-8ba9-d7b789592dc2}</UniqueIdentifier>
+      <UniqueIdentifier>{877a1ec0-5ece-4330-8084-db83dad8ec0e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\arduino folders read me.txt">
       <Filter>Misc Files</Filter>
     </None>
-    <None Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\library.properties">
+    <None Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\library.properties">
       <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
     </None>
-    <None Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\TFT_eSPI\library.json">
-      <Filter>src\_micro-api-readonly\libraries\TFT_eSPI</Filter>
-    </None>
-    <None Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\TFT_eSPI\library.properties">
-      <Filter>src\_micro-api-readonly\libraries\TFT_eSPI</Filter>
-    </None>
-    <None Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\TaskScheduler\library.json">
+    <None Include="..\..\..\Arduino\libraries\TaskScheduler\library.json">
       <Filter>src\_micro-api-readonly\libraries\TaskScheduler</Filter>
     </None>
-    <None Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\TaskScheduler\library.properties">
+    <None Include="..\..\..\Arduino\libraries\TaskScheduler\library.properties">
       <Filter>src\_micro-api-readonly\libraries\TaskScheduler</Filter>
     </None>
-    <None Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\SPI\library.properties">
-      <Filter>src\_micro-api-readonly\libraries\SPI</Filter>
-    </None>
-    <None Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\FS\library.properties">
-      <Filter>src\_micro-api-readonly\libraries\FS</Filter>
-    </None>
-    <None Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\SPIFFS\library.properties">
-      <Filter>src\_micro-api-readonly\libraries\SPIFFS</Filter>
-    </None>
-    <None Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\ezButton\library.properties">
+    <None Include="..\..\..\Arduino\libraries\ezButton\library.properties">
       <Filter>src\_micro-api-readonly\libraries\ezButton</Filter>
     </None>
-    <None Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\Adafruit_seesaw_Library\library.properties">
+    <None Include="..\..\..\Arduino\libraries\Adafruit_seesaw_Library\library.properties">
       <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
     </None>
-    <None Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\Adafruit_BusIO\library.properties">
+    <None Include="..\..\..\Arduino\libraries\Adafruit_BusIO\library.properties">
       <Filter>src\_micro-api-readonly\libraries\Adafruit_BusIO</Filter>
     </None>
-    <None Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\Wire\library.properties">
+    <None Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\Wire\library.properties">
       <Filter>src\_micro-api-readonly\libraries\Wire</Filter>
     </None>
-    <None Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\ezAnalogKeypad\library.properties">
+    <None Include="..\..\..\Arduino\libraries\ezAnalogKeypad\library.properties">
       <Filter>src\_micro-api-readonly\libraries\ezAnalogKeypad</Filter>
     </None>
-    <None Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\movingAvg\library.properties">
+    <None Include="..\..\..\Arduino\libraries\TFT_eSPI\library.json">
+      <Filter>src\_micro-api-readonly\libraries\TFT_eSPI</Filter>
+    </None>
+    <None Include="..\..\..\Arduino\libraries\TFT_eSPI\library.properties">
+      <Filter>src\_micro-api-readonly\libraries\TFT_eSPI</Filter>
+    </None>
+    <None Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\SPI\library.properties">
+      <Filter>src\_micro-api-readonly\libraries\SPI</Filter>
+    </None>
+    <None Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\FS\library.properties">
+      <Filter>src\_micro-api-readonly\libraries\FS</Filter>
+    </None>
+    <None Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\SPIFFS\library.properties">
+      <Filter>src\_micro-api-readonly\libraries\SPIFFS</Filter>
+    </None>
+    <None Include="..\..\..\Arduino\libraries\movingAvg\library.properties">
       <Filter>src\_micro-api-readonly\libraries\movingAvg</Filter>
     </None>
   </ItemGroup>
@@ -134,291 +134,6 @@
     <ClInclude Include="src\Measurement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\Arduino.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\base64.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\binary.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\cbuf.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\Client.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\core_version.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\Esp.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-adc.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-bt.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-cpu.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-dac.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-gpio.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-i2c-slave.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-i2c.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-ledc.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-log.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-matrix.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-psram.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-rgb-led.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-rmt.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-sigmadelta.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-spi.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-timer.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-tinyusb.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-touch.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-uart.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp8266-compat.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp_arduino_version.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\FirmwareMSC.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\firmware_msc_fat.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\FunctionalInterrupt.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\HardwareSerial.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\HWCDC.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\IPAddress.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\IPv6Address.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\MD5Builder.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\pgmspace.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\Print.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\Printable.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\Server.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\stdlib_noniso.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\Stream.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\StreamString.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\Udp.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\USB.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\USBCDC.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\USBMSC.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\WCharacter.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\wiring_private.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\WString.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\apps\sntp\sntp.h">
-      <Filter>src\_micro-api-readonly\core\apps\sntp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\libb64\cdecode.h">
-      <Filter>src\_micro-api-readonly\core\libb64</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\libb64\cencode.h">
-      <Filter>src\_micro-api-readonly\core\libb64</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\variants\doitESP32devkitV1\pins_arduino.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFi.h">
-      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiAP.h">
-      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiClient.h">
-      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiGeneric.h">
-      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiMulti.h">
-      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiScan.h">
-      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiServer.h">
-      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiSTA.h">
-      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiType.h">
-      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiUdp.h">
-      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\TFT_eSPI\TFT_config.h">
-      <Filter>src\_micro-api-readonly\libraries\TFT_eSPI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\TFT_eSPI\TFT_eSPI.h">
-      <Filter>src\_micro-api-readonly\libraries\TFT_eSPI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\TFT_eSPI\User_Setup.h">
-      <Filter>src\_micro-api-readonly\libraries\TFT_eSPI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\TFT_eSPI\User_Setup_Select.h">
-      <Filter>src\_micro-api-readonly\libraries\TFT_eSPI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\TaskScheduler\src\TaskScheduler.h">
-      <Filter>src\_micro-api-readonly\libraries\TaskScheduler</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\TaskScheduler\src\TaskSchedulerDeclarations.h">
-      <Filter>src\_micro-api-readonly\libraries\TaskScheduler</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\TaskScheduler\src\TaskSchedulerSleepMethods.h">
-      <Filter>src\_micro-api-readonly\libraries\TaskScheduler</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\SPI\src\SPI.h">
-      <Filter>src\_micro-api-readonly\libraries\SPI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\FS\src\FS.h">
-      <Filter>src\_micro-api-readonly\libraries\FS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\FS\src\FSImpl.h">
-      <Filter>src\_micro-api-readonly\libraries\FS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\FS\src\vfs_api.h">
-      <Filter>src\_micro-api-readonly\libraries\FS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\SPIFFS\src\SPIFFS.h">
-      <Filter>src\_micro-api-readonly\libraries\SPIFFS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\ezButton\src\ezButton.h">
-      <Filter>src\_micro-api-readonly\libraries\ezButton</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\Adafruit_seesaw_Library\Adafruit_Crickit.h">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\Adafruit_seesaw_Library\Adafruit_miniTFTWing.h">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\Adafruit_seesaw_Library\Adafruit_NeoKey_1x4.h">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\Adafruit_seesaw_Library\Adafruit_NeoTrellis.h">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\Adafruit_seesaw_Library\Adafruit_seesaw.h">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\Adafruit_seesaw_Library\Adafruit_TFTShield18.h">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\Adafruit_seesaw_Library\seesaw_motor.h">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\Adafruit_seesaw_Library\seesaw_neopixel.h">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\Adafruit_seesaw_Library\seesaw_servo.h">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\Adafruit_seesaw_Library\seesaw_spectrum.h">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\Adafruit_BusIO\Adafruit_BusIO_Register.h">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_BusIO</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\Adafruit_BusIO\Adafruit_I2CDevice.h">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_BusIO</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\Adafruit_BusIO\Adafruit_I2CRegister.h">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_BusIO</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\Adafruit_BusIO\Adafruit_SPIDevice.h">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_BusIO</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\Wire\src\Wire.h">
-      <Filter>src\_micro-api-readonly\libraries\Wire</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\ezAnalogKeypad\src\ezAnalogKeypad.h">
-      <Filter>src\_micro-api-readonly\libraries\ezAnalogKeypad</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\movingAvg\src\movingAvg.h">
-      <Filter>src\_micro-api-readonly\libraries\movingAvg</Filter>
-    </ClInclude>
     <ClInclude Include="src\NMStatus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -437,48 +152,336 @@
     <ClInclude Include="src\NMCommands.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\Arduino.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\base64.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\binary.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\cbuf.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\Client.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\core_version.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\Esp.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-adc.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-bt.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-cpu.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-dac.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-gpio.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-i2c-slave.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-i2c.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-ledc.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-log.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-matrix.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-psram.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-rgb-led.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-rmt.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-sigmadelta.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-spi.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-timer.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-tinyusb.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-touch.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-uart.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp8266-compat.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp_arduino_version.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\FirmwareMSC.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\firmware_msc_fat.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\FunctionalInterrupt.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\HardwareSerial.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\HWCDC.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\IPAddress.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\IPv6Address.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\MD5Builder.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\pgmspace.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\Print.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\Printable.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\Server.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\stdlib_noniso.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\Stream.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\StreamString.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\Udp.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\USB.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\USBCDC.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\USBMSC.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\WCharacter.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\wiring_private.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\WString.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\apps\sntp\sntp.h">
+      <Filter>src\_micro-api-readonly\core\apps\sntp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\libb64\cdecode.h">
+      <Filter>src\_micro-api-readonly\core\libb64</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\libb64\cencode.h">
+      <Filter>src\_micro-api-readonly\core\libb64</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\variants\doitESP32devkitV1\pins_arduino.h">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFi.h">
+      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiAP.h">
+      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiClient.h">
+      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiGeneric.h">
+      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiMulti.h">
+      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiScan.h">
+      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiServer.h">
+      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiSTA.h">
+      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiType.h">
+      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiUdp.h">
+      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\libraries\TaskScheduler\src\TaskScheduler.h">
+      <Filter>src\_micro-api-readonly\libraries\TaskScheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\libraries\TaskScheduler\src\TaskSchedulerDeclarations.h">
+      <Filter>src\_micro-api-readonly\libraries\TaskScheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\libraries\TaskScheduler\src\TaskSchedulerSleepMethods.h">
+      <Filter>src\_micro-api-readonly\libraries\TaskScheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\libraries\ezButton\src\ezButton.h">
+      <Filter>src\_micro-api-readonly\libraries\ezButton</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\libraries\Adafruit_seesaw_Library\Adafruit_Crickit.h">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\libraries\Adafruit_seesaw_Library\Adafruit_miniTFTWing.h">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\libraries\Adafruit_seesaw_Library\Adafruit_NeoKey_1x4.h">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\libraries\Adafruit_seesaw_Library\Adafruit_NeoTrellis.h">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\libraries\Adafruit_seesaw_Library\Adafruit_seesaw.h">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\libraries\Adafruit_seesaw_Library\Adafruit_TFTShield18.h">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\libraries\Adafruit_seesaw_Library\seesaw_motor.h">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\libraries\Adafruit_seesaw_Library\seesaw_neopixel.h">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\libraries\Adafruit_seesaw_Library\seesaw_servo.h">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\libraries\Adafruit_seesaw_Library\seesaw_spectrum.h">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\libraries\Adafruit_BusIO\Adafruit_BusIO_Register.h">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_BusIO</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\libraries\Adafruit_BusIO\Adafruit_I2CDevice.h">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_BusIO</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\libraries\Adafruit_BusIO\Adafruit_I2CRegister.h">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_BusIO</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\libraries\Adafruit_BusIO\Adafruit_SPIDevice.h">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_BusIO</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\Wire\src\Wire.h">
+      <Filter>src\_micro-api-readonly\libraries\Wire</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\libraries\ezAnalogKeypad\src\ezAnalogKeypad.h">
+      <Filter>src\_micro-api-readonly\libraries\ezAnalogKeypad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\libraries\TFT_eSPI\TFT_config.h">
+      <Filter>src\_micro-api-readonly\libraries\TFT_eSPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\libraries\TFT_eSPI\TFT_eSPI.h">
+      <Filter>src\_micro-api-readonly\libraries\TFT_eSPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\libraries\TFT_eSPI\User_Setup.h">
+      <Filter>src\_micro-api-readonly\libraries\TFT_eSPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\libraries\TFT_eSPI\User_Setup_Select.h">
+      <Filter>src\_micro-api-readonly\libraries\TFT_eSPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\SPI\src\SPI.h">
+      <Filter>src\_micro-api-readonly\libraries\SPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\FS\src\FS.h">
+      <Filter>src\_micro-api-readonly\libraries\FS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\FS\src\FSImpl.h">
+      <Filter>src\_micro-api-readonly\libraries\FS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\FS\src\vfs_api.h">
+      <Filter>src\_micro-api-readonly\libraries\FS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\SPIFFS\src\SPIFFS.h">
+      <Filter>src\_micro-api-readonly\libraries\SPIFFS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\libraries\movingAvg\src\movingAvg.h">
+      <Filter>src\_micro-api-readonly\libraries\movingAvg</Filter>
+    </ClInclude>
+    <ClInclude Include="src\NMControls.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="board.txt">
       <Filter>Misc Files</Filter>
     </Text>
-    <Text Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\keywords.txt">
+    <Text Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\keywords.txt">
       <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
     </Text>
-    <Text Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\TFT_eSPI\CMakeLists.txt">
-      <Filter>src\_micro-api-readonly\libraries\TFT_eSPI</Filter>
-    </Text>
-    <Text Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\TFT_eSPI\keywords.txt">
-      <Filter>src\_micro-api-readonly\libraries\TFT_eSPI</Filter>
-    </Text>
-    <Text Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\TFT_eSPI\license.txt">
-      <Filter>src\_micro-api-readonly\libraries\TFT_eSPI</Filter>
-    </Text>
-    <Text Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\TFT_eSPI\README.txt">
-      <Filter>src\_micro-api-readonly\libraries\TFT_eSPI</Filter>
-    </Text>
-    <Text Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\TaskScheduler\keywords.txt">
+    <Text Include="..\..\..\Arduino\libraries\TaskScheduler\keywords.txt">
       <Filter>src\_micro-api-readonly\libraries\TaskScheduler</Filter>
     </Text>
-    <Text Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\TaskScheduler\LICENSE.txt">
+    <Text Include="..\..\..\Arduino\libraries\TaskScheduler\LICENSE.txt">
       <Filter>src\_micro-api-readonly\libraries\TaskScheduler</Filter>
     </Text>
-    <Text Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\TaskScheduler\extras\These documents are no longer current.txt">
+    <Text Include="..\..\..\Arduino\libraries\TaskScheduler\extras\These documents are no longer current.txt">
       <Filter>src\_micro-api-readonly\libraries\TaskScheduler</Filter>
     </Text>
-    <Text Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\SPI\keywords.txt">
-      <Filter>src\_micro-api-readonly\libraries\SPI</Filter>
-    </Text>
-    <Text Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\ezButton\keywords.txt">
+    <Text Include="..\..\..\Arduino\libraries\ezButton\keywords.txt">
       <Filter>src\_micro-api-readonly\libraries\ezButton</Filter>
     </Text>
-    <Text Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\Wire\keywords.txt">
+    <Text Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\Wire\keywords.txt">
       <Filter>src\_micro-api-readonly\libraries\Wire</Filter>
     </Text>
-    <Text Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\ezAnalogKeypad\keywords.txt">
+    <Text Include="..\..\..\Arduino\libraries\ezAnalogKeypad\keywords.txt">
       <Filter>src\_micro-api-readonly\libraries\ezAnalogKeypad</Filter>
     </Text>
-    <Text Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\movingAvg\keywords.txt">
+    <Text Include="..\..\..\Arduino\libraries\TFT_eSPI\CMakeLists.txt">
+      <Filter>src\_micro-api-readonly\libraries\TFT_eSPI</Filter>
+    </Text>
+    <Text Include="..\..\..\Arduino\libraries\TFT_eSPI\keywords.txt">
+      <Filter>src\_micro-api-readonly\libraries\TFT_eSPI</Filter>
+    </Text>
+    <Text Include="..\..\..\Arduino\libraries\TFT_eSPI\license.txt">
+      <Filter>src\_micro-api-readonly\libraries\TFT_eSPI</Filter>
+    </Text>
+    <Text Include="..\..\..\Arduino\libraries\TFT_eSPI\README.txt">
+      <Filter>src\_micro-api-readonly\libraries\TFT_eSPI</Filter>
+    </Text>
+    <Text Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\SPI\keywords.txt">
+      <Filter>src\_micro-api-readonly\libraries\SPI</Filter>
+    </Text>
+    <Text Include="..\..\..\Arduino\libraries\movingAvg\keywords.txt">
       <Filter>src\_micro-api-readonly\libraries\movingAvg</Filter>
     </Text>
   </ItemGroup>
@@ -496,228 +499,6 @@
     <ClCompile Include="src\Measurement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\base64.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\cbuf.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\Esp.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-adc.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-bt.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-cpu.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-dac.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-gpio.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-i2c-slave.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-i2c.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-ledc.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-matrix.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-misc.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-psram.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-rgb-led.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-rmt.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-sigmadelta.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-spi.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-time.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-timer.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-tinyusb.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-touch.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-uart.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\FirmwareMSC.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\firmware_msc_fat.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\FunctionalInterrupt.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\HardwareSerial.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\HWCDC.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\IPAddress.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\IPv6Address.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\main.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\MD5Builder.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\Print.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\stdlib_noniso.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\Stream.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\StreamString.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\Tone.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\USB.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\USBCDC.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\USBMSC.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\wiring_pulse.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\wiring_shift.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\WMath.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\WString.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFi.cpp">
-      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiAP.cpp">
-      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiClient.cpp">
-      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiGeneric.cpp">
-      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiMulti.cpp">
-      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiScan.cpp">
-      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiServer.cpp">
-      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiSTA.cpp">
-      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiUdp.cpp">
-      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\TFT_eSPI\TFT_eSPI.cpp">
-      <Filter>src\_micro-api-readonly\libraries\TFT_eSPI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\SPI\src\SPI.cpp">
-      <Filter>src\_micro-api-readonly\libraries\SPI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\FS\src\FS.cpp">
-      <Filter>src\_micro-api-readonly\libraries\FS</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\FS\src\vfs_api.cpp">
-      <Filter>src\_micro-api-readonly\libraries\FS</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\SPIFFS\src\SPIFFS.cpp">
-      <Filter>src\_micro-api-readonly\libraries\SPIFFS</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\ezButton\src\ezButton.cpp">
-      <Filter>src\_micro-api-readonly\libraries\ezButton</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\Adafruit_seesaw_Library\Adafruit_Crickit.cpp">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\Adafruit_seesaw_Library\Adafruit_miniTFTWing.cpp">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\Adafruit_seesaw_Library\Adafruit_NeoKey_1x4.cpp">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\Adafruit_seesaw_Library\Adafruit_NeoTrellis.cpp">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\Adafruit_seesaw_Library\Adafruit_seesaw.cpp">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\Adafruit_seesaw_Library\Adafruit_TFTShield18.cpp">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\Adafruit_seesaw_Library\seesaw_neopixel.cpp">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\Adafruit_seesaw_Library\seesaw_servo.cpp">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\Adafruit_seesaw_Library\seesaw_spectrum.cpp">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\Adafruit_BusIO\Adafruit_BusIO_Register.cpp">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_BusIO</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\Adafruit_BusIO\Adafruit_I2CDevice.cpp">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_BusIO</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\Adafruit_BusIO\Adafruit_SPIDevice.cpp">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_BusIO</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\Wire\src\Wire.cpp">
-      <Filter>src\_micro-api-readonly\libraries\Wire</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\ezAnalogKeypad\src\ezAnalogKeypad.cpp">
-      <Filter>src\_micro-api-readonly\libraries\ezAnalogKeypad</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Users\Mitchell Baldwin\OneDrive\Documents\Arduino\libraries\movingAvg\src\movingAvg.cpp">
-      <Filter>src\_micro-api-readonly\libraries\movingAvg</Filter>
-    </ClCompile>
     <ClCompile Include="src\NMStatus.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -732,6 +513,228 @@
     </ClCompile>
     <ClCompile Include="src\OSBSet.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\base64.cpp">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\cbuf.cpp">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\Esp.cpp">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-adc.c">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-bt.c">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-cpu.c">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-dac.c">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-gpio.c">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-i2c-slave.c">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-i2c.c">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-ledc.c">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-matrix.c">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-misc.c">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-psram.c">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-rgb-led.c">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-rmt.c">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-sigmadelta.c">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-spi.c">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-time.c">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-timer.c">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-tinyusb.c">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-touch.c">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\esp32-hal-uart.c">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\FirmwareMSC.cpp">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\firmware_msc_fat.c">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\FunctionalInterrupt.cpp">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\HardwareSerial.cpp">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\HWCDC.cpp">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\IPAddress.cpp">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\IPv6Address.cpp">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\main.cpp">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\MD5Builder.cpp">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\Print.cpp">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\stdlib_noniso.c">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\Stream.cpp">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\StreamString.cpp">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\Tone.cpp">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\USB.cpp">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\USBCDC.cpp">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\USBMSC.cpp">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\wiring_pulse.c">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\wiring_shift.c">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\WMath.cpp">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\cores\esp32\WString.cpp">
+      <Filter>src\_micro-api-readonly\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFi.cpp">
+      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiAP.cpp">
+      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiClient.cpp">
+      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiGeneric.cpp">
+      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiMulti.cpp">
+      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiScan.cpp">
+      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiServer.cpp">
+      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiSTA.cpp">
+      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiUdp.cpp">
+      <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\libraries\ezButton\src\ezButton.cpp">
+      <Filter>src\_micro-api-readonly\libraries\ezButton</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\libraries\Adafruit_seesaw_Library\Adafruit_Crickit.cpp">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\libraries\Adafruit_seesaw_Library\Adafruit_miniTFTWing.cpp">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\libraries\Adafruit_seesaw_Library\Adafruit_NeoKey_1x4.cpp">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\libraries\Adafruit_seesaw_Library\Adafruit_NeoTrellis.cpp">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\libraries\Adafruit_seesaw_Library\Adafruit_seesaw.cpp">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\libraries\Adafruit_seesaw_Library\Adafruit_TFTShield18.cpp">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\libraries\Adafruit_seesaw_Library\seesaw_neopixel.cpp">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\libraries\Adafruit_seesaw_Library\seesaw_servo.cpp">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\libraries\Adafruit_seesaw_Library\seesaw_spectrum.cpp">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_seesaw_Library</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\libraries\Adafruit_BusIO\Adafruit_BusIO_Register.cpp">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_BusIO</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\libraries\Adafruit_BusIO\Adafruit_I2CDevice.cpp">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_BusIO</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\libraries\Adafruit_BusIO\Adafruit_SPIDevice.cpp">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_BusIO</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\Wire\src\Wire.cpp">
+      <Filter>src\_micro-api-readonly\libraries\Wire</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\libraries\ezAnalogKeypad\src\ezAnalogKeypad.cpp">
+      <Filter>src\_micro-api-readonly\libraries\ezAnalogKeypad</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\libraries\TFT_eSPI\TFT_eSPI.cpp">
+      <Filter>src\_micro-api-readonly\libraries\TFT_eSPI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\SPI\src\SPI.cpp">
+      <Filter>src\_micro-api-readonly\libraries\SPI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\FS\src\FS.cpp">
+      <Filter>src\_micro-api-readonly\libraries\FS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\FS\src\vfs_api.cpp">
+      <Filter>src\_micro-api-readonly\libraries\FS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\SPIFFS\src\SPIFFS.cpp">
+      <Filter>src\_micro-api-readonly\libraries\SPIFFS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\libraries\movingAvg\src\movingAvg.cpp">
+      <Filter>src\_micro-api-readonly\libraries\movingAvg</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

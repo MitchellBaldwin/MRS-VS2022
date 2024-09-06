@@ -14,7 +14,7 @@
 	TFT_eSPI setup: #include <User_Setups/Setup42_ILI9341_ESP32.h>
 
  v1.0	Initial release
- v1.1	
+ v1.1	Reassigned Heartbeat LED and Right Rocker Switch GPIOs
  v1.2	
  v1.3	
 
@@ -51,10 +51,10 @@ HardwareSerial IDCSerial(2);	// UART for inter-device communication & control
 
 Scheduler MainScheduler;			// Main loop task scheduler
 
-//constexpr byte LED_BUILTIN = 0x02;
-//constexpr auto HeartbeatLEDToggleInterval = 1000;
-//void ToggleBuiltinLEDCallback();
-//Task HeartbeatLEDTask(HeartbeatLEDToggleInterval* TASK_MILLISECOND, TASK_FOREVER, &ToggleBuiltinLEDCallback, &MainScheduler, false);
+constexpr byte HeartbeatLED = 0x04;
+constexpr auto HeartbeatLEDToggleInterval = 1000;
+void ToggleBuiltinLEDCallback();
+Task HeartbeatLEDTask((HeartbeatLEDToggleInterval * TASK_MILLISECOND), TASK_FOREVER, &ToggleBuiltinLEDCallback, &MainScheduler, false);
 
 constexpr uint64_t ReadControlInterval = 100;	// ms
 void ReadControlsCallback();
@@ -64,21 +64,12 @@ constexpr uint64_t UpdateDisplayInterval = 100;	// ms
 void UpdateDisplayCallback();
 Task UpdateDisplayTask((UpdateDisplayInterval * TASK_MILLISECOND), TASK_FOREVER, &UpdateDisplayCallback, &MainScheduler, false);
 
-//#include "src\LocalDisplay.h"
 #include "src\MFCD.h"
 
 void setup()
 {
 	char buf[64];
 
-
-//#ifdef LED_BUILTIN
-//	sprintf(buf, "Heartbeat LED: GPIO 0x%02X", LED_BUILTIN);
-//	_PL(buf);
-//#endif // LED_BUILTIN
-
-	//pinMode(LED_BUILTIN, OUTPUT);
-	//HeartbeatLEDTask.enable();
 
 	USBSerial.begin(115200);
 	if (!USBSerial)
@@ -91,6 +82,12 @@ void setup()
 	}
 
 	_PL();
+
+	sprintf(buf, "Heartbeat LED: GPIO 0x%02X", HeartbeatLED);
+	_PL(buf);
+
+	pinMode(HeartbeatLED, OUTPUT);
+	HeartbeatLEDTask.enable();
 
 	IDCSerial.begin(115200);
 	if (!IDCSerial)
@@ -108,7 +105,6 @@ void setup()
 
 	NMControls.Init();
 	
-	//NMStatus.LocalDisplayStatus = LocalDisplay.Init();
 	NMStatus.LocalDisplayStatus = MFCD.Init();
 	
 	ReadControlsTask.enable();
@@ -121,12 +117,11 @@ void loop()
 	MainScheduler.execute();
 }
 
-// GPIO02 is in use for the TFT display board
-//void ToggleBuiltinLEDCallback()
-//{
-//	digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-//}
-//
+void ToggleBuiltinLEDCallback()
+{
+	digitalWrite(HeartbeatLED, !digitalRead(HeartbeatLED));
+}
+
 
 void ReadControlsCallback()
 {
@@ -136,8 +131,5 @@ void ReadControlsCallback()
 
 void UpdateDisplayCallback()
 {
-	//LocalDisplay.Update();
-	//LocalDisplay.Control(LocalDisplayClass::Commands::NoCommand);
-	//MFCD.Update();
 	MFCD.Control(NMCommands::NoCommand);
 }

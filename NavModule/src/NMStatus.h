@@ -28,7 +28,7 @@ class NMStatusClass
  public:
 	 // Navigation Module firmware version:
 	 uint8_t MajorVersion = 1;
-	 uint8_t MinorVersion = 0;
+	 uint8_t MinorVersion = 1;
 
 	 enum ComModes
 	 {

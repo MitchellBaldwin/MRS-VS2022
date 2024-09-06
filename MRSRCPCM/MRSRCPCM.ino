@@ -9,6 +9,8 @@
  Configuration notes:
 	Board: LilyGo T-Display-S3
 	TFT_eSPI setup: #include <User_Setups/Setup206_LilyGo_T_Display_S3.h>
+	Update Setup206_LilyGo_T_Display_S3.h to select correct color encoding order:
+		#define TFT_RGB_ORDER TFT_RGB  // Colour order Red-Green-Blue
 
  v1.0	Initial release
  v1.1	
