@@ -19,11 +19,17 @@
 
  */
 
+#include <HardwareSerial.h>
+HardwareSerial IDCSerial(1);
+
+
 #include <TaskScheduler.h>
 //#include <TaskSchedulerDeclarations.h>
 //#include <TaskSchedulerSleepMethods.h>
 
 Scheduler MainScheduler;	// Main task scheduler
+
+constexpr int CSSMPowerControlPin = GPIO_NUM_11;
 
 constexpr int HeartbeatLEDPin = GPIO_NUM_16;
 constexpr auto NormalHeartbeatLEDToggleInterval = 1000;		// 1 s on, 1 s off; indicates normal heartbeat
@@ -49,10 +55,37 @@ void setup()
 {
 	char buf[32];
 
+	Serial.begin(115200);
+	if (!Serial)
+	{
+		PCMStatus.UART0Status = false;
+	}
+	else
+	{
+		PCMStatus.UART0Status = true;
+	}
+
 	_PL("");
 	
+	IDCSerial.begin(115200, SERIAL_8N1, 18, 17);
+	if (!IDCSerial)
+	{
+		PCMStatus.UART1Status = false;
+	}
+	else
+	{
+		PCMStatus.UART1Status = true;
+
+		// Test code:
+		IDCSerial.println("Hello from the IDCSerial port...");
+	}
+	
+	pinMode(CSSMPowerControlPin, OUTPUT);
+	// Test code:
+	digitalWrite(CSSMPowerControlPin, HIGH);
+
 	pinMode(HeartbeatLEDPin, OUTPUT);
-	sprintf(buf, "Heartbeat LED on GPIO%02X", HeartbeatLEDPin);
+	sprintf(buf, "Heartbeat LED on GPIO%02D", HeartbeatLEDPin);
 	_PL(buf);
 
 	if (I2CBus.Init(GPIO_NUM_43, GPIO_NUM_44))

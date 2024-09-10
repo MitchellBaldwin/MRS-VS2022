@@ -56,7 +56,7 @@ constexpr auto HeartbeatLEDToggleInterval = 1000;
 void ToggleBuiltinLEDCallback();
 Task HeartbeatLEDTask((HeartbeatLEDToggleInterval * TASK_MILLISECOND), TASK_FOREVER, &ToggleBuiltinLEDCallback, &MainScheduler, false);
 
-constexpr uint64_t ReadControlInterval = 100;	// ms
+constexpr uint64_t ReadControlInterval = 25;	// ms
 void ReadControlsCallback();
 Task ReadControlsTask((ReadControlInterval * TASK_MILLISECOND), TASK_FOREVER, &ReadControlsCallback, &MainScheduler, false);
 

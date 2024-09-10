@@ -57,7 +57,7 @@ protected:
 
 	const char* ComModeHeadings[PCMStatusClass::ComModes::NoComs] =
 	{
-		"MRS RC MCC UART2",
+		"MRS RC MCC UART1",
 		"Direct WiFi/TCP ",
 		"Direct ESP-NOW  ",
 	};

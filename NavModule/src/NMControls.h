@@ -33,6 +33,24 @@ constexpr byte DefaultRightRockerSwitchPin = 0x05;	// GPIO05
 constexpr byte SS_BUTTON = 0x18;
 constexpr byte SS_NEOPIX = 0x06;
 
+#include <AceButton.h>
+class SSButtonConfig : public ace_button::ButtonConfig
+{
+public:
+	SSButtonConfig(Adafruit_seesaw& enc) : encoder(enc)
+	{
+	}
+
+protected:
+	int readButton(uint8_t /* pin */) override
+	{
+		return encoder.digitalRead(SS_BUTTON);
+	}
+
+private:
+	Adafruit_seesaw& encoder;
+};
+
 constexpr byte DefaultHDGEncoderI2CAddress = 0x36;
 constexpr byte DefaultCRSEncoderI2CAddress = 0x37;
 constexpr byte DefaultBRTEncoderI2CAddress = 0x38;
@@ -73,19 +91,35 @@ protected:
 	ezButton* RightRockerSwitch;
 
 	Adafruit_seesaw HDGEncoder;
-	bool HDGButtonState = false;
+	//bool HDGButtonState = false;
 	seesaw_NeoPixel HDGNeoPix = seesaw_NeoPixel(1, SS_NEOPIX, NEO_GRB + NEO_KHZ800);
+	SSButtonConfig* HDGButtonConfig;
+	ace_button::AceButton* HDGButton;
+	static void HandleHDGButtonEvents(ace_button::AceButton* b, uint8_t eventType, uint8_t buttonState);
+	
 	Adafruit_seesaw CRSEncoder;
-	bool CRSButtonState = false;
+	//bool CRSButtonState = false;
 	seesaw_NeoPixel CRSNeoPix = seesaw_NeoPixel(1, SS_NEOPIX, NEO_GRB + NEO_KHZ800);
+	SSButtonConfig* CRSButtonConfig;
+	ace_button::AceButton* CRSButton;
+	static void HandleCRSButtonEvents(ace_button::AceButton* b, uint8_t eventType, uint8_t buttonState);
+
 	Adafruit_seesaw BRTEncoder;
-	bool BRTButtonState = false;
+	//bool BRTButtonState = false;
 	seesaw_NeoPixel BRTNeoPix = seesaw_NeoPixel(1, SS_NEOPIX, NEO_GRB + NEO_KHZ800);
+	SSButtonConfig* BRTButtonConfig;
+	ace_button::AceButton* BRTButton;
+	static void HandleBRTButtonEvents(ace_button::AceButton* b, uint8_t eventType, uint8_t buttonState);
+	
 	Adafruit_seesaw TRREncoder;
-	bool TRRButtonState = false;
+	//bool TRRButtonState = false;
 	seesaw_NeoPixel TRRNeoPix = seesaw_NeoPixel(1, SS_NEOPIX, NEO_GRB + NEO_KHZ800);
+	SSButtonConfig* TRRButtonConfig;
+	ace_button::AceButton* TRRButton;
+	static void HandleTRRButtonEvents(ace_button::AceButton* b, uint8_t eventType, uint8_t buttonState);
 
 public:
+
 	enum Commands
 	{
 		NoCommand,
@@ -109,13 +143,13 @@ public:
 	int32_t RightRockerSwitchState = 0;
 
 	int32_t HDGSetting = 0;			// Selected Heading (HDG); bottom right rotary encoder
-	bool HDGSelected = false;
+	static bool HDGSelected;
 	int32_t CRSSetting = 0;			// Selected Course (CRS); bottom left rotary encoder
-	bool CRSSelected = false;
+	static bool CRSSelected;
 	int32_t BRTSetting = 127;		// Display brightness (BRT) setting; top left rotary encoder
-	bool BRTSelected = false;
+	static bool BRTSelected;
 	int32_t TRRSetting = 0;			// Top right rotary encoder; function TBD
-	bool TRRSelected = false;
+	static bool TRRSelected;
 
 	void Init();
 	void Init(
@@ -127,14 +161,14 @@ public:
 	
 	void Update();
 
-	bool HDGButtonWasPressed();
-	void ToggleHDGSelected();
-	bool CRSButtonWasPressed();
-	void ToggleCRSSelected();
-	bool BRTButtonWasPressed();
+	//bool HDGButtonWasPressed();
+	//void ToggleHDGSelected();
+	//bool CRSButtonWasPressed();
+	//void ToggleCRSSelected();
+	//bool BRTButtonWasPressed();
 	void ToggleBRTSelected();
-	bool TRRButtonWasPressed();
-	void ToggleTRRSelected();
+	//bool TRRButtonWasPressed();
+	//void ToggleTRRSelected();
 
 	void SetLocalDisplayBrightness(byte brightness);
 

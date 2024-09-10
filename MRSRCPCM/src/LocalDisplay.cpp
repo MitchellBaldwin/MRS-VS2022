@@ -64,7 +64,7 @@ void LocalDisplayClass::DrawSYSPage()
 		tft.drawString(buf, 2, 30);
 
 		tft.setTextDatum(CR_DATUM);
-		sprintf(buf, "UART2 %s", PCMStatus.UART2Status ? "OK" : "NO");
+		sprintf(buf, "UART1 %s", PCMStatus.UART1Status ? "OK" : "NO");
 		tft.drawString(buf, tft.width() / 2 - 2, 30);
 
 		tft.setTextColor(TFT_PINK);
