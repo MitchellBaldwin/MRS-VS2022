@@ -38,11 +38,15 @@ class PCMStatusClass
 	 bool UART2Status = false;
 
 	 bool WiFiStatus = false;
+	 bool ESPNOWStatus = false;
 
 	 bool LocalDisplayStatus = false;
 	 bool DebugDisplayStatus = false;
 
-	 bool BME280Status = false;
+	 bool NavEncoderStatus = false;
+	 bool FuncEncoderStatus = false;
+
+	 bool BMEx80Status = false;
 
 	 void Init();
 

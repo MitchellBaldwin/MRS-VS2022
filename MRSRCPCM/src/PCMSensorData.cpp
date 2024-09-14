@@ -56,15 +56,15 @@ void PCMSensorData::Update()
 	// Primary battery sense circuit includes an op amp scaling buffer having a nominal gain of 0.60 (22k + 33k voltage divider (?))
 	// 
 	uint16_t rawADC = analogRead(VBatSensePin);
-	VBat = ((float)rawADC / 4095.0) * 6.107 * (Vref / 1000.0);
+	VBat = ((float)rawADC / 4095.0) * 6.191 * (Vref / 1000.0);
 	rawADC = analogRead(VBBatSensePin);
-	VBBat = ((float)rawADC / 4095.0) * 1.855 * 3.3 * (Vref / 1000.0);
+	VBBat = ((float)rawADC / 4095.0) * 1.841 * 3.3 * (Vref / 1000.0);
 	rawADC = analogRead(VMCUSensePin);
 	VMCU = ((float)rawADC / 4095.0) * 1.855 * 3.3 * (Vref / 1000.0);
 	rawADC = analogRead(VExtSensePin);
-	VExt = ((float)rawADC / 4095.0) * 4.456 * 3.3 * (Vref / 1000.0);
+	VExt = ((float)rawADC / 4095.0) * 7.161 * 3.3 * (Vref / 1000.0);
 	rawADC = analogRead(V5SensePin);
-	V5 = ((float)rawADC / 4095.0) * 1.647 * 3.3 * (Vref / 1000.0);
+	V5 = ((float)rawADC / 4095.0) * 1.807 * 3.3 * (Vref / 1000.0);
 }
 
 PCMSensorData SensorData;

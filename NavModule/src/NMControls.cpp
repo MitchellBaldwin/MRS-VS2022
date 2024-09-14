@@ -11,9 +11,9 @@ void NMControlsClass::HandleHDGButtonEvents(ace_button::AceButton *b, uint8_t ev
 	switch (eventType)
 	{
 	case ace_button::AceButton::kEventClicked:
-		HDGSelected = !HDGSelected;
+		ToggleHDGSelected();
 
-		_PL("HDG encoder button clicked");
+		//_PL("HDG encoder button clicked");
 		break;
 	}
 }
@@ -23,9 +23,9 @@ void NMControlsClass::HandleCRSButtonEvents(ace_button::AceButton *b, uint8_t ev
 	switch (eventType)
 	{
 	case ace_button::AceButton::kEventClicked:
-		CRSSelected = !CRSSelected;
+		ToggleCRSSelected();
 
-		_PL("CRS encoder button clicked");
+		//_PL("CRS encoder button clicked");
 		break;
 	}
 }
@@ -35,9 +35,9 @@ void NMControlsClass::HandleBRTButtonEvents(ace_button::AceButton *b, uint8_t ev
 	switch (eventType)
 	{
 	case ace_button::AceButton::kEventClicked:
-		BRTSelected = !BRTSelected;
+		ToggleBRTSelected();
 
-		_PL("BRT encoder button clicked");
+		//_PL("BRT encoder button clicked");
 		break;
 	}
 }
@@ -47,7 +47,7 @@ void NMControlsClass::HandleTRRButtonEvents(ace_button::AceButton *b, uint8_t ev
 	switch (eventType)
 	{
 	case ace_button::AceButton::kEventClicked:
-		TRRSelected = !TRRSelected;
+		ToggleTRRSelected();
 
 		_PL("TRR encoder button clicked");
 		break;
@@ -207,12 +207,6 @@ void NMControlsClass::Update()
 	}
 
 	// Read encoders and check for encoder button presses:
-	////TODO: Test debounce; wrap encoder button function into ACEButton, which should take care of debouncing and other
-	////button conditioning and event handling needs
-	//if (!HDGEncoder.digitalRead(SS_BUTTON))
-	//{
-	//	HDGButtonState = true;
-	//}
 	int32_t newHDGSetting = HDGSetting - HDGEncoder.getEncoderDelta();
 	if (newHDGSetting != HDGSetting)
 	{
@@ -228,17 +222,8 @@ void NMControlsClass::Update()
 		HDGSetting = newHDGSetting;
 	}
 
-	//if (HDGButtonWasPressed())
-	//{
-	//	ToggleHDGSelected();
-	//}
-
 	HDGButton->check();
 	
-	//if (!CRSEncoder.digitalRead(SS_BUTTON))
-	//{
-	//	CRSButtonState = true;
-	//}
 	int32_t newCRSSetting = CRSSetting - CRSEncoder.getEncoderDelta();
 	if (newCRSSetting != CRSSetting)
 	{
@@ -252,21 +237,10 @@ void NMControlsClass::Update()
 		}
 		
 		CRSSetting = newCRSSetting;
-		//sprintf(buf, "%03D", CRSSetting);
-		//_PL(buf);
 	}
-
-	//if (CRSButtonWasPressed())
-	//{
-	//	ToggleCRSSelected();
-	//}
 
 	CRSButton->check();
 
-	//if (!BRTEncoder.digitalRead(SS_BUTTON))
-	//{
-	//	BRTButtonState = true;
-	//}
 	int32_t newBRTSetting = BRTSetting - BRTEncoder.getEncoderDelta();
 	if (newBRTSetting != BRTSetting)
 	{
@@ -282,17 +256,8 @@ void NMControlsClass::Update()
 		BRTSetting = newBRTSetting;
 	}
 
-	//if (BRTButtonWasPressed())
-	//{
-	//	ToggleBRTSelected();
-	//}
-
 	BRTButton->check();
 	
-	//if (!TRREncoder.digitalRead(SS_BUTTON))
-	//{
-	//	TRRButtonState = true;
-	//}
 	int32_t newTRRSetting = TRRSetting - TRREncoder.getEncoderDelta();
 	if (newTRRSetting != TRRSetting)
 	{
@@ -312,54 +277,15 @@ void NMControlsClass::Update()
 
 }
 
-//bool NMControlsClass::HDGButtonWasPressed()
-//{
-//	if (HDGButtonState)
-//	{
-//		HDGButtonState = false;
-//		return true;
-//	}
-//	else
-//	{
-//		return false;
-//	}
-//}
+void NMControlsClass::ToggleHDGSelected()
+{
+	HDGSelected = !HDGSelected;
+}
 
-//void NMControlsClass::ToggleHDGSelected()
-//{
-//	HDGSelected = !HDGSelected;
-//}
-
-//bool NMControlsClass::CRSButtonWasPressed()
-//{
-//	if (CRSButtonState)
-//	{
-//		CRSButtonState = false;
-//		return true;
-//	}
-//	else
-//	{
-//		return false;
-//	}
-//}
-
-//void NMControlsClass::ToggleCRSSelected()
-//{
-//	CRSSelected = !CRSSelected;
-//}
-
-//bool NMControlsClass::BRTButtonWasPressed()
-//{
-//	if (BRTButtonState)
-//	{
-//		BRTButtonState = false;
-//		return true;
-//	}
-//	else
-//	{
-//		return false;
-//	}
-//}
+void NMControlsClass::ToggleCRSSelected()
+{
+	CRSSelected = !CRSSelected;
+}
 
 void NMControlsClass::ToggleBRTSelected()
 {
@@ -367,23 +293,10 @@ void NMControlsClass::ToggleBRTSelected()
 
 }
 
-//bool NMControlsClass::TRRButtonWasPressed()
-//{
-//	if (TRRButtonState)
-//	{
-//		TRRButtonState = false;
-//		return true;
-//	}
-//	else
-//	{
-//		return false;
-//	}
-//}
-
-//void NMControlsClass::ToggleTRRSelected()
-//{
-//	TRRSelected = !TRRSelected;
-//}
+void NMControlsClass::ToggleTRRSelected()
+{
+	TRRSelected = !TRRSelected;
+}
 
 void NMControlsClass::SetLocalDisplayBrightness(byte brightness)
 {

@@ -91,28 +91,24 @@ protected:
 	ezButton* RightRockerSwitch;
 
 	Adafruit_seesaw HDGEncoder;
-	//bool HDGButtonState = false;
 	seesaw_NeoPixel HDGNeoPix = seesaw_NeoPixel(1, SS_NEOPIX, NEO_GRB + NEO_KHZ800);
 	SSButtonConfig* HDGButtonConfig;
 	ace_button::AceButton* HDGButton;
 	static void HandleHDGButtonEvents(ace_button::AceButton* b, uint8_t eventType, uint8_t buttonState);
 	
 	Adafruit_seesaw CRSEncoder;
-	//bool CRSButtonState = false;
 	seesaw_NeoPixel CRSNeoPix = seesaw_NeoPixel(1, SS_NEOPIX, NEO_GRB + NEO_KHZ800);
 	SSButtonConfig* CRSButtonConfig;
 	ace_button::AceButton* CRSButton;
 	static void HandleCRSButtonEvents(ace_button::AceButton* b, uint8_t eventType, uint8_t buttonState);
 
 	Adafruit_seesaw BRTEncoder;
-	//bool BRTButtonState = false;
 	seesaw_NeoPixel BRTNeoPix = seesaw_NeoPixel(1, SS_NEOPIX, NEO_GRB + NEO_KHZ800);
 	SSButtonConfig* BRTButtonConfig;
 	ace_button::AceButton* BRTButton;
 	static void HandleBRTButtonEvents(ace_button::AceButton* b, uint8_t eventType, uint8_t buttonState);
 	
 	Adafruit_seesaw TRREncoder;
-	//bool TRRButtonState = false;
 	seesaw_NeoPixel TRRNeoPix = seesaw_NeoPixel(1, SS_NEOPIX, NEO_GRB + NEO_KHZ800);
 	SSButtonConfig* TRRButtonConfig;
 	ace_button::AceButton* TRRButton;
@@ -161,14 +157,10 @@ public:
 	
 	void Update();
 
-	//bool HDGButtonWasPressed();
-	//void ToggleHDGSelected();
-	//bool CRSButtonWasPressed();
-	//void ToggleCRSSelected();
-	//bool BRTButtonWasPressed();
-	void ToggleBRTSelected();
-	//bool TRRButtonWasPressed();
-	//void ToggleTRRSelected();
+	static void ToggleHDGSelected();
+	static void ToggleCRSSelected();
+	static void ToggleBRTSelected();
+	static void ToggleTRRSelected();
 
 	void SetLocalDisplayBrightness(byte brightness);
 

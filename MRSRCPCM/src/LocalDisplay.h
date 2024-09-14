@@ -23,6 +23,7 @@
 
 #include "PCMStatus.h"
 #include <TFT_eSPI.h>
+#include "MenuItem.h"
 
 class LocalDisplayClass
 {
@@ -61,6 +62,8 @@ protected:
 		"Direct WiFi/TCP ",
 		"Direct ESP-NOW  ",
 	};
+
+	MenuItemClass* testMenuItem;
 
 	void DrawPageHeaderAndFooter();
 	void DrawSYSPage();

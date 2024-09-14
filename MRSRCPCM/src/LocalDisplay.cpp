@@ -7,6 +7,7 @@
 #include "LocalDisplay.h"
 #include <I2CBus.h>
 #include "PCMSensorData.h"
+#include "PCMControls.h"
 
 #include <WiFi.h>
 
@@ -24,11 +25,14 @@ void LocalDisplayClass::DrawPageHeaderAndFooter()
 	sprintf(buf, "%s", PageTitles[currentPage]);
 	tft.drawString(buf, tft.width() - 2, 2);
 
-	// Draw footer:
-	tft.setTextDatum(BC_DATUM);
-	tft.setTextColor(TFT_MAGENTA, TFT_BLACK, false);
-	sprintf(buf, "%s", PageMenus[currentPage]);
-	tft.drawString(buf, tft.width() / 2, tft.height() - 2);
+	//// Draw footer:
+	//tft.setTextDatum(BC_DATUM);
+	//tft.setTextColor(TFT_MAGENTA, TFT_BLACK, false);
+	//sprintf(buf, "%s", PageMenus[currentPage]);
+	//tft.drawString(buf, tft.width() / 2, tft.height() - 2);
+
+	// Draw footer menu:
+	testMenuItem->Draw(&tft, false);
 
 	//// Draw rectangle at screen bounds to aid framing physical display to panel:
 	//tft.drawRect(0, 0, tft.getViewportWidth(), tft.getViewportHeight(), TFT_DARKCYAN);
@@ -152,6 +156,16 @@ void LocalDisplayClass::DrawSYSPage()
 	sprintf(buf, "%5.2F V", SensorData.VExt);
 	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
 
+	// Display rotary encoder settings:
+	tft.setTextDatum(BL_DATUM);
+	tft.setTextSize(1);
+	tft.setTextColor(TFT_CYAN, TFT_BLACK, true);
+	sprintf(buf, "%04D", PCMControls.NavSetting);
+	tft.drawString(buf, 2, tft.height() - 2);
+
+	tft.setTextDatum(BR_DATUM);
+	sprintf(buf, "%04D", PCMControls.FuncSetting);
+	tft.drawString(buf, tft.width() - 2, tft.height() - 2);
 }
 
 void LocalDisplayClass::DrawCOMPage()
@@ -184,6 +198,9 @@ bool LocalDisplayClass::Init()
 	//so must explicitly turn LCD power on:
 	pinMode(LCD_POWER_ON, OUTPUT);
 	digitalWrite(LCD_POWER_ON, HIGH);
+
+	// Test code:
+	testMenuItem = new MenuItemClass("Test", 10, 60, 60, 10);
 
 	tft.init();
 	tft.setRotation(3);

@@ -285,6 +285,12 @@
     <ClCompile Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiUdp.cpp">
       <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
     </ClCompile>
+    <ClCompile Include="src\PCMControls.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MenuItem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="__vm\.MRSRCPCM.vsarduino.h">
@@ -538,6 +544,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\src\WiFiUdp.h">
       <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PCMControls.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MenuItem.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
