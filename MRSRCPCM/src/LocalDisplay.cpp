@@ -200,7 +200,7 @@ bool LocalDisplayClass::Init()
 	//so must explicitly turn LCD power on:
 	pinMode(LCD_POWER_ON, OUTPUT);
 	digitalWrite(LCD_POWER_ON, HIGH);
-	SetDisplayBrightness(128);
+	SetDisplayBrightness(DefaultDisplayBrightness);
 
 	tft.init();
 	tft.setRotation(3);
@@ -262,4 +262,4 @@ void LocalDisplayClass::SetDisplayBrightness(byte brightness)
 }
 
 LocalDisplayClass LocalDisplay;
-byte LocalDisplayClass::Brightness = 128;
+byte LocalDisplayClass::Brightness = DefaultDisplayBrightness;
