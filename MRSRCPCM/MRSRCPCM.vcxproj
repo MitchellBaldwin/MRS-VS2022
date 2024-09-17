@@ -149,6 +149,7 @@
     <ClCompile Include="src\PCMControls.cpp" />
     <ClCompile Include="src\PCMSensorData.cpp" />
     <ClCompile Include="src\PCMStatus.cpp" />
+    <ClCompile Include="src\TFTMenu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\FS\library.properties" />
@@ -253,6 +254,7 @@
     <ClInclude Include="src\PCMControls.h" />
     <ClInclude Include="src\PCMSensorData.h" />
     <ClInclude Include="src\PCMStatus.h" />
+    <ClInclude Include="src\TFTMenu.h" />
     <ClInclude Include="__vm\.MRSRCPCM.vsarduino.h" />
   </ItemGroup>
   <ItemGroup>

@@ -25,6 +25,8 @@
 #include <TFT_eSPI.h>
 #include "MenuItem.h"
 
+constexpr byte DefaultDisplayBrightness = 128;
+
 class LocalDisplayClass
 {
 public:
@@ -40,6 +42,7 @@ protected:
 	char buf[32];
 
 	TFT_eSPI tft = TFT_eSPI();
+	static byte Brightness;
 
 	Pages currentPage = SYS;
 	Pages lastPage = NONE;				// Aid to determine when a complete page redraw is needed
@@ -62,8 +65,6 @@ protected:
 		"Direct WiFi/TCP ",
 		"Direct ESP-NOW  ",
 	};
-
-	MenuItemClass* testMenuItem;
 
 	void DrawPageHeaderAndFooter();
 	void DrawSYSPage();
@@ -92,6 +93,8 @@ public:
 	void Update();
 	void Control(uint8_t command);
 	Pages GetCurrentPage();
+	TFT_eSPI* GetTFT();
+	static void SetDisplayBrightness(byte brightness);
 
 };
 

@@ -24,8 +24,9 @@ void PCMControlsClass::HandleFuncButtonEvents(ace_button::AceButton* b, uint8_t 
 	_PL("Function encoder button clicked");
 }
 
-void PCMControlsClass::Init()
+void PCMControlsClass::Init(TFT_eSPI* parentTFT)
 {
+	tft = parentTFT;
 	Init(DefaultNavEncoderI2CAddress, DefaultFuncEncoderI2CAddress);
 }
 
@@ -104,6 +105,11 @@ void PCMControlsClass::Init(byte navEncoderI2CAddress, byte funcEncoderI2CAddres
 	pinMode(NMPowerEnablePin, OUTPUT);
 	digitalWrite(NMPowerEnablePin, 0);
 
+	MainMenu = new TFTMenuClass(tft);
+	MainMenu->AddItem(new MenuItemClass("CSSM", 10, 60, 50, 12, MenuItemClass::MenuItemTypes::OffOn));
+	MainMenu->AddItem(new MenuItemClass("NM", 10, 72, 50, 12, MenuItemClass::MenuItemTypes::OffOn));
+	MainMenu->AddItem(new MenuItemClass("BRT", 10, 84, 50, 12, MenuItemClass::MenuItemTypes::Numeric));
+
 }
 
 void PCMControlsClass::CheckButtons()
@@ -123,25 +129,81 @@ void PCMControlsClass::Update()
 {
 	bool NavWasSelected = NavSelected;
 	bool FuncWasSelected = FuncSelected;
-	
+	MenuItemClass* currentItem = MainMenu->GetCurrentItem();
+
 	if (PCMStatus.NavEncoderStatus)
 	{
-		NavSetting = NavSetting + NavEncoder.getEncoderDelta();
+		int delta = NavEncoder.getEncoderDelta();
+		if (delta > 0)
+		{
+			currentItem = MainMenu->NextItem();
+		}
+		else if (delta < 0)
+		{
+			currentItem = MainMenu->PrevItem();
+		}
 		NavButton->check();
 	}
 
 	if (PCMStatus.FuncEncoderStatus)
 	{
-		FuncSetting = FuncSetting + FuncEncoder.getEncoderDelta();
+		int delta = FuncEncoder.getEncoderDelta();
+		FuncSetting = FuncSetting + delta;
+		if (currentItem != nullptr && delta != 0)
+		{
+			switch (currentItem->MenuItemType)
+			{
+			case MenuItemClass::MenuItemTypes::Numeric:
+				currentItem->SetValue(FuncSetting);
+				currentItem->Draw(tft, true);
+				break;
+			default:
+				break;
+			}
+		}
 		FuncButton->check();
 	}
 
-	if (NavSelected ^ NavWasSelected)
+	if (NavSelected ^ NavWasSelected) // Nav encoder button was pressed...
 	{
-		digitalWrite(CSSMPowerEnablePin, NavSelected ? 1 : 0);
-		//NavSelected = NavWasSelected;
+		if (currentItem != nullptr)
+		{
+			switch (currentItem->MenuItemType)
+			{
+			case MenuItemClass::MenuItemTypes::Action:
+				currentItem->InvokeOnExecuteHandler();
+				break;
+			case MenuItemClass::MenuItemTypes::OffOn:
+				currentItem->SetValue(NavSelected ? 1 : 0);
+				currentItem->Draw(tft, true);
+				digitalWrite(CSSMPowerEnablePin, currentItem->GetValue());
+				break;
+			case MenuItemClass::MenuItemTypes::Numeric:
+				// Item is selected for data entry, so set FuncEncoder accordingly:
+				FuncSetting = currentItem->GetValue();
+				currentItem->Draw(tft, true);
+				break;
+			default:
+				break;
+			}
+		}
 	}
 
+	if (FuncSelected ^ FuncWasSelected) // Func encoder button was pressed...
+	{
+		if (currentItem != nullptr)
+		{
+			switch (currentItem->MenuItemType)
+			{
+			case MenuItemClass::MenuItemTypes::Numeric:
+				// Do something with the current Value of the current item:
+				//currentItem->SetValue(FuncSetting);
+				break;
+			default:
+				break;
+			}
+		}
+	}
 }
 
 void PCMControlsClass::ToggleNavSelected()

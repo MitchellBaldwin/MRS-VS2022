@@ -291,6 +291,9 @@
     <ClCompile Include="src\MenuItem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\TFTMenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="__vm\.MRSRCPCM.vsarduino.h">
@@ -549,6 +552,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\MenuItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TFTMenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

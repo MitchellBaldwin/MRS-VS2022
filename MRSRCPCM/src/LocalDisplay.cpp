@@ -32,8 +32,10 @@ void LocalDisplayClass::DrawPageHeaderAndFooter()
 	//tft.drawString(buf, tft.width() / 2, tft.height() - 2);
 
 	// Draw footer menu:
-	testMenuItem->Draw(&tft, false);
-
+	if (PCMControls.MainMenu != nullptr)
+	{
+		PCMControls.MainMenu->Draw();
+	}
 	//// Draw rectangle at screen bounds to aid framing physical display to panel:
 	//tft.drawRect(0, 0, tft.getViewportWidth(), tft.getViewportHeight(), TFT_DARKCYAN);
 }
@@ -198,9 +200,7 @@ bool LocalDisplayClass::Init()
 	//so must explicitly turn LCD power on:
 	pinMode(LCD_POWER_ON, OUTPUT);
 	digitalWrite(LCD_POWER_ON, HIGH);
-
-	// Test code:
-	testMenuItem = new MenuItemClass("Test", 10, 60, 60, 10);
+	SetDisplayBrightness(128);
 
 	tft.init();
 	tft.setRotation(3);
@@ -250,4 +250,16 @@ LocalDisplayClass::Pages LocalDisplayClass::GetCurrentPage()
 	return currentPage;
 }
 
+TFT_eSPI* LocalDisplayClass::GetTFT()
+{
+	return &tft;
+}
+
+void LocalDisplayClass::SetDisplayBrightness(byte brightness)
+{
+	Brightness = brightness;
+
+}
+
 LocalDisplayClass LocalDisplay;
+byte LocalDisplayClass::Brightness = 128;

@@ -13,7 +13,18 @@
 class MenuItemClass
 {
 public:
-	typedef void (*MenuItemOnActivateHandler)(void);	// Function pointer for OnPress event handler
+	enum MenuItemTypes
+	{
+		Action,
+		OffOn,
+		Numeric,
+		OptionList,
+
+		NoType
+	};
+	MenuItemTypes MenuItemType = Action;
+
+	typedef void (*MenuItemOnExecuteHandler)(void);	// Function pointer for OnPress event handler
 
 protected:
 	uint16_t Xtl;
@@ -21,17 +32,20 @@ protected:
 	uint16_t Width;
 	uint16_t Height;
 	String Label;
+	int Value = 0;
 
-	MenuItemOnActivateHandler OnActivate = nullptr;
+	MenuItemOnExecuteHandler OnExecute = nullptr;
 
 public:
-	MenuItemClass(String label, uint16_t xtl, uint16_t ytl, uint16_t width, uint16_t height, MenuItemOnActivateHandler onActivate = nullptr);
+	MenuItemClass(String label, uint16_t xtl, uint16_t ytl, uint16_t width, uint16_t height, MenuItemTypes menuItemType = OffOn, MenuItemOnExecuteHandler onActivate = nullptr);
 
 	void Init();
 	void Draw(TFT_eSPI* tft, bool isCurrent);
 
-	void SetOnActivateHandler(MenuItemOnActivateHandler onActivate);
-	void InvokeOnActivateHandler();
+	void SetValue(int value);
+	int GetValue();
+	void SetOnExecuteHandler(MenuItemOnExecuteHandler onActivate);
+	void InvokeOnExecuteHandler();
 
 };
 

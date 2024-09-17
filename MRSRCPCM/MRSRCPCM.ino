@@ -100,9 +100,6 @@ void setup()
 	SensorData.Init();
 	UpdateSensorsTask.enable();
 
-	PCMControls.Init();
-	UpdateControlsTask.enable();
-
 	if (LocalDisplay.Init())
 	{
 		PCMStatus.LocalDisplayStatus = true;
@@ -114,6 +111,11 @@ void setup()
 		_PL("Local Display initialization FAIL");
 	}
 	UpdateLocalDisplayTask.enable();
+
+	PCMControls.Init(LocalDisplay.GetTFT());
+	PCMControls.MainMenu->Draw();
+
+	UpdateControlsTask.enable();
 
 	ToggleBuiltinLEDTask.enable();
 

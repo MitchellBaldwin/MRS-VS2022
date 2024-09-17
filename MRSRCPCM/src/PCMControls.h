@@ -47,6 +47,8 @@ constexpr byte DefaultFuncEncoderI2CAddress = 0x37;	// Right rotary encoder, use
 constexpr byte DefaultCSSMPowerEnablePin = GPIO_NUM_11;
 constexpr byte DefaultNMPowerEnablePin = GPIO_NUM_12;
 
+#include "TFTMenu.h"
+
 class PCMControlsClass
 {
 protected:
@@ -67,15 +69,17 @@ protected:
 	ace_button::AceButton* FuncButton;
 	static void HandleFuncButtonEvents(ace_button::AceButton* b, uint8_t eventType, uint8_t buttonState);
 
-
+	TFT_eSPI* tft;
 
 public:
 	uint32_t NavSetting = 0;
 	static bool NavSelected;
 	uint32_t FuncSetting = 0;
 	static bool FuncSelected;
+
+	TFTMenuClass* MainMenu;
 	
-	void Init();
+	void Init(TFT_eSPI* parentTFT);
 	void Init(byte navEncoderI2CAddress, byte funcEncoderI2CAddress);
 	void Init(byte navEncoderI2CAddress, byte funcEncoderI2CAddress, byte cssmPowerEnablePin, byte nmPowerEnablePin);
 
