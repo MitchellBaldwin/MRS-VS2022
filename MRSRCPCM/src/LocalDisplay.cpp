@@ -168,6 +168,11 @@ void LocalDisplayClass::DrawSYSPage()
 	tft.setTextDatum(BR_DATUM);
 	sprintf(buf, "%04D", PCMControls.FuncSetting);
 	tft.drawString(buf, tft.width() - 2, tft.height() - 2);
+
+	//// Test code:
+	//tft.setTextDatum(BL_DATUM);
+	//sprintf(buf, "BRT: %04D", Brightness);
+	//tft.drawString(buf, 240, tft.height() - 2);
 }
 
 void LocalDisplayClass::DrawCOMPage()
@@ -235,7 +240,6 @@ void LocalDisplayClass::Control(uint8_t command)
 	case Clear:
 		DrawNONEPage();
 		break;
-
 	case SYSPage:
 		DrawSYSPage();
 		break;
@@ -258,7 +262,12 @@ TFT_eSPI* LocalDisplayClass::GetTFT()
 void LocalDisplayClass::SetDisplayBrightness(byte brightness)
 {
 	Brightness = brightness;
+	analogWrite(LCD_BL, Brightness);
+}
 
+byte LocalDisplayClass::GetDisplayBrightness()
+{
+	return Brightness;
 }
 
 LocalDisplayClass LocalDisplay;

@@ -54,8 +54,8 @@ class PCMControlsClass
 protected:
 	char buf[64];
 
-	byte CSSMPowerEnablePin = DefaultCSSMPowerEnablePin;
-	byte NMPowerEnablePin = DefaultNMPowerEnablePin;
+	static byte CSSMPowerEnablePin;
+	static byte NMPowerEnablePin;
 
 	Adafruit_seesaw NavEncoder;
 	seesaw_NeoPixel NavNeoPix = seesaw_NeoPixel(1, SS_NEOPIX, NEO_GRB + NEO_KHZ800);
@@ -71,6 +71,8 @@ protected:
 
 	TFT_eSPI* tft;
 
+	static void ControlCSSMPower(byte value);
+
 public:
 	uint32_t NavSetting = 0;
 	static bool NavSelected;
@@ -78,6 +80,9 @@ public:
 	static bool FuncSelected;
 
 	TFTMenuClass* MainMenu;
+	MenuItemClass* CSSMMenuItem;
+	MenuItemClass* NMMenuItem;
+	MenuItemClass* BRTMenuItem;
 	
 	void Init(TFT_eSPI* parentTFT);
 	void Init(byte navEncoderI2CAddress, byte funcEncoderI2CAddress);

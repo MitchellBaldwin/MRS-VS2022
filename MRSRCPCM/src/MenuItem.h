@@ -24,15 +24,21 @@ public:
 	};
 	MenuItemTypes MenuItemType = Action;
 
-	typedef void (*MenuItemOnExecuteHandler)(void);	// Function pointer for OnPress event handler
+	typedef void (*MenuItemOnExecuteHandler)(byte);	// Function pointer for OnPress event handler
 
 protected:
 	uint16_t Xtl;
 	uint16_t Ytl;
 	uint16_t Width;
 	uint16_t Height;
+	
 	String Label;
+	
+	int MinValue = 0;
 	int Value = 0;
+	int MaxValue = 1;
+	
+	int NumericStepSize = 1;
 
 	MenuItemOnExecuteHandler OnExecute = nullptr;
 
@@ -42,8 +48,14 @@ public:
 	void Init();
 	void Draw(TFT_eSPI* tft, bool isCurrent);
 
+	void SetMinValue(int minValue);
 	void SetValue(int value);
+	void SetMaxValue(int maxValue);
 	int GetValue();
+
+	void SetNumericStepSize(int numericStepSize);
+	int GetNumericStepSize();
+
 	void SetOnExecuteHandler(MenuItemOnExecuteHandler onActivate);
 	void InvokeOnExecuteHandler();
 

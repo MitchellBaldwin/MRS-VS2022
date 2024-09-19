@@ -94,6 +94,7 @@ public:
 	void Control(uint8_t command);
 	Pages GetCurrentPage();
 	TFT_eSPI* GetTFT();
+	byte GetDisplayBrightness();
 	static void SetDisplayBrightness(byte brightness);
 
 };

@@ -32,7 +32,7 @@ void MenuItemClass::Draw(TFT_eSPI* tft, bool isCurrent)
 	}
 	else
 	{
-		tft->drawRect(Xtl, Ytl, Width, Height, TFT_BLACK);
+		tft->drawRect(Xtl, Ytl, Width, Height, TFT_DARKGREY);
 	}
 	
 	// Draw label:
@@ -71,14 +71,50 @@ void MenuItemClass::Draw(TFT_eSPI* tft, bool isCurrent)
 	}
 }
 
+void MenuItemClass::SetMinValue(int minValue)
+{
+	MinValue = minValue;
+	if (Value < MinValue)
+	{
+		Value = MinValue;
+	}
+}
+
 void MenuItemClass::SetValue(int value)
 {
+	if (value < MinValue)
+	{
+		value = MinValue;
+	}
+	if (value > MaxValue)
+	{
+		value = MaxValue;
+	}
 	Value = value;
+}
+
+void MenuItemClass::SetMaxValue(int maxValue)
+{
+	MaxValue = maxValue;
+	if (Value > MaxValue)
+	{
+		Value = MaxValue;
+	}
 }
 
 int MenuItemClass::GetValue()
 {
 	return Value;
+}
+
+void MenuItemClass::SetNumericStepSize(int numericStepSize)
+{
+	NumericStepSize = numericStepSize;
+}
+
+int MenuItemClass::GetNumericStepSize()
+{
+	return NumericStepSize;
 }
 
 void MenuItemClass::SetOnExecuteHandler(MenuItemOnExecuteHandler onActivate)
@@ -90,7 +126,7 @@ void MenuItemClass::InvokeOnExecuteHandler()
 {
 	if (OnExecute != nullptr)
 	{
-		OnExecute();
+		OnExecute(Value);
 	}
 }
 
