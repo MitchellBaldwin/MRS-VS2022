@@ -72,6 +72,7 @@ protected:
 	TFT_eSPI* tft;
 
 	static void ControlCSSMPower(byte value);
+	static void ControlNMPower(byte value);
 
 public:
 	uint32_t NavSetting = 0;
@@ -83,6 +84,7 @@ public:
 	MenuItemClass* CSSMMenuItem;
 	MenuItemClass* NMMenuItem;
 	MenuItemClass* BRTMenuItem;
+	MenuItemClass* NextPageMenuItem;
 	
 	void Init(TFT_eSPI* parentTFT);
 	void Init(byte navEncoderI2CAddress, byte funcEncoderI2CAddress);

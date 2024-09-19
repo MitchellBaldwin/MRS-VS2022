@@ -44,7 +44,7 @@ protected:
 	TFT_eSPI tft = TFT_eSPI();
 	static byte Brightness;
 
-	Pages currentPage = SYS;
+	static Pages currentPage;
 	Pages lastPage = NONE;				// Aid to determine when a complete page redraw is needed
 
 	const char* PageTitles[NONE] =
@@ -92,7 +92,12 @@ public:
 	bool Test();
 	void Update();
 	void Control(uint8_t command);
+
+	void SetCurrentPage(Pages page);
 	Pages GetCurrentPage();
+	static void PrevPage(byte value);
+	static void NextPage(byte value);
+	
 	TFT_eSPI* GetTFT();
 	byte GetDisplayBrightness();
 	static void SetDisplayBrightness(byte brightness);
@@ -100,6 +105,7 @@ public:
 };
 
 extern LocalDisplayClass LocalDisplay;
+//extern LocalDisplayClass::Pages currentPage;
 
 #endif
 

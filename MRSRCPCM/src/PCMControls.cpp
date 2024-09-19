@@ -14,7 +14,6 @@ void PCMControlsClass::HandleNavButtonEvents(ace_button::AceButton* b, uint8_t e
 {
 	if (eventType == ace_button::AceButton::kEventPressed)
 	{
-		//ToggleNavSelected();
 		NavSelected = true;
 		_PL("Navigation encoder button clicked");
 	}
@@ -22,9 +21,9 @@ void PCMControlsClass::HandleNavButtonEvents(ace_button::AceButton* b, uint8_t e
 
 void PCMControlsClass::HandleFuncButtonEvents(ace_button::AceButton* b, uint8_t eventType, uint8_t buttonState)
 {
-	if (eventType == ace_button::AceButton::kEventClicked)
+	if (eventType == ace_button::AceButton::kEventPressed)
 	{
-		ToggleFuncSelected();
+		FuncSelected = true;
 		_PL("Function encoder button clicked");
 	}
 }
@@ -32,6 +31,11 @@ void PCMControlsClass::HandleFuncButtonEvents(ace_button::AceButton* b, uint8_t 
 void PCMControlsClass::ControlCSSMPower(byte value)
 {
 	digitalWrite(CSSMPowerEnablePin, value);
+}
+
+void PCMControlsClass::ControlNMPower(byte value)
+{
+	digitalWrite(NMPowerEnablePin, value);
 }
 
 void PCMControlsClass::Init(TFT_eSPI* parentTFT)
@@ -100,7 +104,7 @@ void PCMControlsClass::Init(byte navEncoderI2CAddress, byte funcEncoderI2CAddres
 
 		FuncButtonConfig = new SSButtonConfig(FuncEncoder);
 		FuncButton = new ace_button::AceButton(FuncButtonConfig);
-		FuncButtonConfig->setFeature(ace_button::ButtonConfig::kFeatureClick);
+		//FuncButtonConfig->setFeature(ace_button::ButtonConfig::kFeatureClick);
 		FuncButtonConfig->setEventHandler(HandleFuncButtonEvents);
 		
 		PCMStatus.FuncEncoderStatus = true;
@@ -117,20 +121,28 @@ void PCMControlsClass::Init(byte navEncoderI2CAddress, byte funcEncoderI2CAddres
 
 	MainMenu = new TFTMenuClass(tft);
 
-	CSSMMenuItem = new MenuItemClass("CSSM", 48, 157, 56, 12, MenuItemClass::MenuItemTypes::OffOn);
+	CSSMMenuItem = new MenuItemClass("CSSM", 36, 157, 56, 12, MenuItemClass::MenuItemTypes::OffOn);
 	MainMenu->AddItem(CSSMMenuItem);
 	CSSMMenuItem->SetOnExecuteHandler(ControlCSSMPower);
 
-	NMMenuItem = new MenuItemClass("NM", 112, 157, 56, 12, MenuItemClass::MenuItemTypes::OffOn);
+	NMMenuItem = new MenuItemClass("NM", 98, 157, 56, 12, MenuItemClass::MenuItemTypes::OffOn);
 	MainMenu->AddItem(NMMenuItem);
+	NMMenuItem->SetOnExecuteHandler(ControlNMPower);
 
-	BRTMenuItem = new MenuItemClass("BRT", 178, 157, 50, 12, MenuItemClass::MenuItemTypes::Numeric);
+	BRTMenuItem = new MenuItemClass("BRT", 162, 157, 56, 12, MenuItemClass::MenuItemTypes::Numeric);
 	MainMenu->AddItem(BRTMenuItem);
 	BRTMenuItem->SetOnExecuteHandler(LocalDisplay.SetDisplayBrightness);
 	BRTMenuItem->SetMinValue(0);
 	BRTMenuItem->SetMaxValue(255);
 	BRTMenuItem->SetNumericStepSize(16);
 	BRTMenuItem->SetValue(LocalDisplay.GetDisplayBrightness());
+
+	NextPageMenuItem = new MenuItemClass("Next", 226, 157, 56, 12, MenuItemClass::MenuItemTypes::Action);
+	MainMenu->AddItem(NextPageMenuItem);
+	NextPageMenuItem->SetOnExecuteHandler(LocalDisplay.NextPage);
+	NextPageMenuItem->SetMinValue(LocalDisplayClass::Pages::SYS);
+	NextPageMenuItem->SetMaxValue(LocalDisplayClass::Pages::NONE);
+	NextPageMenuItem->SetValue(LocalDisplayClass::Pages::COM);
 
 }
 
@@ -169,7 +181,6 @@ void PCMControlsClass::Update()
 		NavButton->check();
 	}
 
-	//if (NavSelected ^ NavWasSelected) // Nav encoder button was pressed...
 	if (NavSelected) // Nav encoder button was pressed...
 	{
 		// Check display brightness setting; if very low or 0 then set to a dim but readable value:
@@ -189,17 +200,7 @@ void PCMControlsClass::Update()
 				NavSelected = false;
 				break;
 			case MenuItemClass::MenuItemTypes::OffOn:
-				//_PL(currentItem->GetValue())
 				currentItem->SetValue(currentItem->GetValue() ? 0 : 1);
-				//if (currentItem->GetValue() == 0)
-				//{
-				//	currentItem->SetValue(1);
-				//}
-				//else
-				//{
-				//	currentItem->SetValue(0);
-				//}
-				//_PL(currentItem->GetValue())
 				currentItem->Draw(tft, true);
 				currentItem->InvokeOnExecuteHandler();
 				NavSelected = false;
@@ -245,7 +246,7 @@ void PCMControlsClass::Update()
 		FuncButton->check();
 	}
 
-	if (FuncSelected ^ FuncWasSelected) // Func encoder button was pressed...
+	if (FuncSelected) // Func encoder button was pressed...
 	{
 		if (currentItem != nullptr)
 		{
@@ -253,15 +254,18 @@ void PCMControlsClass::Update()
 			{
 			case MenuItemClass::MenuItemTypes::Action:
 				currentItem->InvokeOnExecuteHandler();
+				FuncSelected = false;
 				break;
 			case MenuItemClass::MenuItemTypes::Numeric:
 				// Do something with the current Value of the current item:
 				// The OnExecute handler (of type MenuItemOnExecuteHandler) is passed the current Value when invoked
 				currentItem->InvokeOnExecuteHandler();
 				// Reset selection of this item for input:
+				FuncSelected = false;
 				NavSelected = false;
 				break;
 			default:
+				FuncSelected = false;
 				break;
 			}
 		}

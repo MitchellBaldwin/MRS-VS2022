@@ -13,6 +13,9 @@
 
 void LocalDisplayClass::DrawPageHeaderAndFooter()
 {
+	// Clear display:
+	tft.fillScreen(TFT_BLACK);
+	
 	// Draw header:
 	tft.setTextSize(1);
 	tft.setTextColor(TFT_BLUE, TFT_BLACK, false);
@@ -184,8 +187,44 @@ void LocalDisplayClass::DrawCOMPage()
 		// Clear display and redraw static elements of the page format:
 		DrawPageHeaderAndFooter();
 
-		char upArrow[1] = { 0x18 };
-		char downArrow[1] = { 0x19 };
+		int32_t halfScreenWidth = tft.width() / 2;
+		int32_t halfScreenHeight = tft.height() / 2;
+
+		tft.setTextSize(1);
+		tft.setTextColor(TFT_GREENYELLOW);
+		tft.setTextDatum(CL_DATUM);	//DONE: setTextDatum has NO AFFECT on print() output; print() effectively uses default TL_DATUM
+		uint8_t mac[6];
+		WiFi.macAddress(mac);
+		sprintf(buf, "MAC:%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+		tft.drawString(buf, 2, halfScreenHeight + 30);
+
+		tft.setTextColor(TFT_GREEN);
+		tft.setTextDatum(CL_DATUM);
+		sprintf(buf, "IP: %s", WiFi.localIP().toString());
+		tft.drawString(buf, 2, halfScreenHeight + 40);
+
+		tft.setTextColor(TFT_CYAN);
+		tft.drawString(I2CBus.Get1st6ActiveI2CAddressesString(), 2, halfScreenHeight + 50);
+
+		tft.setTextColor(TFT_LIGHTGREY);
+		sprintf(buf, "UART0 %s", PCMStatus.UART0Status ? "OK" : "NO");
+		tft.drawString(buf, 2, 30);
+
+		tft.setTextDatum(CR_DATUM);
+		sprintf(buf, "UART1 %s", PCMStatus.UART1Status ? "OK" : "NO");
+		tft.drawString(buf, halfScreenWidth, 30);
+
+		tft.setTextColor(TFT_PINK);
+		tft.setTextDatum(CL_DATUM);
+		tft.drawString(ComModeHeadings[PCMStatus.ComMode], 2, 40);
+
+		tft.setTextColor(TFT_GREENYELLOW);
+		sprintf(buf, "ESPNow %s", PCMStatus.ESPNOWStatus ? "OK" : "NO");
+		tft.drawString(buf, 2, 50);
+
+		tft.setTextColor(TFT_GREEN);
+		sprintf(buf, "WiFi %s", PCMStatus.WiFiStatus ? "OK" : "NO");
+		tft.drawString(buf, 2, 60);
 
 		lastPage = currentPage;
 	}
@@ -210,7 +249,7 @@ bool LocalDisplayClass::Init()
 	tft.init();
 	tft.setRotation(3);
 
-	tft.fillScreen(TFT_BLACK);
+	//tft.fillScreen(TFT_BLACK);
 
 	Control(LocalDisplayClass::SYSPage);
 
@@ -243,15 +282,58 @@ void LocalDisplayClass::Control(uint8_t command)
 	case SYSPage:
 		DrawSYSPage();
 		break;
+	case COMPage:
+		DrawCOMPage();
+		break;
+	case Next:
+		NextPage(0);
+		break;
+	case Prev:
+		PrevPage(0);
+		break;
 
 	default:
 		break;
 	}
 }
 
+void LocalDisplayClass::SetCurrentPage(Pages page)
+{
+	LocalDisplayClass::currentPage = page;
+}
+
 LocalDisplayClass::Pages LocalDisplayClass::GetCurrentPage()
 {
 	return currentPage;
+}
+
+void LocalDisplayClass::PrevPage(byte /*value*/)
+{
+	//TODO: Untested
+	if (currentPage <= LocalDisplayClass::Pages::SYS)
+	{
+		currentPage = LocalDisplayClass::Pages::NONE;
+	}
+	else
+	{
+		int page = currentPage;
+		page--;
+		currentPage = (LocalDisplayClass::Pages)page;
+	}
+}
+
+void LocalDisplayClass::NextPage(byte /*value*/)
+{
+	if (currentPage >= LocalDisplayClass::Pages::NONE)
+	{
+		currentPage = LocalDisplayClass::Pages::SYS;
+	}
+	else
+	{
+		int page = currentPage;
+		page++;
+		currentPage = (LocalDisplayClass::Pages)page;
+	}
 }
 
 TFT_eSPI* LocalDisplayClass::GetTFT()
@@ -272,3 +354,5 @@ byte LocalDisplayClass::GetDisplayBrightness()
 
 LocalDisplayClass LocalDisplay;
 byte LocalDisplayClass::Brightness = DefaultDisplayBrightness;
+LocalDisplayClass::Pages LocalDisplayClass::currentPage = LocalDisplayClass::Pages::SYS;
+
