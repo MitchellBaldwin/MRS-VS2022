@@ -26,14 +26,16 @@ void MenuItemClass::Draw(TFT_eSPI* tft, bool isCurrent)
 	tft->fillRect(Xtl, Ytl, Width, Height, TFT_BLACK);
 
 	// Enclose in a box if this item is the current item:
+	uint32_t boxColor = TFT_DARKGREY;
 	if (isCurrent)
 	{
-		tft->drawRect(Xtl, Ytl, Width, Height, TFT_LIGHTGREY);
+		boxColor = TFT_LIGHTGREY;
 	}
-	else
+	if (Activated)
 	{
-		tft->drawRect(Xtl, Ytl, Width, Height, TFT_DARKGREY);
+		boxColor = TFT_RED;
 	}
+	tft->drawRect(Xtl, Ytl, Width, Height, boxColor);
 	
 	// Draw label:
 	tft->setTextColor(TFT_YELLOW, TFT_BLACK, true);
@@ -69,6 +71,11 @@ void MenuItemClass::Draw(TFT_eSPI* tft, bool isCurrent)
 	default:
 		break;
 	}
+}
+
+void MenuItemClass::Activate(bool isActivated)
+{
+	Activated = isActivated;
 }
 
 void MenuItemClass::SetMinValue(int minValue)

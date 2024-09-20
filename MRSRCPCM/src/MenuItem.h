@@ -33,6 +33,7 @@ protected:
 	uint16_t Height;
 	
 	String Label;
+	bool Activated = false;
 	
 	int MinValue = 0;
 	int Value = 0;
@@ -47,6 +48,8 @@ public:
 
 	void Init();
 	void Draw(TFT_eSPI* tft, bool isCurrent);
+
+	void Activate(bool isActivated);
 
 	void SetMinValue(int minValue);
 	void SetValue(int value);

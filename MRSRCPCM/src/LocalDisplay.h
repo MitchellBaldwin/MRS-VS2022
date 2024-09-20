@@ -34,6 +34,7 @@ public:
 	{
 		SYS,
 		COM,
+		DBG,
 
 		NONE
 	};
@@ -51,12 +52,15 @@ protected:
 	{
 		"  System",
 		"   Comms",
+		"   Debug",
+
 	};
 
 	const char* PageMenus[NONE] =
 	{
 		"DbNx  DRVm       LoNx",	// Rotary menu for the SYS page: select next DebugDisplay page, enter DRIVE mode, select next LoaclDisplay page
 		"SYSp  Mode       LoNx",	// OSB menu for the COM page: select SYS page, select current drive DriveMode page, 
+		"SYSp  Mode       LoNx",	// OSB menu for the DBG page: select SYS page, select current drive DriveMode page, 
 	};
 
 	const char* ComModeHeadings[PCMStatusClass::ComModes::NoComs] =
@@ -69,6 +73,7 @@ protected:
 	void DrawPageHeaderAndFooter();
 	void DrawSYSPage();
 	void DrawCOMPage();
+	void DrawDBGPage();
 
 	void DrawNONEPage();
 
@@ -79,6 +84,7 @@ public:
 		Refresh,
 		SYSPage,
 		COMPage,
+		DBGPage,
 		I2CScan,
 
 		Prev,

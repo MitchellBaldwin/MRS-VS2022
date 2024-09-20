@@ -15,7 +15,7 @@ void PCMControlsClass::HandleNavButtonEvents(ace_button::AceButton* b, uint8_t e
 	if (eventType == ace_button::AceButton::kEventPressed)
 	{
 		NavSelected = true;
-		_PL("Navigation encoder button clicked");
+		//_PL("Navigation encoder button clicked");
 	}
 }
 
@@ -24,7 +24,7 @@ void PCMControlsClass::HandleFuncButtonEvents(ace_button::AceButton* b, uint8_t 
 	if (eventType == ace_button::AceButton::kEventPressed)
 	{
 		FuncSelected = true;
-		_PL("Function encoder button clicked");
+		//_PL("Function encoder button clicked");
 	}
 }
 
@@ -206,6 +206,8 @@ void PCMControlsClass::Update()
 				NavSelected = false;
 				break;
 			case MenuItemClass::MenuItemTypes::Numeric:
+				// Show the item in its Activated state:
+				currentItem->Activate(true);
 				// Item is selected for data entry, so set FuncEncoder accordingly:
 				FuncSetting = currentItem->GetValue();
 				currentItem->Draw(tft, true);
@@ -261,6 +263,7 @@ void PCMControlsClass::Update()
 				// The OnExecute handler (of type MenuItemOnExecuteHandler) is passed the current Value when invoked
 				currentItem->InvokeOnExecuteHandler();
 				// Reset selection of this item for input:
+				currentItem->Activate(false);
 				FuncSelected = false;
 				NavSelected = false;
 				break;

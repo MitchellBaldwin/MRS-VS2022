@@ -8,6 +8,7 @@
 #include <I2CBus.h>
 #include "PCMSensorData.h"
 #include "PCMControls.h"
+#include "DEBUG Macros.h"
 
 #include <WiFi.h>
 
@@ -231,6 +232,61 @@ void LocalDisplayClass::DrawCOMPage()
 
 }
 
+void LocalDisplayClass::DrawDBGPage()
+{
+	currentPage = DBG;
+
+	if (lastPage != currentPage)
+	{
+		// Clear display and redraw static elements of the page format:
+		DrawPageHeaderAndFooter();
+
+		int32_t halfScreenWidth = tft.width() / 2;
+		int32_t halfScreenHeight = tft.height() / 2;
+
+		tft.setTextSize(1);
+		tft.setTextColor(TFT_GREENYELLOW);
+		tft.setTextDatum(CL_DATUM);	//DONE: setTextDatum has NO AFFECT on print() output; print() effectively uses default TL_DATUM
+		uint8_t mac[6];
+		WiFi.macAddress(mac);
+		sprintf(buf, "MAC:%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+		tft.drawString(buf, 2, halfScreenHeight + 30);
+
+		tft.setTextColor(TFT_GREEN);
+		tft.setTextDatum(CL_DATUM);
+		sprintf(buf, "IP: %s", WiFi.localIP().toString());
+		tft.drawString(buf, 2, halfScreenHeight + 40);
+
+		tft.setTextColor(TFT_CYAN);
+		tft.drawString(I2CBus.Get1st6ActiveI2CAddressesString(), 2, halfScreenHeight + 50);
+
+		tft.setTextColor(TFT_LIGHTGREY);
+		sprintf(buf, "UART0 %s", PCMStatus.UART0Status ? "OK" : "NO");
+		tft.drawString(buf, 2, halfScreenHeight);
+
+		tft.setTextDatum(CR_DATUM);
+		sprintf(buf, "UART1 %s", PCMStatus.UART1Status ? "OK" : "NO");
+		tft.drawString(buf, halfScreenWidth, halfScreenHeight);
+
+		//tft.setTextColor(TFT_PINK);
+		//tft.setTextDatum(CL_DATUM);
+		//tft.drawString(ComModeHeadings[PCMStatus.ComMode], 2, 40);
+
+		tft.setTextColor(TFT_GREENYELLOW);
+		tft.setTextDatum(CL_DATUM);
+		sprintf(buf, "ESPNow %s", PCMStatus.ESPNOWStatus ? "OK" : "NO");
+		tft.drawString(buf, 2, halfScreenHeight + 10);
+
+		tft.setTextColor(TFT_GREEN);
+		tft.setTextDatum(CR_DATUM);
+		sprintf(buf, "WiFi %s", PCMStatus.WiFiStatus ? "OK" : "NO");
+		tft.drawString(buf, halfScreenWidth, halfScreenHeight + 10);
+
+		lastPage = currentPage;
+	}
+
+}
+
 void LocalDisplayClass::DrawNONEPage()
 {
 	currentPage = NONE;
@@ -249,8 +305,6 @@ bool LocalDisplayClass::Init()
 	tft.init();
 	tft.setRotation(3);
 
-	//tft.fillScreen(TFT_BLACK);
-
 	Control(LocalDisplayClass::SYSPage);
 
 	return true;
@@ -265,6 +319,9 @@ void LocalDisplayClass::Update()
 		break;
 	case COM:
 		DrawCOMPage();
+		break;
+	case DBG:
+		DrawDBGPage();
 		break;
 
 	default:
@@ -284,6 +341,9 @@ void LocalDisplayClass::Control(uint8_t command)
 		break;
 	case COMPage:
 		DrawCOMPage();
+		break;
+	case DBGPage:
+		DrawDBGPage();
 		break;
 	case Next:
 		NextPage(0);
