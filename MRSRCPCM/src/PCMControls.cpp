@@ -30,12 +30,19 @@ void PCMControlsClass::HandleFuncButtonEvents(ace_button::AceButton* b, uint8_t 
 
 void PCMControlsClass::ControlCSSMPower(byte value)
 {
+	char buffer[32];
+
 	digitalWrite(CSSMPowerEnablePin, value);
+	sprintf(buffer, "CSSM power %s", value ? "ON" : "OFF");
+	LocalDisplay.AddDebugTextLine(buffer);
 }
 
 void PCMControlsClass::ControlNMPower(byte value)
 {
+	char buffer[32];
 	digitalWrite(NMPowerEnablePin, value);
+	sprintf(buffer, "NM power %s", value ? "ON" : "OFF");
+	LocalDisplay.AddDebugTextLine(buffer);
 }
 
 void PCMControlsClass::Init(TFT_eSPI* parentTFT)

@@ -96,9 +96,11 @@ void setup()
 	{
 		_PL("Error initializing I2C bus...");
 	}
+	LocalDisplay.ReportHeapStatus();
 
 	SensorData.Init();
 	UpdateSensorsTask.enable();
+	LocalDisplay.ReportHeapStatus();
 
 	if (LocalDisplay.Init())
 	{
@@ -111,9 +113,11 @@ void setup()
 		_PL("Local Display initialization FAIL");
 	}
 	UpdateLocalDisplayTask.enable();
+	LocalDisplay.ReportHeapStatus();
 
 	PCMControls.Init(LocalDisplay.GetTFT());
 	PCMControls.MainMenu->Draw();
+	LocalDisplay.ReportHeapStatus();
 
 	UpdateControlsTask.enable();
 

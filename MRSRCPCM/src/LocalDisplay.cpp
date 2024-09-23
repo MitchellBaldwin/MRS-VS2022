@@ -245,15 +245,40 @@ void LocalDisplayClass::DrawDBGPage()
 		int32_t halfScreenHeight = tft.height() / 2;
 
 		tft.setTextSize(1);
+
+		tft.setTextColor(TFT_GREEN);
+		tft.setTextDatum(CL_DATUM);
+		sprintf(buf, "%s %d core", ESP.getChipModel(), ESP.getChipCores());
+		tft.drawString(buf, 2, 30, 1);
+		sprintf(buf, "CPU v%d %d MHz", ESP.getChipRevision(), ESP.getCpuFreqMHz());
+		tft.drawString(buf, 2, 40, 1);
+
+		tft.setTextColor(TFT_ORANGE, TFT_BLACK, true);
+		sprintf(buf, "Heap (F/T): %d/%d", ESP.getFreeHeap(), ESP.getHeapSize());
+		tft.drawString(buf, 2, 50, 1);
+		sprintf(buf, "Prog (U/F): %d/%d", ESP.getSketchSize(), ESP.getFreeSketchSpace());
+		tft.drawString(buf, 2, 60, 1);
+		if (ESP.getPsramSize() > 0)
+		{
+			sprintf(buf, "PSRAM: %d/%d", ESP.getFreePsram(), ESP.getPsramSize());
+		}
+		else
+		{
+			sprintf(buf, "No PSRAM");
+		}
+		tft.drawString(buf, 2, 70, 1);
+
 		tft.setTextColor(TFT_GREENYELLOW);
 		tft.setTextDatum(CL_DATUM);	//DONE: setTextDatum has NO AFFECT on print() output; print() effectively uses default TL_DATUM
 		uint8_t mac[6];
 		WiFi.macAddress(mac);
 		sprintf(buf, "MAC:%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-		tft.drawString(buf, 2, halfScreenHeight + 30);
+		tft.drawString(buf, 2, halfScreenHeight + 20);
 
 		tft.setTextColor(TFT_GREEN);
 		tft.setTextDatum(CL_DATUM);
+		sprintf(buf, "SSID: %s %d dBm", WiFi.SSID().c_str(), WiFi.RSSI());
+		tft.drawString(buf, 2, halfScreenHeight + 30, 1);
 		sprintf(buf, "IP: %s", WiFi.localIP().toString());
 		tft.drawString(buf, 2, halfScreenHeight + 40);
 
@@ -282,8 +307,29 @@ void LocalDisplayClass::DrawDBGPage()
 		sprintf(buf, "WiFi %s", PCMStatus.WiFiStatus ? "OK" : "NO");
 		tft.drawString(buf, halfScreenWidth, halfScreenHeight + 10);
 
+		tft.setTextColor(TFT_GREENYELLOW);
+		tft.setTextDatum(CL_DATUM);
+		for (int i = 0; i < MAX_TEXT_LINES; ++i)
+		{
+			tft.drawString(PCMStatus.debugTextLines[i].c_str(), halfScreenWidth + 2, 30 + i * 10);
+		}
+
 		lastPage = currentPage;
 	}
+
+	// Update dynamic displays:
+
+	// Display rotary encoder settings:
+	tft.setTextDatum(BL_DATUM);
+	tft.setTextSize(1);
+	tft.setTextColor(TFT_CYAN, TFT_BLACK, true);
+	sprintf(buf, "%04D", PCMControls.NavSetting);
+	tft.drawString(buf, 2, tft.height() - 2);
+
+	tft.setTextDatum(BR_DATUM);
+	sprintf(buf, "%04D", PCMControls.FuncSetting);
+	tft.drawString(buf, tft.width() - 2, tft.height() - 2);
+
 
 }
 
@@ -394,6 +440,38 @@ void LocalDisplayClass::NextPage(byte /*value*/)
 		page++;
 		currentPage = (LocalDisplayClass::Pages)page;
 	}
+}
+
+void LocalDisplayClass::RefreshCurrentPage()
+{
+	lastPage = NONE;
+	SetCurrentPage(currentPage);
+	Update();
+}
+
+void LocalDisplayClass::RefreshPage(Pages page)
+{
+	if (page == currentPage)
+	{
+		RefreshCurrentPage();
+	}
+}
+
+void LocalDisplayClass::ReportHeapStatus()
+{
+	sprintf(buf, "Heap (F/T): %d/%d", ESP.getFreeHeap(), ESP.getHeapSize());
+	PCMStatus.AddDebugTextLine(buf);
+	if (GetCurrentPage() == LocalDisplayClass::Pages::DBG)
+	{
+		// Refresh displayed list of debug messages:
+		RefreshCurrentPage();
+	}
+}
+
+void LocalDisplayClass::AddDebugTextLine(String newLine)
+{
+	PCMStatus.AddDebugTextLine(newLine);
+	RefreshPage(DBG);
 }
 
 TFT_eSPI* LocalDisplayClass::GetTFT()

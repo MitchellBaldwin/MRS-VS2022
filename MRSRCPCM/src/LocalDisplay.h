@@ -101,12 +101,17 @@ public:
 
 	void SetCurrentPage(Pages page);
 	Pages GetCurrentPage();
+	void RefreshCurrentPage();
+	void RefreshPage(Pages page);
 	static void PrevPage(byte value);
 	static void NextPage(byte value);
 	
 	TFT_eSPI* GetTFT();
 	byte GetDisplayBrightness();
 	static void SetDisplayBrightness(byte brightness);
+
+	void AddDebugTextLine(String newLine);
+	void ReportHeapStatus();
 
 };
 

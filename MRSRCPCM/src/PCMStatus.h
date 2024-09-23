@@ -13,12 +13,15 @@
 	#include "WProgram.h"
 #endif
 
+constexpr uint8_t MAX_TEXT_LINES = 8;
+
 class PCMStatusClass
 {
- protected:
+protected:
+	char buf[32];
+	uint8_t curDebugTextLine = 0x00;
 
-
- public:
+public:
 	 // Power Control Module firmware version:
 	 uint8_t MajorVersion = 1;
 	 uint8_t MinorVersion = 1;
@@ -48,7 +51,11 @@ class PCMStatusClass
 
 	 bool BMEx80Status = false;
 
+	 String debugTextLines[MAX_TEXT_LINES];
+
 	 void Init();
+	 void AddDebugTextLine(String newLine);
+	 void ClearDebugText();
 
 };
 
