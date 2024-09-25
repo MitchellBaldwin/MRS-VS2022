@@ -461,11 +461,7 @@ void LocalDisplayClass::ReportHeapStatus()
 {
 	sprintf(buf, "Heap (F/T): %d/%d", ESP.getFreeHeap(), ESP.getHeapSize());
 	PCMStatus.AddDebugTextLine(buf);
-	if (GetCurrentPage() == LocalDisplayClass::Pages::DBG)
-	{
-		// Refresh displayed list of debug messages:
-		RefreshCurrentPage();
-	}
+	RefreshPage(DBG);
 }
 
 void LocalDisplayClass::AddDebugTextLine(String newLine)

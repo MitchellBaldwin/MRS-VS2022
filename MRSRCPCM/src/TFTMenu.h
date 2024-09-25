@@ -1,5 +1,12 @@
-// TFTMenu.h
-
+/*	TFTMenu.h
+*	TFTMenuClass - Base class for encoder or button driven on-screen menus
+*	Container class for MenuItemClass objects
+*
+*	Mitchell Baldwin copyright 2024
+*	v 0.00:	Initial data structure
+*	v
+*
+*/
 #ifndef _TFTMENU_h
 #define _TFTMENU_h
 
@@ -16,7 +23,7 @@ class TFTMenuClass
 {
 protected:
 	MenuItemClass* Items[MAX_MENU_ITEMS];
-	byte CurrentItemIndex = 0;
+	byte CurrentItemIndex = 1;
 	byte HighestItemIndex = 255;
 	TFT_eSPI* tft;
 

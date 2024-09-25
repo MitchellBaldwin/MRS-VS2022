@@ -58,6 +58,9 @@
     <Filter Include="src\_micro-api-readonly\libraries\WiFi">
       <UniqueIdentifier>{272b8011-d469-4923-82fd-2deee98a5c9d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\_micro-api-readonly\libraries\Adafruit_INA219">
+      <UniqueIdentifier>{4bfd5546-84fe-45f0-a11a-b65fa2696baa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\arduino folders read me.txt">
@@ -92,6 +95,9 @@
     </None>
     <None Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\library.properties">
       <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
+    </None>
+    <None Include="..\..\..\Arduino\libraries\libraries\Adafruit_INA219\library.properties">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_INA219</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -293,6 +299,9 @@
     </ClCompile>
     <ClCompile Include="src\TFTMenu.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\libraries\libraries\Adafruit_INA219\Adafruit_INA219.cpp">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_INA219</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -557,6 +566,9 @@
     <ClInclude Include="src\TFTMenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\libraries\libraries\Adafruit_INA219\Adafruit_INA219.h">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_INA219</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\..\Arduino\libraries\TaskScheduler\keywords.txt">
@@ -594,6 +606,9 @@
     </Text>
     <Text Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\WiFi\keywords.txt">
       <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
+    </Text>
+    <Text Include="..\..\..\Arduino\libraries\libraries\Adafruit_INA219\license.txt">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_INA219</Filter>
     </Text>
   </ItemGroup>
 </Project>

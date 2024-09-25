@@ -129,14 +129,22 @@ void PCMControlsClass::Init(byte navEncoderI2CAddress, byte funcEncoderI2CAddres
 	MainMenu = new TFTMenuClass(tft);
 
 	CSSMMenuItem = new MenuItemClass("CSSM", 36, 157, 56, 12, MenuItemClass::MenuItemTypes::OffOn);
+	CSSMMenuItem->Init(tft);
 	MainMenu->AddItem(CSSMMenuItem);
 	CSSMMenuItem->SetOnExecuteHandler(ControlCSSMPower);
 
+	//CSSMMenuItem1 = new MenuItemClass("CSSM", 36, 157, 56, 12, MenuItemClass::MenuItemTypes::OffOn);
+	//CSSMMenuItem1->Init(tft);
+	//MainMenu->AddItem(CSSMMenuItem1);
+	//CSSMMenuItem1->SetOnExecuteHandler(ControlCSSMPower);
+
 	NMMenuItem = new MenuItemClass("NM", 98, 157, 56, 12, MenuItemClass::MenuItemTypes::OffOn);
+	NMMenuItem->Init(tft);
 	MainMenu->AddItem(NMMenuItem);
 	NMMenuItem->SetOnExecuteHandler(ControlNMPower);
 
 	BRTMenuItem = new MenuItemClass("BRT", 162, 157, 56, 12, MenuItemClass::MenuItemTypes::Numeric);
+	BRTMenuItem->Init(tft);
 	MainMenu->AddItem(BRTMenuItem);
 	BRTMenuItem->SetOnExecuteHandler(LocalDisplay.SetDisplayBrightness);
 	BRTMenuItem->SetMinValue(0);
@@ -145,6 +153,7 @@ void PCMControlsClass::Init(byte navEncoderI2CAddress, byte funcEncoderI2CAddres
 	BRTMenuItem->SetValue(LocalDisplay.GetDisplayBrightness());
 
 	NextPageMenuItem = new MenuItemClass("Next", 226, 157, 56, 12, MenuItemClass::MenuItemTypes::Action);
+	NextPageMenuItem->Init(tft);
 	MainMenu->AddItem(NextPageMenuItem);
 	NextPageMenuItem->SetOnExecuteHandler(LocalDisplay.NextPage);
 	NextPageMenuItem->SetMinValue(LocalDisplayClass::Pages::SYS);

@@ -1,7 +1,9 @@
-// 
-// 
-// 
-
+/*	TFTMenuClass - Base class for encoder or button driven on-screen menus
+*	Container class for MenuItemClass objects
+*
+*	Mitchell Baldwin copyright 2024
+*
+*/
 #include "TFTMenu.h"
 #include "DEBUG Macros.h"
 
@@ -17,14 +19,22 @@ void TFTMenuClass::Init(TFT_eSPI* parentTFT)
 		Items[i] = nullptr;
 	}
 	tft = parentTFT;
+
+	// Workaround: For some reason when using a sprite to draw the menu item, text is not
+	//rendered for the first item (graphics, e.g., the bounding box and a test line) ARE
+	//rendered, though.  Creating a dummy menu item before the 'real' ones are added allows
+	//the forst real menu item to display properly.
+
+	MenuItemClass* dummy = new MenuItemClass("", 0, 0, 10, 10);
+	dummy->Init(tft);
+	AddItem(dummy);
+
 }
 
 void TFTMenuClass::Draw()
 {
-	//_PL(HighestItemIndex)
-	for (byte i = 0; i <= HighestItemIndex; ++i)
+	for (byte i = 1; i <= HighestItemIndex; ++i)
 	{
-		//_PL(i)
 		Items[i]->Draw(tft, (i == CurrentItemIndex) ? true : false);
 	}
 }
@@ -51,7 +61,7 @@ bool TFTMenuClass::AddItem(MenuItemClass* item)
 
 bool TFTMenuClass::AddItemAt(MenuItemClass* item, byte index)
 {
-	if (index >= MAX_MENU_ITEMS)
+	if (index >= MAX_MENU_ITEMS || index == 0)
 	{
 		return false;
 	}
@@ -76,7 +86,7 @@ MenuItemClass* TFTMenuClass::PrevItem()
 	MenuItemClass* item = Items[CurrentItemIndex];
 	item->Draw(tft, false);
 	//_PL(CurrentItemIndex)
-	if (CurrentItemIndex == 0)
+	if (CurrentItemIndex == 1)
 	{
 		CurrentItemIndex = HighestItemIndex;
 	}
@@ -96,7 +106,7 @@ MenuItemClass* TFTMenuClass::NextItem()
 	item->Draw(tft, false);
 	if (++CurrentItemIndex > HighestItemIndex)
 	{
-		CurrentItemIndex = 0;
+		CurrentItemIndex = 1;
 	}
 	item = Items[CurrentItemIndex];
 	item->Draw(tft, true);

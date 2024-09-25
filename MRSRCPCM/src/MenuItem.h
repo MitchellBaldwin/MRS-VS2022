@@ -1,5 +1,11 @@
-// MenuItem.h
-
+/*	MenuItem.h
+*	MenuItemClass - Base class for items comprising a TFTMenu
+*
+*	Mitchell Baldwin copyright 2024
+*	v 0.00:	Initial data structure
+*	v
+*
+*/
 #ifndef _MENUITEM_h
 #define _MENUITEM_h
 
@@ -27,6 +33,8 @@ public:
 	typedef void (*MenuItemOnExecuteHandler)(byte);	// Function pointer for OnPress event handler
 
 protected:
+	TFT_eSprite* canvas;
+	
 	uint16_t Xtl;
 	uint16_t Ytl;
 	uint16_t Width;
@@ -46,7 +54,7 @@ protected:
 public:
 	MenuItemClass(String label, uint16_t xtl, uint16_t ytl, uint16_t width, uint16_t height, MenuItemTypes menuItemType = OffOn, MenuItemOnExecuteHandler onActivate = nullptr);
 
-	void Init();
+	void Init(TFT_eSPI* tft);
 	void Draw(TFT_eSPI* tft, bool isCurrent);
 
 	void Activate(bool isActivated);

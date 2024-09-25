@@ -19,6 +19,7 @@
 
  */
 
+#include <Adafruit_INA219.h>
 #include <HardwareSerial.h>
 HardwareSerial IDCSerial(1);
 
