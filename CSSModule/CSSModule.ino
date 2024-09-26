@@ -87,7 +87,8 @@ AsyncWiFiManager wifiManager(&server, &dns);
 HardwareSerial USBSerial(0);	// Uses the same UART device as "Serial" but does not allow use of "Serial"?
 HardwareSerial IDCSerial(2);	// UART for inter-device communication & control
 
-#include "src/I2CBus.h"
+//#include "src/I2CBus.h"
+#include <I2CBus.h>
 
 #include "src/LocalDisplay.h"
 constexpr byte LocalDisplayI2CAddress = 0x3C;

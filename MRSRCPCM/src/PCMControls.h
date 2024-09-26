@@ -47,7 +47,7 @@ constexpr byte DefaultFuncEncoderI2CAddress = 0x37;	// Right rotary encoder, use
 constexpr byte DefaultCSSMPowerEnablePin = GPIO_NUM_11;
 constexpr byte DefaultNMPowerEnablePin = GPIO_NUM_12;
 
-#include "TFTMenu.h"
+#include <TFTMenu.h>
 
 class PCMControlsClass
 {

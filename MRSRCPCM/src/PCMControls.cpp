@@ -133,11 +133,6 @@ void PCMControlsClass::Init(byte navEncoderI2CAddress, byte funcEncoderI2CAddres
 	MainMenu->AddItem(CSSMMenuItem);
 	CSSMMenuItem->SetOnExecuteHandler(ControlCSSMPower);
 
-	//CSSMMenuItem1 = new MenuItemClass("CSSM", 36, 157, 56, 12, MenuItemClass::MenuItemTypes::OffOn);
-	//CSSMMenuItem1->Init(tft);
-	//MainMenu->AddItem(CSSMMenuItem1);
-	//CSSMMenuItem1->SetOnExecuteHandler(ControlCSSMPower);
-
 	NMMenuItem = new MenuItemClass("NM", 98, 157, 56, 12, MenuItemClass::MenuItemTypes::OffOn);
 	NMMenuItem->Init(tft);
 	MainMenu->AddItem(NMMenuItem);

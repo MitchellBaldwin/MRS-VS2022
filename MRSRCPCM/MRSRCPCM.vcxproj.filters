@@ -294,12 +294,6 @@
     <ClCompile Include="src\PCMControls.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\MenuItem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\TFTMenu.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Arduino\libraries\libraries\Adafruit_INA219\Adafruit_INA219.cpp">
       <Filter>src\_micro-api-readonly\libraries\Adafruit_INA219</Filter>
     </ClCompile>
@@ -558,12 +552,6 @@
       <Filter>src\_micro-api-readonly\libraries\WiFi</Filter>
     </ClInclude>
     <ClInclude Include="src\PCMControls.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\MenuItem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\TFTMenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Arduino\libraries\libraries\Adafruit_INA219\Adafruit_INA219.h">

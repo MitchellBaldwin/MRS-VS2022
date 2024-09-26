@@ -204,9 +204,6 @@
     <ClCompile Include="src\DebugDisplay.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\I2CBus.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\LocalDisplay.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -507,9 +504,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\DebugDisplay.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\I2CBus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\LocalDisplay.h">
