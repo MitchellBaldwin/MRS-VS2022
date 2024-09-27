@@ -19,11 +19,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NavModule", "NavModule\NavModule.vcxproj", "{B30D587C-2C39-403B-B67B-888E16D86152}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MRSRCPCM", "MRSRCPCM\MRSRCPCM.vcxproj", "{4832D7AD-D860-40A0-B942-C758D5DC2A13}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "I2CBus", "..\..\Arduino\libraries\I2CBus\I2CBus.vcxitems", "{5A4B0045-CDA2-4498-8290-E4791807B4A3}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TFTMenu", "..\..\Arduino\libraries\TFTMenu\TFTMenu.vcxitems", "{D1CEA50A-E82F-4BA9-A6B8-21FE6DA8D1DA}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MRSRCPCM", "MRSRCPCM\MRSRCPCM.vcxproj", "{28025B43-6E1C-4724-8D23-8D5529901E14}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -171,30 +171,30 @@ Global
 		{B30D587C-2C39-403B-B67B-888E16D86152}.Release|x86.ActiveCfg = Release|x86
 		{B30D587C-2C39-403B-B67B-888E16D86152}.Release|x86.Build.0 = Release|x86
 		{B30D587C-2C39-403B-B67B-888E16D86152}.Release|x86.Deploy.0 = Release|x86
-		{4832D7AD-D860-40A0-B942-C758D5DC2A13}.Debug|ARM.ActiveCfg = Debug|ARM
-		{4832D7AD-D860-40A0-B942-C758D5DC2A13}.Debug|ARM.Build.0 = Debug|ARM
-		{4832D7AD-D860-40A0-B942-C758D5DC2A13}.Debug|ARM.Deploy.0 = Debug|ARM
-		{4832D7AD-D860-40A0-B942-C758D5DC2A13}.Debug|ARM64.ActiveCfg = Debug|ARM64
-		{4832D7AD-D860-40A0-B942-C758D5DC2A13}.Debug|ARM64.Build.0 = Debug|ARM64
-		{4832D7AD-D860-40A0-B942-C758D5DC2A13}.Debug|ARM64.Deploy.0 = Debug|ARM64
-		{4832D7AD-D860-40A0-B942-C758D5DC2A13}.Debug|x64.ActiveCfg = Debug|x64
-		{4832D7AD-D860-40A0-B942-C758D5DC2A13}.Debug|x64.Build.0 = Debug|x64
-		{4832D7AD-D860-40A0-B942-C758D5DC2A13}.Debug|x64.Deploy.0 = Debug|x64
-		{4832D7AD-D860-40A0-B942-C758D5DC2A13}.Debug|x86.ActiveCfg = Debug|x86
-		{4832D7AD-D860-40A0-B942-C758D5DC2A13}.Debug|x86.Build.0 = Debug|x86
-		{4832D7AD-D860-40A0-B942-C758D5DC2A13}.Debug|x86.Deploy.0 = Debug|x86
-		{4832D7AD-D860-40A0-B942-C758D5DC2A13}.Release|ARM.ActiveCfg = Release|ARM
-		{4832D7AD-D860-40A0-B942-C758D5DC2A13}.Release|ARM.Build.0 = Release|ARM
-		{4832D7AD-D860-40A0-B942-C758D5DC2A13}.Release|ARM.Deploy.0 = Release|ARM
-		{4832D7AD-D860-40A0-B942-C758D5DC2A13}.Release|ARM64.ActiveCfg = Release|ARM64
-		{4832D7AD-D860-40A0-B942-C758D5DC2A13}.Release|ARM64.Build.0 = Release|ARM64
-		{4832D7AD-D860-40A0-B942-C758D5DC2A13}.Release|ARM64.Deploy.0 = Release|ARM64
-		{4832D7AD-D860-40A0-B942-C758D5DC2A13}.Release|x64.ActiveCfg = Release|x64
-		{4832D7AD-D860-40A0-B942-C758D5DC2A13}.Release|x64.Build.0 = Release|x64
-		{4832D7AD-D860-40A0-B942-C758D5DC2A13}.Release|x64.Deploy.0 = Release|x64
-		{4832D7AD-D860-40A0-B942-C758D5DC2A13}.Release|x86.ActiveCfg = Release|x86
-		{4832D7AD-D860-40A0-B942-C758D5DC2A13}.Release|x86.Build.0 = Release|x86
-		{4832D7AD-D860-40A0-B942-C758D5DC2A13}.Release|x86.Deploy.0 = Release|x86
+		{28025B43-6E1C-4724-8D23-8D5529901E14}.Debug|ARM.ActiveCfg = Debug|ARM
+		{28025B43-6E1C-4724-8D23-8D5529901E14}.Debug|ARM.Build.0 = Debug|ARM
+		{28025B43-6E1C-4724-8D23-8D5529901E14}.Debug|ARM.Deploy.0 = Debug|ARM
+		{28025B43-6E1C-4724-8D23-8D5529901E14}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{28025B43-6E1C-4724-8D23-8D5529901E14}.Debug|ARM64.Build.0 = Debug|ARM64
+		{28025B43-6E1C-4724-8D23-8D5529901E14}.Debug|ARM64.Deploy.0 = Debug|ARM64
+		{28025B43-6E1C-4724-8D23-8D5529901E14}.Debug|x64.ActiveCfg = Debug|x64
+		{28025B43-6E1C-4724-8D23-8D5529901E14}.Debug|x64.Build.0 = Debug|x64
+		{28025B43-6E1C-4724-8D23-8D5529901E14}.Debug|x64.Deploy.0 = Debug|x64
+		{28025B43-6E1C-4724-8D23-8D5529901E14}.Debug|x86.ActiveCfg = Debug|x86
+		{28025B43-6E1C-4724-8D23-8D5529901E14}.Debug|x86.Build.0 = Debug|x86
+		{28025B43-6E1C-4724-8D23-8D5529901E14}.Debug|x86.Deploy.0 = Debug|x86
+		{28025B43-6E1C-4724-8D23-8D5529901E14}.Release|ARM.ActiveCfg = Release|ARM
+		{28025B43-6E1C-4724-8D23-8D5529901E14}.Release|ARM.Build.0 = Release|ARM
+		{28025B43-6E1C-4724-8D23-8D5529901E14}.Release|ARM.Deploy.0 = Release|ARM
+		{28025B43-6E1C-4724-8D23-8D5529901E14}.Release|ARM64.ActiveCfg = Release|ARM64
+		{28025B43-6E1C-4724-8D23-8D5529901E14}.Release|ARM64.Build.0 = Release|ARM64
+		{28025B43-6E1C-4724-8D23-8D5529901E14}.Release|ARM64.Deploy.0 = Release|ARM64
+		{28025B43-6E1C-4724-8D23-8D5529901E14}.Release|x64.ActiveCfg = Release|x64
+		{28025B43-6E1C-4724-8D23-8D5529901E14}.Release|x64.Build.0 = Release|x64
+		{28025B43-6E1C-4724-8D23-8D5529901E14}.Release|x64.Deploy.0 = Release|x64
+		{28025B43-6E1C-4724-8D23-8D5529901E14}.Release|x86.ActiveCfg = Release|x86
+		{28025B43-6E1C-4724-8D23-8D5529901E14}.Release|x86.Build.0 = Release|x86
+		{28025B43-6E1C-4724-8D23-8D5529901E14}.Release|x86.Deploy.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -205,8 +205,8 @@ Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\..\Arduino\libraries\I2CBus\I2CBus.vcxitems*{25df7ed6-ef8f-4f4a-87be-741f945cbe57}*SharedItemsImports = 4
 		DEBUG Helpers\DEBUG Helpers.vcxitems*{25df7ed6-ef8f-4f4a-87be-741f945cbe57}*SharedItemsImports = 4
-		..\..\Arduino\libraries\I2CBus\I2CBus.vcxitems*{4832d7ad-d860-40a0-b942-c758d5dc2a13}*SharedItemsImports = 4
-		..\..\Arduino\libraries\TFTMenu\TFTMenu.vcxitems*{4832d7ad-d860-40a0-b942-c758d5dc2a13}*SharedItemsImports = 4
+		..\..\Arduino\libraries\I2CBus\I2CBus.vcxitems*{28025b43-6e1c-4724-8d23-8d5529901e14}*SharedItemsImports = 4
+		..\..\Arduino\libraries\TFTMenu\TFTMenu.vcxitems*{28025b43-6e1c-4724-8d23-8d5529901e14}*SharedItemsImports = 4
 		DEBUG Helpers\DEBUG Helpers.vcxitems*{530244f0-94ac-4e9e-9304-7fb159b0023d}*SharedItemsImports = 4
 		..\..\Arduino\libraries\I2CBus\I2CBus.vcxitems*{5a4b0045-cda2-4498-8290-e4791807b4a3}*SharedItemsImports = 9
 		DEBUG Helpers\DEBUG Helpers.vcxitems*{92b77076-b132-437a-b955-e03ba9f3a7d3}*SharedItemsImports = 9
