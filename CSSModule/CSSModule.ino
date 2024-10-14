@@ -14,7 +14,7 @@
  v1.0	Initial release
  v1.1	Added support for ladder button arrays
  v1.2	Added WiFi and OTA programming support
- v1.3	
+ v1.3	Added ESP-NOW support\v1.4
 
 */
 
@@ -51,14 +51,24 @@
 
 #define FORMAT_LITTLEFS_IF_FAILED true
 
+#include <esp_now.h>
+uint8_t MRSRCPCMAddress[] = { 0x48, 0x27, 0xE2, 0xEA, 0x0A, 0x4C };
+esp_now_peer_info_t MRSRCPCMInfo;
+
+void OnMRSRCPCMDataSent(const uint8_t* mac_addr, esp_now_send_status_t status) {
+	//Serial.print("\r\nLast Packet Send Status:\t");
+	//Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
+}
+
+
 #include "src/ESP32WiFi.h"
 
 //#include <ESPAsyncWiFiManager.h>
 //#include <AsyncElegantOTA.h>
 
-AsyncWebServer server(80);
-DNSServer dns;
-AsyncWiFiManager wifiManager(&server, &dns);
+//AsyncWebServer server(80);
+//DNSServer dns;
+//AsyncWiFiManager wifiManager(&server, &dns);
 
 #include <DEBUG Macros.h>
 
@@ -177,6 +187,8 @@ static const uint16_t OSB_LEVELS[OSB_NUM_LEVELS] =
 };
 #endif
 
+#include "src/CSSMDrivePacket.h"
+
 // Scheduler
 Scheduler MainScheduler;
 
@@ -208,7 +220,7 @@ constexpr long UpdateDebugDisplayInterval = 500;
 void UpdateDebugDisplayCallback();
 Task UpdateDebugDisplayTask(UpdateDebugDisplayInterval* TASK_MILLISECOND, TASK_FOREVER, &UpdateDebugDisplayCallback, &MainScheduler, false);
 
-constexpr long SendCSSMPacketInterval = 100;
+constexpr long SendCSSMPacketInterval = 1000;
 void SendCSSMPacketCallback();
 Task SendCSSMPacketTask((SendCSSMPacketInterval * TASK_MILLISECOND), TASK_FOREVER, &SendCSSMPacketCallback, &MainScheduler, false);
 
@@ -287,10 +299,37 @@ void setup()
 		_PL(buf)
 	}
 
+	// Initialize ESP-NOW
+	_PL("Initializing ESP-NOW")
+	// Set device as a Wi-Fi Station; turns WiFi radio ON:
+	WiFi.mode(WIFI_STA);
+	CSSMStatus.ESPNOWStatus = (esp_now_init() == ESP_OK);
+	if (!CSSMStatus.ESPNOWStatus) {
+		_PL("Error initializing ESP-NOW")
+	}
+
+	esp_now_register_send_cb(OnMRSRCPCMDataSent);
+
+	// Register peer
+	memcpy(MRSRCPCMInfo.peer_addr, MRSRCPCMAddress, 6);
+	MRSRCPCMInfo.channel = 0;
+	MRSRCPCMInfo.encrypt = false;
+
+	// Add peer        
+	if (esp_now_add_peer(&MRSRCPCMInfo) != ESP_OK) {
+		_PL("Failed to add peer")
+		//return;
+	}
+
+	uint8_t mac[6];
+	WiFi.macAddress(mac);
+	snprintf(buf, 22, "MAC:%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+	_PL(buf)
+
 	// Initialize WiFi and update Debug display to confirm success;
 	// Perform hard reset of WiFi network association if right rocker switch is ON, invoking WiFi manager config portal on soft AP at 192.168.4.1:
-	CSSMStatus.WiFiStatus = false;
-	CSSMStatus.WiFiStatus = ESP32WiFi.Init(SensorData.GetRightRockerSwitchStateRaw() == 0);
+	//CSSMStatus.WiFiStatus = false;
+	//CSSMStatus.WiFiStatus = ESP32WiFi.Init(SensorData.GetRightRockerSwitchStateRaw() == 0);
 
 	if (CSSMStatus.DebugDisplayStatus)
 	{
@@ -318,7 +357,7 @@ void setup()
 	UpdateLocalDisplayTask.enable();
 	UpdateDebugDisplayTask.enable();
 
-	//SendCSSMPacketTask.enable();
+	SendCSSMPacketTask.enable();
 
 	HeartbeatLEDTask.setInterval(HeartbeatLEDTogglePeriod * TASK_MILLISECOND);
 	HeartbeatLEDTask.enable();
@@ -478,6 +517,12 @@ void UpdateDebugDisplayCallback()
 
 void SendCSSMPacketCallback()
 {
+	cssmDrivePacket.Heading = SensorData.HDGEncoderSetting;
+	cssmDrivePacket.Throttle = SensorData.GetThrottle();
+
+	esp_err_t result = esp_now_send(MRSRCPCMAddress, (uint8_t*)&cssmDrivePacket, sizeof(cssmDrivePacket));
+
+	//_PL(sizeof(cssmDrivePacket))
 
 }
 

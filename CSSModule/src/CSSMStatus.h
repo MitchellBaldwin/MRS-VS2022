@@ -29,7 +29,7 @@ class CSSMStatusClass
 	 
 	 // Control Stick Steering Module firmware version:
 	 uint8_t MajorVersion = 1;
-	 uint8_t MinorVersion = 2;
+	 uint8_t MinorVersion = 4;
 
 	 enum DriveModes
 	 {
@@ -56,6 +56,7 @@ class CSSMStatusClass
 	 bool UART1Status = false;
 	 bool UART2Status = false;
 
+	 bool ESPNOWStatus = false;
 	 bool WiFiStatus = false;
 	 
 	 bool LocalDisplayStatus = false;
