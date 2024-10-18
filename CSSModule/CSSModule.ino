@@ -14,7 +14,8 @@
  v1.0	Initial release
  v1.1	Added support for ladder button arrays
  v1.2	Added WiFi and OTA programming support
- v1.3	Added ESP-NOW support\v1.4
+ v1.3	Added ESP-NOW support
+ v1.4	
 
 */
 
@@ -65,7 +66,6 @@ void OnMRSRCPCMDataSent(const uint8_t* mac_addr, esp_now_send_status_t status) {
 
 //#include <ESPAsyncWiFiManager.h>
 //#include <AsyncElegantOTA.h>
-
 //AsyncWebServer server(80);
 //DNSServer dns;
 //AsyncWiFiManager wifiManager(&server, &dns);
@@ -299,10 +299,15 @@ void setup()
 		_PL(buf)
 	}
 
+	// Initialize WiFi and update Debug display to confirm success;
+	// Perform hard reset of WiFi network association if right rocker switch is ON, invoking WiFi manager config portal on soft AP at 192.168.4.1:
+	CSSMStatus.WiFiStatus = false;
+	CSSMStatus.WiFiStatus = ESP32WiFi.Init(SensorData.GetRightRockerSwitchStateRaw() == 0);
+
 	// Initialize ESP-NOW
 	_PL("Initializing ESP-NOW")
 	// Set device as a Wi-Fi Station; turns WiFi radio ON:
-	WiFi.mode(WIFI_STA);
+	//WiFi.mode(WIFI_STA);
 	CSSMStatus.ESPNOWStatus = (esp_now_init() == ESP_OK);
 	if (!CSSMStatus.ESPNOWStatus) {
 		_PL("Error initializing ESP-NOW")
@@ -325,11 +330,6 @@ void setup()
 	WiFi.macAddress(mac);
 	snprintf(buf, 22, "MAC:%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 	_PL(buf)
-
-	// Initialize WiFi and update Debug display to confirm success;
-	// Perform hard reset of WiFi network association if right rocker switch is ON, invoking WiFi manager config portal on soft AP at 192.168.4.1:
-	//CSSMStatus.WiFiStatus = false;
-	//CSSMStatus.WiFiStatus = ESP32WiFi.Init(SensorData.GetRightRockerSwitchStateRaw() == 0);
 
 	if (CSSMStatus.DebugDisplayStatus)
 	{
