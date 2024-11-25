@@ -43,6 +43,8 @@ private:
 
 constexpr byte DefaultNavEncoderI2CAddress = 0x36;	// Left rotary encoder, used primarily for navigating controls on the display
 constexpr byte DefaultFuncEncoderI2CAddress = 0x37;	// Right rotary encoder, used primarily for manipulating control settings
+//constexpr byte DefaultNavEncoderI2CAddress = 0x38;	// Left rotary encoder, used primarily for navigating controls on the display
+//constexpr byte DefaultFuncEncoderI2CAddress = 0x3A;	// Right rotary encoder, used primarily for manipulating control settings
 
 constexpr byte DefaultCSSMPowerEnablePin = GPIO_NUM_11;
 constexpr byte DefaultNMPowerEnablePin = GPIO_NUM_12;

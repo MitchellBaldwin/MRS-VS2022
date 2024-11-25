@@ -1,11 +1,11 @@
 /*	LocalDisplayClass - Class for implementing paged graphical display interface for
-*	ESP32 based MRS RC Power Control Module
+*	ESP32 based MRS Master Communications Controller (MRS MCC)
 *
 *	Pages supported:
 *		System (SYS)	Default summary of system, power supply voltages and I/O ststus
-*		Comms (COM)		Communications with MRS RC MCC
+*		Comms (COM)		Communications with MRS RC MCC or MRS RC CSSM
 *
-*	Mitchell Baldwin copyright 2023-2024
+*	Mitchell Baldwin copyright 2024
 *
 *	v 0.00:	Initial command set
 *	v
@@ -21,9 +21,8 @@
 	#include "WProgram.h"
 #endif
 
-#include "PCMStatus.h"
+#include "MCCStatus.h"
 #include <TFT_eSPI.h>
-//#include "MenuItem.h"
 
 constexpr byte DefaultDisplayBrightness = 128;
 
@@ -56,14 +55,7 @@ protected:
 
 	};
 
-	const char* PageMenus[NONE] =
-	{
-		"DbNx  DRVm       LoNx",	// Rotary menu for the SYS page: select next DebugDisplay page, enter DRIVE mode, select next LoaclDisplay page
-		"SYSp  Mode       LoNx",	// OSB menu for the COM page: select SYS page, select current drive DriveMode page, 
-		"SYSp  Mode       LoNx",	// OSB menu for the DBG page: select SYS page, select current drive DriveMode page, 
-	};
-
-	const char* ComModeHeadings[PCMStatusClass::ComModes::NoComs] =
+	const char* ComModeHeadings[MCCStatusClass::ComModes::NoComs] =
 	{
 		"MRS RC MCC UART1",
 		"Direct WiFi/TCP ",
@@ -105,7 +97,7 @@ public:
 	void RefreshPage(Pages page);
 	static void PrevPage(byte value);
 	static void NextPage(byte value);
-	
+
 	TFT_eSPI* GetTFT();
 	byte GetDisplayBrightness();
 	static void SetDisplayBrightness(byte brightness);
@@ -116,7 +108,6 @@ public:
 };
 
 extern LocalDisplayClass LocalDisplay;
-//extern LocalDisplayClass::Pages currentPage;
 
 #endif
 
