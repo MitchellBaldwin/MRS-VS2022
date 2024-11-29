@@ -41,6 +41,7 @@ class CSSMStatusClass
 		 NoDriveMode
 	 };
 	 DriveModes DriveMode = DriveModes::DRV;
+	 DriveModes LastDriveMode = DriveModes::DRV;
 
 	 enum ComModes
 	 {

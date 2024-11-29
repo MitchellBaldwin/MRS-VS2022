@@ -56,19 +56,15 @@
 uint8_t MRSRCPCMAddress[] = { 0x48, 0x27, 0xE2, 0xEA, 0x0A, 0x4C };
 esp_now_peer_info_t MRSRCPCMInfo;
 
-void OnMRSRCPCMDataSent(const uint8_t* mac_addr, esp_now_send_status_t status) {
+void OnMRSRCPCMDataSent(const uint8_t* mac_addr, esp_now_send_status_t status)
+{
+	
 	//Serial.print("\r\nLast Packet Send Status:\t");
 	//Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
 }
 
 
 #include "src/ESP32WiFi.h"
-
-//#include <ESPAsyncWiFiManager.h>
-//#include <AsyncElegantOTA.h>
-//AsyncWebServer server(80);
-//DNSServer dns;
-//AsyncWiFiManager wifiManager(&server, &dns);
 
 #include <DEBUG Macros.h>
 
@@ -97,7 +93,6 @@ void OnMRSRCPCMDataSent(const uint8_t* mac_addr, esp_now_send_status_t status) {
 HardwareSerial USBSerial(0);	// Uses the same UART device as "Serial" but does not allow use of "Serial"?
 HardwareSerial IDCSerial(2);	// UART for inter-device communication & control
 
-//#include "src/I2CBus.h"
 #include <I2CBus.h>
 
 #include "src/LocalDisplay.h"
@@ -198,27 +193,27 @@ constexpr long NoLocalDisplayHeartbeatLEDToggleInterval = 100;
 
 long HeartbeatLEDTogglePeriod = NormalHeartbeatLEDToggleInterval;
 void ToggleBuiltinLEDCallback();
-Task HeartbeatLEDTask(HeartbeatLEDTogglePeriod* TASK_MILLISECOND, TASK_FOREVER, &ToggleBuiltinLEDCallback, &MainScheduler, false);
+Task HeartbeatLEDTask((HeartbeatLEDTogglePeriod * TASK_MILLISECOND), TASK_FOREVER, &ToggleBuiltinLEDCallback, &MainScheduler, false);
 
 constexpr long ReadControlsInterval = 100;
 void ReadControlsCallback();
-Task ReadControlsTask(ReadControlsInterval* TASK_MILLISECOND, TASK_FOREVER, &ReadControlsCallback, &MainScheduler, false);
+Task ReadControlsTask((ReadControlsInterval * TASK_MILLISECOND), TASK_FOREVER, &ReadControlsCallback, &MainScheduler, false);
 
 constexpr long ReadSensorsInterval = 50;
 void ReadSensorDataCallback();
-Task ReadSensorsTask(ReadSensorsInterval* TASK_MILLISECOND, TASK_FOREVER, &ReadSensorDataCallback, &MainScheduler, false);
+Task ReadSensorsTask((ReadSensorsInterval * TASK_MILLISECOND), TASK_FOREVER, &ReadSensorDataCallback, &MainScheduler, false);
 
 constexpr long ReadENVDataInterval = 5000;
 void ReadENVDataCallback();
-Task ReadENVDataTask(ReadENVDataInterval* TASK_MILLISECOND, TASK_FOREVER, &ReadENVDataCallback, &MainScheduler, false);
+Task ReadENVDataTask((ReadENVDataInterval * TASK_MILLISECOND), TASK_FOREVER, &ReadENVDataCallback, &MainScheduler, false);
 
 constexpr long UpdateLocalDisplayInterval = 100;
 void UpdateLocalDisplayCallback();
-Task UpdateLocalDisplayTask(UpdateLocalDisplayInterval* TASK_MILLISECOND, TASK_FOREVER, &UpdateLocalDisplayCallback, &MainScheduler, false);
+Task UpdateLocalDisplayTask((UpdateLocalDisplayInterval * TASK_MILLISECOND), TASK_FOREVER, &UpdateLocalDisplayCallback, &MainScheduler, false);
 
 constexpr long UpdateDebugDisplayInterval = 500;
 void UpdateDebugDisplayCallback();
-Task UpdateDebugDisplayTask(UpdateDebugDisplayInterval* TASK_MILLISECOND, TASK_FOREVER, &UpdateDebugDisplayCallback, &MainScheduler, false);
+Task UpdateDebugDisplayTask((UpdateDebugDisplayInterval * TASK_MILLISECOND), TASK_FOREVER, &UpdateDebugDisplayCallback, &MainScheduler, false);
 
 constexpr long SendCSSMPacketInterval = 1000;
 void SendCSSMPacketCallback();
@@ -242,12 +237,10 @@ void setup()
 	if (!IDCSerial)
 	{
 		CSSMStatus.UART2Status = false;
-		//HeartbeatLEDTogglePeriod = NoSerialHeartbeatLEDToggleInterval;
 	}
 	else
 	{
 		CSSMStatus.UART2Status = true;
-		//HeartbeatLEDTogglePeriod = NormalHeartbeatLEDToggleInterval;
 	}
 
 	if (!LittleFS.begin(FORMAT_LITTLEFS_IF_FAILED)) {
@@ -281,8 +274,7 @@ void setup()
 #endif
 
 	SensorData.Init(LOSBAnalogPin, ThrottlePin, ESP32VINAnalogPin, LeftToggleSwitchPin, CenterToggleSwitchPin, RightToggleSwitchPin, RightRockerSwitchPin);
-	
-	//SW1.setDebounceTime(50);
+	SensorData.LeftToggleSwitchHandler = LeftToggleSwitchStateChanged;
 
 	if (!DebugDisplay.Init(DebugDisplayI2CAddress))
 	{
@@ -307,7 +299,7 @@ void setup()
 	// Initialize ESP-NOW
 	_PL("Initializing ESP-NOW")
 	// Set device as a Wi-Fi Station; turns WiFi radio ON:
-	//WiFi.mode(WIFI_STA);
+	//WiFi.mode(WIFI_STA);	// WiFi radio is already on by virtue of the call to ESP32WiFi.Init(), above
 	CSSMStatus.ESPNOWStatus = (esp_now_init() == ESP_OK);
 	if (!CSSMStatus.ESPNOWStatus) {
 		_PL("Error initializing ESP-NOW")
@@ -422,35 +414,26 @@ void ReadControlsCallback()
 				LocalDisplay.Control(LocalDisplayClass::SYSPage);
 			}
 			break;
-		case OSBArrayClass::OSB3:	// OSB3/>Mode
-			if (LocalDisplay.IsOnSYSPage())
+	case OSBArrayClass::OSB3:	// OSB3/>Mode
+			// Return LocalDisplay to the page correspnding to the current CSSMStatus.DriveMode
+			switch (CSSMStatus.DriveMode)
 			{
-				// Engage Direct Drive (DRV) mode
-				CSSMStatus.DriveMode = CSSMStatusClass::DriveModes::DRV;
+			case CSSMStatusClass::DriveModes::DRV:
 				LocalDisplay.Control(LocalDisplayClass::DRVPage);
-			}
-			else
-			{
-				// Return LocalDisplay to the page correspnding to the current CSSMStatus.DriveMode
-				switch (CSSMStatus.DriveMode)
-				{
-				case CSSMStatusClass::DriveModes::DRV:
-					LocalDisplay.Control(LocalDisplayClass::DRVPage);
-					break;
-				case CSSMStatusClass::DriveModes::HDG:
-					LocalDisplay.Control(LocalDisplayClass::HDGPage);
-					break;
-				case CSSMStatusClass::DriveModes::WPT:
-					LocalDisplay.Control(LocalDisplayClass::WPTPage);
-					break;
-				case CSSMStatusClass::DriveModes::SEQ:
-					LocalDisplay.Control(LocalDisplayClass::SEQPage);
-					break;
+				break;
+			case CSSMStatusClass::DriveModes::HDG:
+				LocalDisplay.Control(LocalDisplayClass::HDGPage);
+				break;
+			case CSSMStatusClass::DriveModes::WPT:
+				LocalDisplay.Control(LocalDisplayClass::WPTPage);
+				break;
+			case CSSMStatusClass::DriveModes::SEQ:
+				LocalDisplay.Control(LocalDisplayClass::SEQPage);
+				break;
 
-				default:
-					LocalDisplay.Control(LocalDisplayClass::SYSPage);
-					break;
-				}
+			default:
+				LocalDisplay.Control(LocalDisplayClass::SYSPage);
+				break;
 			}
 			break;
 		case OSBArrayClass::OSB4:	// OSB4/>Func
@@ -494,8 +477,48 @@ void ReadControlsCallback()
 		}
 	}
 	
-	// Abandoned use of AceButton library due to issue with one button in a ladder array being unusable:
+	// Abandoned use of AceButton library for ladder button arrays due to issue with one button in the ladder being unusable:
 	//buttonConfig.checkButtons();
+
+	// Consider using AceButton library to respond to changes of toggle / rocker switch states (Already using ezButton library)
+
+}
+
+void LeftToggleSwitchStateChanged(byte data)
+{
+	if (SensorData.LeftToggleSwitchState)
+	{
+		// Engage Direct Drive (DRV) mode
+		CSSMStatus.LastDriveMode = CSSMStatus.DriveMode;
+		CSSMStatus.DriveMode = CSSMStatusClass::DriveModes::DRV;
+		//LocalDisplay.Control(LocalDisplayClass::DRVPage);
+	}
+	else
+	{
+		CSSMStatus.DriveMode = CSSMStatus.LastDriveMode;
+		//LocalDisplay.Control(LocalDisplayClass::DRVPage);
+	}
+
+	// Return LocalDisplay to the page correspnding to the current CSSMStatus.DriveMode
+	switch (CSSMStatus.DriveMode)
+	{
+	case CSSMStatusClass::DriveModes::DRV:
+		LocalDisplay.Control(LocalDisplayClass::DRVPage);
+		break;
+	case CSSMStatusClass::DriveModes::HDG:
+		LocalDisplay.Control(LocalDisplayClass::HDGPage);
+		break;
+	case CSSMStatusClass::DriveModes::WPT:
+		LocalDisplay.Control(LocalDisplayClass::WPTPage);
+		break;
+	case CSSMStatusClass::DriveModes::SEQ:
+		LocalDisplay.Control(LocalDisplayClass::SEQPage);
+		break;
+
+	default:
+		LocalDisplay.Control(LocalDisplayClass::SYSPage);
+		break;
+	}
 }
 
 void UpdateLocalDisplayCallback()

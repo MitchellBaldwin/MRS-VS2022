@@ -130,6 +130,11 @@ void CSSMSensorData::Update()
 	if (LeftToggleSwitchState != newState)
 	{
 		LeftToggleSwitchState = newState;
+		// Execute callback function when state has changed:
+		if (LeftToggleSwitchHandler != nullptr)
+		{
+			LeftToggleSwitchHandler(0x00);
+		}
 		_PL(LeftToggleSwitchState);
 	}
 	CenterToggleSwitch->loop();

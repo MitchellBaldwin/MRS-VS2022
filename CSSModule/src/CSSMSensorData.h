@@ -79,6 +79,12 @@ public:
 	int RightToggleSwitchState = 0;
 	int RightRockerSwitchState = 0;
 
+	typedef void (*OnSwitchHandler)(byte);	// Function pointer to callback that handles any switch state change
+	OnSwitchHandler LeftToggleSwitchHandler = nullptr;
+	OnSwitchHandler CenterToggleSwitchHandler = nullptr;
+	OnSwitchHandler RightToggleSwitchHandler = nullptr;
+	OnSwitchHandler RightRockerSwitchHandler = nullptr;
+
 	CSSMSensorData();
 	bool Init();
 	bool Init(byte kbSensePin, byte throttleSensePin, byte esp32VINSensePin);
