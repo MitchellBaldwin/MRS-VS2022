@@ -97,7 +97,7 @@ protected:
 
 	 const char* PageMenus[NONE] =
 	 {
-		 "DbNx  DRVm       LoNx",	// OSB menu for the SYS page: select next DebugDisplay page, enter DRIVE mode, select next LoaclDisplay page
+		 "DbNx  Mode       LoNx",	// OSB menu for the SYS page: select next DebugDisplay page, enter DRIVE mode, select next LoaclDisplay page
 		 "SYSp  Mode       LoNx",	// OSB menu for the POW page: select SYS page, select current drive DriveMode page, 
 		 "SYSp  Mode WiFi  LoNx",	// OSB menu for the COM page: select SYS page, select current drive DriveMode page, connect to WiFi, 
 		 "SYSp  Mode Scan  LoNx",	// OSB menu for the I2C page: select SYS page, select current drive DriveMode page, rescan I2C bus, 
@@ -196,6 +196,8 @@ public:
 	bool IsOnCOMPage();
 	bool IsOnI2CPage();
 	bool IsOnENVPage();
+
+	void ShowCurrentDriveModePage();
 
 };
 

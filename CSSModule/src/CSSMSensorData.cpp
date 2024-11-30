@@ -135,7 +135,10 @@ void CSSMSensorData::Update()
 		{
 			LeftToggleSwitchHandler(0x00);
 		}
-		_PL(LeftToggleSwitchState);
+		else
+		{
+			_PL(LeftToggleSwitchState);
+		}
 	}
 	CenterToggleSwitch->loop();
 	newState = CenterToggleSwitch->getState();

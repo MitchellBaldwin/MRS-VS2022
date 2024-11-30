@@ -143,6 +143,10 @@ void LocalDisplayClass::DrawCOMPage()
 	}
 
 	// Update dynamic displays:
+	display.fillRect(0, 48, 128, 8, SSD1306_BLACK);
+	display.setCursor(0, 48);
+	snprintf(buf, 22, "ESPN Pkt Cnt: %d", CSSMStatus.ESPNOWPacketSentCount);
+	display.write(buf);
 
 	display.display();
 }
@@ -579,6 +583,30 @@ bool LocalDisplayClass::IsOnENVPage()
 		return true;
 	}
 	return false;
+}
+
+void LocalDisplayClass::ShowCurrentDriveModePage()
+{
+	// Return LocalDisplay to the page correspnding to the current CSSMStatus.DriveMode
+	switch (CSSMStatus.DriveMode)
+	{
+	case CSSMStatusClass::DriveModes::DRV:
+		LocalDisplay.Control(LocalDisplayClass::DRVPage);
+		break;
+	case CSSMStatusClass::DriveModes::HDG:
+		LocalDisplay.Control(LocalDisplayClass::HDGPage);
+		break;
+	case CSSMStatusClass::DriveModes::WPT:
+		LocalDisplay.Control(LocalDisplayClass::WPTPage);
+		break;
+	case CSSMStatusClass::DriveModes::SEQ:
+		LocalDisplay.Control(LocalDisplayClass::SEQPage);
+		break;
+
+	default:
+		LocalDisplay.Control(LocalDisplayClass::SYSPage);
+		break;
+	}
 }
 
 LocalDisplayClass LocalDisplay;

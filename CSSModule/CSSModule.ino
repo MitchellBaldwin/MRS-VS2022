@@ -53,16 +53,9 @@
 #define FORMAT_LITTLEFS_IF_FAILED true
 
 #include <esp_now.h>
-uint8_t MRSRCPCMAddress[] = { 0x48, 0x27, 0xE2, 0xEA, 0x0A, 0x4C };
+uint8_t MRSRCPCMMAC[] = { 0x48, 0x27, 0xE2, 0xEA, 0x0A, 0x4C };
+uint8_t MRSMCCMAC[] = { 0xF0, 0xF5, 0xBD, 0x42, 0xB7, 0x78 };
 esp_now_peer_info_t MRSRCPCMInfo;
-
-void OnMRSRCPCMDataSent(const uint8_t* mac_addr, esp_now_send_status_t status)
-{
-	
-	//Serial.print("\r\nLast Packet Send Status:\t");
-	//Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
-}
-
 
 #include "src/ESP32WiFi.h"
 
@@ -241,6 +234,7 @@ void setup()
 	else
 	{
 		CSSMStatus.UART2Status = true;
+		CSSMStatus.ComMode = CSSMStatusClass::ComModes::IDCPktSerial;
 	}
 
 	if (!LittleFS.begin(FORMAT_LITTLEFS_IF_FAILED)) {
@@ -295,27 +289,36 @@ void setup()
 	// Perform hard reset of WiFi network association if right rocker switch is ON, invoking WiFi manager config portal on soft AP at 192.168.4.1:
 	CSSMStatus.WiFiStatus = false;
 	CSSMStatus.WiFiStatus = ESP32WiFi.Init(SensorData.GetRightRockerSwitchStateRaw() == 0);
+	CSSMStatus.ComMode = CSSMStatusClass::ComModes::WiFiTCP;
 
 	// Initialize ESP-NOW
-	_PL("Initializing ESP-NOW")
 	// Set device as a Wi-Fi Station; turns WiFi radio ON:
 	//WiFi.mode(WIFI_STA);	// WiFi radio is already on by virtue of the call to ESP32WiFi.Init(), above
+	WiFi.mode(WIFI_MODE_APSTA);
 	CSSMStatus.ESPNOWStatus = (esp_now_init() == ESP_OK);
 	if (!CSSMStatus.ESPNOWStatus) {
 		_PL("Error initializing ESP-NOW")
 	}
+	else
+	{
+		_PL("Initializing ESP-NOW")
 
-	esp_now_register_send_cb(OnMRSRCPCMDataSent);
+		CSSMStatus.ComMode = CSSMStatusClass::ComModes::ESPNOW;
+		
+		// Register OnDataSent callback
+		esp_now_register_send_cb(OnMRSRCPCMDataSent);
 
-	// Register peer
-	memcpy(MRSRCPCMInfo.peer_addr, MRSRCPCMAddress, 6);
-	MRSRCPCMInfo.channel = 0;
-	MRSRCPCMInfo.encrypt = false;
+		// Register peer
+		memcpy(MRSRCPCMInfo.peer_addr, MRSRCPCMMAC, 6);
+		MRSRCPCMInfo.channel = 0;
+		MRSRCPCMInfo.encrypt = false;
 
-	// Add peer        
-	if (esp_now_add_peer(&MRSRCPCMInfo) != ESP_OK) {
-		_PL("Failed to add peer")
-		//return;
+		// Add peer        
+		if (esp_now_add_peer(&MRSRCPCMInfo) != ESP_OK)
+		{
+			_PL("Failed to add peer")
+			//return;
+		}
 	}
 
 	uint8_t mac[6];
@@ -349,7 +352,10 @@ void setup()
 	UpdateLocalDisplayTask.enable();
 	UpdateDebugDisplayTask.enable();
 
-	SendCSSMPacketTask.enable();
+	if (CSSMStatus.ESPNOWStatus)
+	{
+		SendCSSMPacketTask.enable();
+	}
 
 	HeartbeatLEDTask.setInterval(HeartbeatLEDTogglePeriod * TASK_MILLISECOND);
 	HeartbeatLEDTask.enable();
@@ -414,27 +420,9 @@ void ReadControlsCallback()
 				LocalDisplay.Control(LocalDisplayClass::SYSPage);
 			}
 			break;
-	case OSBArrayClass::OSB3:	// OSB3/>Mode
+		case OSBArrayClass::OSB3:	// OSB3/>Mode
 			// Return LocalDisplay to the page correspnding to the current CSSMStatus.DriveMode
-			switch (CSSMStatus.DriveMode)
-			{
-			case CSSMStatusClass::DriveModes::DRV:
-				LocalDisplay.Control(LocalDisplayClass::DRVPage);
-				break;
-			case CSSMStatusClass::DriveModes::HDG:
-				LocalDisplay.Control(LocalDisplayClass::HDGPage);
-				break;
-			case CSSMStatusClass::DriveModes::WPT:
-				LocalDisplay.Control(LocalDisplayClass::WPTPage);
-				break;
-			case CSSMStatusClass::DriveModes::SEQ:
-				LocalDisplay.Control(LocalDisplayClass::SEQPage);
-				break;
-
-			default:
-				LocalDisplay.Control(LocalDisplayClass::SYSPage);
-				break;
-			}
+			LocalDisplay.ShowCurrentDriveModePage();
 			break;
 		case OSBArrayClass::OSB4:	// OSB4/>Func
 			switch (LocalDisplay.GetCurrentPage())
@@ -491,34 +479,14 @@ void LeftToggleSwitchStateChanged(byte data)
 		// Engage Direct Drive (DRV) mode
 		CSSMStatus.LastDriveMode = CSSMStatus.DriveMode;
 		CSSMStatus.DriveMode = CSSMStatusClass::DriveModes::DRV;
-		//LocalDisplay.Control(LocalDisplayClass::DRVPage);
 	}
 	else
 	{
 		CSSMStatus.DriveMode = CSSMStatus.LastDriveMode;
-		//LocalDisplay.Control(LocalDisplayClass::DRVPage);
 	}
 
 	// Return LocalDisplay to the page correspnding to the current CSSMStatus.DriveMode
-	switch (CSSMStatus.DriveMode)
-	{
-	case CSSMStatusClass::DriveModes::DRV:
-		LocalDisplay.Control(LocalDisplayClass::DRVPage);
-		break;
-	case CSSMStatusClass::DriveModes::HDG:
-		LocalDisplay.Control(LocalDisplayClass::HDGPage);
-		break;
-	case CSSMStatusClass::DriveModes::WPT:
-		LocalDisplay.Control(LocalDisplayClass::WPTPage);
-		break;
-	case CSSMStatusClass::DriveModes::SEQ:
-		LocalDisplay.Control(LocalDisplayClass::SEQPage);
-		break;
-
-	default:
-		LocalDisplay.Control(LocalDisplayClass::SYSPage);
-		break;
-	}
+	LocalDisplay.ShowCurrentDriveModePage();
 }
 
 void UpdateLocalDisplayCallback()
@@ -538,15 +506,33 @@ void UpdateDebugDisplayCallback()
 	DebugDisplay.Update();
 }
 
+/// <summary>
+/// Sends Control Stick Steering command packets to MRS MCC
+/// 
+/// </summary>
 void SendCSSMPacketCallback()
 {
+	char buf1[32];
+	char buf2[64];
+
 	cssmDrivePacket.Heading = SensorData.HDGEncoderSetting;
 	cssmDrivePacket.Throttle = SensorData.GetThrottle();
 
-	esp_err_t result = esp_now_send(MRSRCPCMAddress, (uint8_t*)&cssmDrivePacket, sizeof(cssmDrivePacket));
+	esp_err_t result = esp_now_send(MRSRCPCMMAC, (uint8_t*)&cssmDrivePacket, sizeof(cssmDrivePacket));
+	
+	sprintf(buf1, MACSTR, MAC2STR(MRSRCPCMMAC));
+	sprintf(buf2, "ESP-NOW to %s: %s, %d bytes", buf1, esp_err_to_name(result), sizeof(cssmDrivePacket));
+	//_PL(buf2)
 
-	//_PL(sizeof(cssmDrivePacket))
+}
 
+void OnMRSRCPCMDataSent(const uint8_t* mac_addr, esp_now_send_status_t status)
+{
+	CSSMStatus.ESPNOWPacketSentCount++;
+
+	//char buf[64];
+	//snprintf(buf, 63, "\r\nLast Packet Send Status:\t %s", (status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail"));
+	//_PL(buf)
 }
 
 void listDir(fs::FS& fs, const char* dirname, uint8_t levels) {

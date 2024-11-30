@@ -51,13 +51,15 @@ class CSSMStatusClass
 
 		 NoComs
 	 };
-	 ComModes ComMode = ComModes::IDCPktSerial;
+	 ComModes ComMode = ComModes::NoComs;
 	 
 	 bool UART0Status = false;
 	 bool UART1Status = false;
 	 bool UART2Status = false;
 
 	 bool ESPNOWStatus = false;
+	 int ESPNOWPacketSentCount = 0;
+
 	 bool WiFiStatus = false;
 	 
 	 bool LocalDisplayStatus = false;
