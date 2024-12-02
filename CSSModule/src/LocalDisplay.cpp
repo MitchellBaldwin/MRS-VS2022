@@ -16,7 +16,7 @@ void LocalDisplayClass::DrawPageHeaderAndFooter()
 	display.clearDisplay();
 	display.cp437();
 	display.setTextSize(1);
-	snprintf(buf, 22, "MRS CSS %s%s", DriveModeHeadings[CSSMStatus.DriveMode], PageTitles[currentPage]);
+	snprintf(buf, 22, "MRS CSS %s%s", DriveModeHeadings[CSSMStatus.cssmDrivePacket.DriveMode], PageTitles[currentPage]);
 	display.setCursor(0, 0);
 	display.write(buf);
 	snprintf(buf, 22, "v%d.%d", CSSMStatus.MajorVersion, CSSMStatus.MinorVersion);
@@ -66,21 +66,24 @@ void LocalDisplayClass::DrawSYSPage()
 
 	// Update dynamic displays:
 	display.fillRect(0, 16, 128, 8, SSD1306_BLACK);
-	snprintf(buf, 22, "THR %+6.1f%%", SensorData.GetThrottle());
+	snprintf(buf, 22, "THR %+6.1f%%", CSSMStatus.cssmDrivePacket.Throttle);
 	display.setCursor(0, 16);
 	display.write(buf);
-	snprintf(buf, 22, "HDG %+04d", SensorData.HDGEncoderSetting);
+	if (CSSMStatus.cssmDrivePacket.DriveMode == CSSMDrivePacket::DriveModes::DRV)
+	{
+		snprintf(buf, 22, "wXY %+4.1f", CSSMStatus.cssmDrivePacket.OmegaXY);
+	}
+	else
+	{
+		snprintf(buf, 22, "HDG %+04d", CSSMStatus.cssmDrivePacket.HeadingSetting);
+	}
 	display.setCursor(79, 16);
 	display.write(buf);
-	//display.fillRect(0, 24, 128, 8, 0x0000);
-	//snprintf(buf, 22, "L/R %+04d     L/R %+04d", 0, 0);
-	//display.setCursor(0, 24);
-	//display.write(buf);
 
-	display.fillRect(0, 32, 128, 8, SSD1306_BLACK);
-	snprintf(buf, 22, "KP %04d %s", SensorData.GetKBRaw(), SensorData.GetKPString("%#5.2f"));
-	display.setCursor(0, 32);
-	display.write(buf);
+	//display.fillRect(0, 32, 128, 8, SSD1306_BLACK);
+	//snprintf(buf, 22, "KP %04d %s", SensorData.GetKBRaw(), SensorData.GetKPString("%#5.2f"));
+	//display.setCursor(0, 32);
+	//display.write(buf);
 
 	display.display();
 }
@@ -259,10 +262,10 @@ void LocalDisplayClass::DrawDRVPage()
 
 	// Update dynamic displays:
 	display.fillRect(0, 16, 128, 8, SSD1306_BLACK);
-	snprintf(buf, 22, "THR %+6.1f%%", SensorData.GetThrottle());
+	snprintf(buf, 22, "THR %+6.1f%%", CSSMStatus.cssmDrivePacket.Throttle);
 	display.setCursor(0, 16);
 	display.write(buf);
-	snprintf(buf, 22, "HDG %+04d", SensorData.HDGEncoderSetting);
+	snprintf(buf, 22, "wXY %+4.1f", CSSMStatus.cssmDrivePacket.OmegaXY);
 	display.setCursor(79, 16);
 	display.write(buf);
 
@@ -288,15 +291,15 @@ void LocalDisplayClass::DrawHDGPage()
 
 	// Update dynamic displays:
 	display.fillRect(0, 16, 128, 8, SSD1306_BLACK);
-	snprintf(buf, 22, "THR %+6.1f%%", SensorData.GetThrottle());
+	snprintf(buf, 22, "THR %+6.1f%%", CSSMStatus.cssmDrivePacket.Throttle);
 	display.setCursor(0, 16);
 	display.write(buf);
-	snprintf(buf, 22, "HDG %+04d", SensorData.HDGEncoderSetting);
+	snprintf(buf, 22, "HDG %+04d", CSSMStatus.cssmDrivePacket.HeadingSetting);
 	display.setCursor(79, 16);
 	display.write(buf);
 
 	display.fillRect(0, 24, 128, 8, SSD1306_BLACK);
-	snprintf(buf, 22, "CRS %+04d", SensorData.CRSEncoderSetting);
+	snprintf(buf, 22, "CRS %+04d", CSSMStatus.cssmDrivePacket.CourseSetting);
 	display.setCursor(79, 24);
 	display.write(buf);
 
@@ -588,18 +591,18 @@ bool LocalDisplayClass::IsOnENVPage()
 void LocalDisplayClass::ShowCurrentDriveModePage()
 {
 	// Return LocalDisplay to the page correspnding to the current CSSMStatus.DriveMode
-	switch (CSSMStatus.DriveMode)
+	switch (CSSMStatus.cssmDrivePacket.DriveMode)
 	{
-	case CSSMStatusClass::DriveModes::DRV:
+	case CSSMDrivePacket::DriveModes::DRV:
 		LocalDisplay.Control(LocalDisplayClass::DRVPage);
 		break;
-	case CSSMStatusClass::DriveModes::HDG:
+	case CSSMDrivePacket::DriveModes::HDG:
 		LocalDisplay.Control(LocalDisplayClass::HDGPage);
 		break;
-	case CSSMStatusClass::DriveModes::WPT:
+	case CSSMDrivePacket::DriveModes::WPT:
 		LocalDisplay.Control(LocalDisplayClass::WPTPage);
 		break;
-	case CSSMStatusClass::DriveModes::SEQ:
+	case CSSMDrivePacket::DriveModes::SEQ:
 		LocalDisplay.Control(LocalDisplayClass::SEQPage);
 		break;
 

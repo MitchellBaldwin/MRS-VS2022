@@ -54,8 +54,9 @@
 
 #include <esp_now.h>
 uint8_t MRSRCPCMMAC[] = { 0x48, 0x27, 0xE2, 0xEA, 0x0A, 0x4C };
-uint8_t MRSMCCMAC[] = { 0xF0, 0xF5, 0xBD, 0x42, 0xB7, 0x78 };
 esp_now_peer_info_t MRSRCPCMInfo;
+uint8_t MRSMCCMAC[] = { 0xF0, 0xF5, 0xBD, 0x42, 0xB7, 0x78 };
+esp_now_peer_info_t MRSMCCInfo;
 
 #include "src/ESP32WiFi.h"
 
@@ -175,8 +176,6 @@ static const uint16_t OSB_LEVELS[OSB_NUM_LEVELS] =
 };
 #endif
 
-#include "src/CSSMDrivePacket.h"
-
 // Scheduler
 Scheduler MainScheduler;
 
@@ -208,7 +207,7 @@ constexpr long UpdateDebugDisplayInterval = 500;
 void UpdateDebugDisplayCallback();
 Task UpdateDebugDisplayTask((UpdateDebugDisplayInterval * TASK_MILLISECOND), TASK_FOREVER, &UpdateDebugDisplayCallback, &MainScheduler, false);
 
-constexpr long SendCSSMPacketInterval = 1000;
+constexpr long SendCSSMPacketInterval = 100;
 void SendCSSMPacketCallback();
 Task SendCSSMPacketTask((SendCSSMPacketInterval * TASK_MILLISECOND), TASK_FOREVER, &SendCSSMPacketCallback, &MainScheduler, false);
 
@@ -306,15 +305,15 @@ void setup()
 		CSSMStatus.ComMode = CSSMStatusClass::ComModes::ESPNOW;
 		
 		// Register OnDataSent callback
-		esp_now_register_send_cb(OnMRSRCPCMDataSent);
+		esp_now_register_send_cb(OnMRSMCCDataSent);
 
 		// Register peer
-		memcpy(MRSRCPCMInfo.peer_addr, MRSRCPCMMAC, 6);
-		MRSRCPCMInfo.channel = 0;
-		MRSRCPCMInfo.encrypt = false;
+		memcpy(MRSMCCInfo.peer_addr, MRSMCCMAC, 6);
+		MRSMCCInfo.channel = 0;
+		MRSMCCInfo.encrypt = false;
 
 		// Add peer        
-		if (esp_now_add_peer(&MRSRCPCMInfo) != ESP_OK)
+		if (esp_now_add_peer(&MRSMCCInfo) != ESP_OK)
 		{
 			_PL("Failed to add peer")
 			//return;
@@ -356,6 +355,10 @@ void setup()
 	{
 		SendCSSMPacketTask.enable();
 	}
+
+	// Test code:
+	sprintf(buf, "CSSMDrivePacket size = %d bytes", sizeof(CSSMStatus.cssmDrivePacket));
+	_PL(buf)
 
 	HeartbeatLEDTask.setInterval(HeartbeatLEDTogglePeriod * TASK_MILLISECOND);
 	HeartbeatLEDTask.enable();
@@ -406,7 +409,7 @@ void ReadControlsCallback()
 		{
 		case OSBArrayClass::OSB1:	// CRS (left) rotary endocer button
 			// CRS rotary; press to engage WPT mode
-			CSSMStatus.DriveMode = CSSMStatusClass::DriveModes::SEQ;
+			CSSMStatus.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::SEQ;
 			LocalDisplay.Control(LocalDisplayClass::SEQPage);
 			break;
 		case OSBArrayClass::OSB2:	// OSB2/SYS
@@ -453,7 +456,7 @@ void ReadControlsCallback()
 			LocalDisplay.Control(LocalDisplayClass::Next);
 			break;
 		case OSBArrayClass::OSB6:	// HDG (right) rotary encoder button
-			CSSMStatus.DriveMode = CSSMStatusClass::DriveModes::HDG;
+			CSSMStatus.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::HDG;
 			LocalDisplay.Control(LocalDisplayClass::HDGPage);
 			break;
 		//case OSBArrayClass::OSB7:
@@ -477,12 +480,12 @@ void LeftToggleSwitchStateChanged(byte data)
 	if (SensorData.LeftToggleSwitchState)
 	{
 		// Engage Direct Drive (DRV) mode
-		CSSMStatus.LastDriveMode = CSSMStatus.DriveMode;
-		CSSMStatus.DriveMode = CSSMStatusClass::DriveModes::DRV;
+		CSSMStatus.SavedDriveMode = CSSMStatus.cssmDrivePacket.DriveMode;
+		CSSMStatus.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::DRV;
 	}
 	else
 	{
-		CSSMStatus.DriveMode = CSSMStatus.LastDriveMode;
+		CSSMStatus.cssmDrivePacket.DriveMode = CSSMStatus.SavedDriveMode;
 	}
 
 	// Return LocalDisplay to the page correspnding to the current CSSMStatus.DriveMode
@@ -515,24 +518,39 @@ void SendCSSMPacketCallback()
 	char buf1[32];
 	char buf2[64];
 
-	cssmDrivePacket.Heading = SensorData.HDGEncoderSetting;
-	cssmDrivePacket.Throttle = SensorData.GetThrottle();
+	//CSSMStatus.cssmDrivePacket.HeadingSetting = SensorData.HDGEncoderSetting;
+	//CSSMStatus.cssmDrivePacket.CourseSetting = SensorData.CRSEncoderSetting;
+	//CSSMStatus.cssmDrivePacket.Throttle = SensorData.GetThrottle();
+	//CSSMStatus.cssmDrivePacket.OmegaXY = 0.0;
 
-	esp_err_t result = esp_now_send(MRSRCPCMMAC, (uint8_t*)&cssmDrivePacket, sizeof(cssmDrivePacket));
+	esp_err_t result = esp_now_send(MRSMCCMAC, (uint8_t*)&CSSMStatus.cssmDrivePacket, sizeof(CSSMStatus.cssmDrivePacket));
 	
-	sprintf(buf1, MACSTR, MAC2STR(MRSRCPCMMAC));
-	sprintf(buf2, "ESP-NOW to %s: %s, %d bytes", buf1, esp_err_to_name(result), sizeof(cssmDrivePacket));
+	//sprintf(buf1, MACSTR, MAC2STR(MRSMCCMAC));
+	//sprintf(buf2, "ESP-NOW to %s: %s, %d bytes", buf1, esp_err_to_name(result), sizeof(cssmDrivePacket));
 	//_PL(buf2)
 
 }
 
 void OnMRSRCPCMDataSent(const uint8_t* mac_addr, esp_now_send_status_t status)
 {
-	CSSMStatus.ESPNOWPacketSentCount++;
+	CSSMStatus.ESPNOWStatus = (status == ESP_NOW_SEND_SUCCESS);
+	if (CSSMStatus.ESPNOWStatus)
+	{
+		CSSMStatus.ESPNOWPacketSentCount++;
+	}
 
 	//char buf[64];
 	//snprintf(buf, 63, "\r\nLast Packet Send Status:\t %s", (status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail"));
 	//_PL(buf)
+}
+
+void OnMRSMCCDataSent(const uint8_t* mac_addr, esp_now_send_status_t status)
+{
+	CSSMStatus.ESPNOWStatus = (status == ESP_NOW_SEND_SUCCESS);
+	if (CSSMStatus.ESPNOWStatus)
+	{
+		CSSMStatus.ESPNOWPacketSentCount++;
+	}
 }
 
 void listDir(fs::FS& fs, const char* dirname, uint8_t levels) {

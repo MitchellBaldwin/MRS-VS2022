@@ -27,6 +27,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MRSRCPCM", "MRSRCPCM\MRSRCP
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MRSMCC", "MRSMCC\MRSMCC.vcxproj", "{867E4C2F-02D5-44B0-824A-E3DF16604FA6}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MRSCommon", "MRSCommon\MRSCommon.vcxitems", "{8A46D26B-E8CD-4D28-B94D-8BD563E3CAEE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM = Debug|ARM
@@ -231,10 +233,14 @@ Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\..\Arduino\libraries\I2CBus\I2CBus.vcxitems*{25df7ed6-ef8f-4f4a-87be-741f945cbe57}*SharedItemsImports = 4
 		DEBUG Helpers\DEBUG Helpers.vcxitems*{25df7ed6-ef8f-4f4a-87be-741f945cbe57}*SharedItemsImports = 4
+		MRSCommon\MRSCommon.vcxitems*{25df7ed6-ef8f-4f4a-87be-741f945cbe57}*SharedItemsImports = 4
 		..\..\Arduino\libraries\I2CBus\I2CBus.vcxitems*{28025b43-6e1c-4724-8d23-8d5529901e14}*SharedItemsImports = 4
 		..\..\Arduino\libraries\TFTMenu\TFTMenu.vcxitems*{28025b43-6e1c-4724-8d23-8d5529901e14}*SharedItemsImports = 4
 		DEBUG Helpers\DEBUG Helpers.vcxitems*{530244f0-94ac-4e9e-9304-7fb159b0023d}*SharedItemsImports = 4
 		..\..\Arduino\libraries\I2CBus\I2CBus.vcxitems*{5a4b0045-cda2-4498-8290-e4791807b4a3}*SharedItemsImports = 9
+		..\..\Arduino\libraries\I2CBus\I2CBus.vcxitems*{867e4c2f-02d5-44b0-824a-e3df16604fa6}*SharedItemsImports = 4
+		MRSCommon\MRSCommon.vcxitems*{867e4c2f-02d5-44b0-824a-e3df16604fa6}*SharedItemsImports = 4
+		MRSCommon\MRSCommon.vcxitems*{8a46d26b-e8cd-4d28-b94d-8bd563e3caee}*SharedItemsImports = 9
 		DEBUG Helpers\DEBUG Helpers.vcxitems*{92b77076-b132-437a-b955-e03ba9f3a7d3}*SharedItemsImports = 9
 		..\..\Arduino\libraries\TFTMenu\TFTMenu.vcxitems*{d1cea50a-e82f-4ba9-a6b8-21fe6da8d1da}*SharedItemsImports = 9
 	EndGlobalSection

@@ -489,9 +489,6 @@
     <ClCompile Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\LittleFS\src\LittleFS.cpp">
       <Filter>src\_micro-api-readonly\libraries\LittleFS</Filter>
     </ClCompile>
-    <ClCompile Include="src\CSSMDrivePacket.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="__vm\.CSSModule.vsarduino.h">
@@ -868,9 +865,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Users\Mitchell Baldwin\AppData\Local\arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\ESP32\src\dummy.h">
       <Filter>src\_micro-api-readonly\libraries\ESP32</Filter>
-    </ClInclude>
-    <ClInclude Include="src\CSSMDrivePacket.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

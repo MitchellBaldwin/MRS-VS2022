@@ -12,7 +12,15 @@
  v1.0	Initial release
  v1.1
 
- */
+*/
+
+#include <HardwareSerial.h>
+HardwareSerial RC2x15ASerial(1);	// Packet serial link to RoboClaw 2x15A Motor Controller
+
+#include <WiFi.h>
+#include <esp_now.h>
+uint8_t MRSRCCSSMMAC[] = { 0xA8, 0x42, 0xE3, 0x4A, 0x8B, 0x00 };
+esp_now_peer_info_t MRSRCCSSMInfo;
 
 #include <TaskScheduler.h>
 //#include <TaskSchedulerDeclarations.h>
@@ -36,6 +44,9 @@ Task UpdateLocalDisplayTask((LocalDisplayUpdateInterval* TASK_MILLISECOND), TASK
 
 #include <I2CBus.h>
 
+//#include "C:\Repos\MRS-VS2022\MRSCommon\src\CSSMDrivePacket.h"
+
+
 void setup()
 {
 	char buf[32];
@@ -52,6 +63,19 @@ void setup()
 
 	_PL("");
 
+	RC2x15ASerial.begin(115200, SERIAL_8N1, 18, 17);
+	if (!RC2x15ASerial)
+	{
+		MCCStatus.UART1Status = false;
+	}
+	else
+	{
+		MCCStatus.UART1Status = true;
+
+		// Test code:
+		RC2x15ASerial.println("Hello from the RC2x15ASerial port...");
+	}
+
 	pinMode(HeartbeatLEDPin, OUTPUT);
 	sprintf(buf, "Heartbeat LED on GPIO%02D", HeartbeatLEDPin);
 	_PL(buf);
@@ -66,6 +90,45 @@ void setup()
 		_PL("Error initializing I2C bus...");
 	}
 	//LocalDisplay.ReportHeapStatus();
+
+	// Initialize ESP-NOW
+	// Set device as a Wi-Fi Station; turns WiFi radio ON:
+	//WiFi.mode(WIFI_STA);	// WiFi radio is already on by virtue of the call to ESP32WiFi.Init(), above
+	WiFi.mode(WIFI_MODE_APSTA);
+	MCCStatus.ESPNOWStatus = (esp_now_init() == ESP_OK);
+	if (!MCCStatus.ESPNOWStatus) {
+		_PL("Error initializing ESP-NOW")
+	}
+	else
+	{
+		_PL("Initializing ESP-NOW")
+
+			MCCStatus.ComMode = MCCStatusClass::ComModes::ESPNOW;
+
+		// Register OnDataSent callback
+		esp_now_register_send_cb(OnMRSRCCSSMDataSent);
+
+		// Register peer
+		memcpy(MRSRCCSSMInfo.peer_addr, MRSRCCSSMMAC, 6);
+		MRSRCCSSMInfo.channel = 0;
+		MRSRCCSSMInfo.encrypt = false;
+
+		// Add peer        
+		if (esp_now_add_peer(&MRSRCCSSMInfo) != ESP_OK)
+		{
+			_PL("Failed to add peer")
+				//return;
+		}
+
+		// Register OnDataReceived callback
+		esp_now_register_recv_cb(esp_now_recv_cb_t(OnMRSRCCSSMDataReceived));
+
+	}
+
+	uint8_t mac[6];
+	WiFi.macAddress(mac);
+	snprintf(buf, 22, "MAC:%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+	_PL(buf)
 
 	if (LocalDisplay.Init())
 	{
@@ -97,4 +160,24 @@ void ToggleBuiltinLEDCallback()
 void UpdateLocalDisplayCallback()
 {
 	LocalDisplay.Update();
+}
+
+void OnMRSRCCSSMDataSent(const uint8_t* mac_addr, esp_now_send_status_t status)
+{
+	MCCStatus.ESPNOWStatus = (status == ESP_NOW_SEND_SUCCESS);
+	if (MCCStatus.ESPNOWStatus)
+	{
+		MCCStatus.ESPNOWPacketSentCount++;
+	}
+}
+
+void OnMRSRCCSSMDataReceived(const uint8_t* mac, const uint8_t* data, int lenght)
+{
+	char buf[32];
+	
+	memcpy(&(MCCStatus.cssmDrivePacket), data, sizeof(MCCStatus.cssmDrivePacket));
+	sprintf(buf, MACSTR, MAC2STR(mac));
+	MCCStatus.IncomingPacketMACString = String(buf);
+	MCCStatus.ESPNOWPacketReceivedCount++;
+	//_PL(MCCStatus.ESPNOWPacketReceivedCount);
 }

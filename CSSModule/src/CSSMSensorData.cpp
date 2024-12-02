@@ -96,23 +96,50 @@ void CSSMSensorData::Update()
 
 	newReading = analogRead(ThrottleSensePin);
 	ThrottleSetting.AddReading(newReading);
+	CSSMStatus.cssmDrivePacket.Throttle = GetThrottle();
 	
 	newReading = analogRead(ESP32VINSensePin);
 	newReading = ReadCalibratedADC1(newReading);
 	ESP32VIN.AddReading(newReading);
 	
-	HDGEncoderSetting = (int)HDGEncoder.getCount() / 2;
-	if (HDGEncoderSetting > 359)
+	if (CSSMStatus.cssmDrivePacket.DriveMode != CSSMStatus.LastDriveMode)
 	{
-		HDGEncoderSetting = 0;
-		HDGEncoder.setCount(0);
-	}
-	else if (HDGEncoderSetting < 0)
-	{
-		HDGEncoderSetting = 359;
-		HDGEncoder.setCount(HDGEncoderSetting * 2);
+		// Drive mode changed since last update so configure HDG encoder appropriately:
+		if (CSSMStatus.cssmDrivePacket.DriveMode == CSSMDrivePacket::DriveModes::DRV)
+		{
+			// Set function of HDG encoder to control turn rate:
+			HDGEncoder.setCount(0);
+		}
+		else
+		{
+			// Return function of HDG encoder to normal:
+			HDGEncoder.setCount(CSSMStatus.cssmDrivePacket.HeadingSetting * 2);
+			// Ensure commanded turn rate is set back to 0.0 in case we are exiting direct drive mode:
+			CSSMStatus.cssmDrivePacket.OmegaXY = 0.0;
+		}
+		CSSMStatus.LastDriveMode = CSSMStatus.cssmDrivePacket.DriveMode;
 	}
 	
+	if (CSSMStatus.cssmDrivePacket.DriveMode == CSSMDrivePacket::DriveModes::DRV)
+	{
+		CSSMStatus.cssmDrivePacket.OmegaXY = (float)HDGEncoder.getCount() / 10.0;
+	}
+	else
+	{
+		HDGEncoderSetting = (int)HDGEncoder.getCount() / 2;
+		if (HDGEncoderSetting > 359)
+		{
+			HDGEncoderSetting = 0;
+			HDGEncoder.setCount(0);
+		}
+		else if (HDGEncoderSetting < 0)
+		{
+			HDGEncoderSetting = 359;
+			HDGEncoder.setCount(HDGEncoderSetting * 2);
+		}
+		CSSMStatus.cssmDrivePacket.HeadingSetting = HDGEncoderSetting;
+	}
+
 	CRSEncoderSetting = (int)CRSEncoder.getCount() / 2;
 	if (CRSEncoderSetting > 359)
 	{
@@ -124,6 +151,7 @@ void CSSMSensorData::Update()
 		CRSEncoderSetting = 359;
 		CRSEncoder.setCount(CRSEncoderSetting * 2);
 	}
+	CSSMStatus.cssmDrivePacket.CourseSetting = CRSEncoderSetting;
 	
 	LeftToggleSwitch->loop();
 	int newState = LeftToggleSwitch->getState();
@@ -210,6 +238,8 @@ float CSSMSensorData::GetThrottle()
 		actual = (actual + ThrottleDeadZone) * 100.0f / (100.0f - ThrottleDeadZone);
 	}
 	
+	CSSMStatus.cssmDrivePacket.Throttle = actual;
+
 	return actual;
 }
 

@@ -6,6 +6,7 @@
 
 #include "LocalDisplay.h"
 #include <I2CBus.h>
+#include "MCCStatus.h"
 //#include "PCMSensorData.h"
 //#include "PCMControls.h"
 #include "DEBUG Macros.h"
@@ -87,6 +88,9 @@ void LocalDisplayClass::DrawSYSPage()
 
 	int16_t cursorY = tft.height() - 20;
 	tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);	//DONE: Does bgfill = true work with the print() method? -> Yes, newly printed text clears the background
+	sprintf(buf, "%s HDG %+04d CRS %+04d wXY %+6.1f%% THR %+6.1f%% ", DriveModeHeadings[MCCStatus.cssmDrivePacket.DriveMode], MCCStatus.cssmDrivePacket.HeadingSetting, MCCStatus.cssmDrivePacket.CourseSetting, MCCStatus.cssmDrivePacket.OmegaXY, MCCStatus.cssmDrivePacket.Throttle);
+	tft.drawString(buf, 2, 60);
+	tft.drawString(MCCStatus.IncomingPacketMACString, 2, 70);
 
 }
 

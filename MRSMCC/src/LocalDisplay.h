@@ -39,7 +39,7 @@ public:
 	};
 
 protected:
-	char buf[32];
+	char buf[64];
 
 	TFT_eSPI tft = TFT_eSPI();
 	static byte Brightness;
@@ -60,6 +60,14 @@ protected:
 		"MRS RC MCC UART1",
 		"Direct WiFi/TCP ",
 		"Direct ESP-NOW  ",
+	};
+
+	const char* DriveModeHeadings[CSSMDrivePacket::DriveModes::NoDriveMode] =
+	{
+		"DRIVE",
+		" HDG ",
+		" WPT ",
+		" SEQ ",
 	};
 
 	void DrawPageHeaderAndFooter();

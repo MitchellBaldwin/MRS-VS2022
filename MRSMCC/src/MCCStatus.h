@@ -20,6 +20,8 @@
 	#include "WProgram.h"
 #endif
 
+#include "C:\Repos\MRS-VS2022\MRSCommon\src\CSSMDrivePacket.h"
+
 constexpr uint8_t MAX_TEXT_LINES = 8;
 
 class MCCStatusClass
@@ -33,16 +35,16 @@ class MCCStatusClass
 	 uint8_t MajorVersion = 1;
 	 uint8_t MinorVersion = 0;
 
-	 enum DriveModes
-	 {
-		 DRV,
-		 HDG,
-		 WPT,
-		 SEQ,
+	 //enum DriveModes
+	 //{
+		// DRV,
+		// HDG,
+		// WPT,
+		// SEQ,
 
-		 NoDriveMode
-	 };
-	 DriveModes DriveMode = DriveModes::DRV;
+		// NoDriveMode
+	 //};
+	 //DriveModes DriveMode = DriveModes::DRV;
 
 	 enum ComModes
 	 {
@@ -59,6 +61,9 @@ class MCCStatusClass
 	 bool UART2Status = false;
 
 	 bool ESPNOWStatus = false;
+	 int ESPNOWPacketSentCount = 0;
+	 int ESPNOWPacketReceivedCount = 0;
+	 String IncomingPacketMACString;
 	 bool WiFiStatus = false;
 
 	 bool LocalDisplayStatus = false;
@@ -68,6 +73,8 @@ class MCCStatusClass
 	 bool IMUStatus = false;
 
 	 String debugTextLines[MAX_TEXT_LINES];
+
+	 CSSMDrivePacket cssmDrivePacket;
 
 	 void Init();
 	 void AddDebugTextLine(String newLine);

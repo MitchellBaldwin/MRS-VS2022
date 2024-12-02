@@ -124,7 +124,7 @@ protected:
 
 	 };
 
-	 const char* DriveModeHeadings[CSSMStatusClass::DriveModes::NoDriveMode] =
+	 const char* DriveModeHeadings[CSSMDrivePacket::DriveModes::NoDriveMode] =
 	 {
 		 "DRIVE",
 		 " HDG ",
