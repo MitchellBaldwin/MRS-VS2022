@@ -86,11 +86,29 @@ void LocalDisplayClass::DrawSYSPage()
 
 	// Update dynamic displays:
 
-	int16_t cursorY = tft.height() - 20;
+	int16_t cursorY = tft.height() / 2 - 20;
 	tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);	//DONE: Does bgfill = true work with the print() method? -> Yes, newly printed text clears the background
-	sprintf(buf, "%s HDG %+04d CRS %+04d wXY %+6.1f%% THR %+6.1f%% ", DriveModeHeadings[MCCStatus.cssmDrivePacket.DriveMode], MCCStatus.cssmDrivePacket.HeadingSetting, MCCStatus.cssmDrivePacket.CourseSetting, MCCStatus.cssmDrivePacket.OmegaXY, MCCStatus.cssmDrivePacket.Throttle);
-	tft.drawString(buf, 2, 60);
-	tft.drawString(MCCStatus.IncomingPacketMACString, 2, 70);
+	sprintf(buf, "%s HDG %+04d CRS %+04d wXY %+6.1f%% THR %+6.1f%% ", 
+		DriveModeHeadings[MCCStatus.cssmDrivePacket.DriveMode], 
+		MCCStatus.cssmDrivePacket.HeadingSetting, 
+		MCCStatus.cssmDrivePacket.CourseSetting, 
+		MCCStatus.cssmDrivePacket.OmegaXY, 
+		MCCStatus.cssmDrivePacket.Throttle);
+	tft.drawString(buf, 2, cursorY);
+	//tft.drawString(MCCStatus.IncomingPacketMACString, 2, 70);
+	cursorY += 10;
+	tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK, true);
+	sprintf(buf, "Vbat: %4.1f  T1: %4.1f°C  T2:%4.1f°C", MCCStatus.mcStatus.SupBatV, MCCStatus.mcStatus.Temp1, MCCStatus.mcStatus.Temp2);
+	tft.drawString(buf, 2, cursorY);
+	cursorY += 10;
+	sprintf(buf, "POS: %10d %10d", MCCStatus.mcStatus.M1Encoder, MCCStatus.mcStatus.M2Encoder);
+	tft.drawString(buf, 2, cursorY);
+	cursorY += 10;
+	sprintf(buf, "SPD: %10d %10d", MCCStatus.mcStatus.M1Speed, MCCStatus.mcStatus.M2Speed);
+	tft.drawString(buf, 2, cursorY);
+	cursorY += 10;
+	sprintf(buf, "Cur: %10.2f %10.2f", MCCStatus.mcStatus.M1Current, MCCStatus.mcStatus.M2Current);
+	tft.drawString(buf, 2, cursorY);
 
 }
 

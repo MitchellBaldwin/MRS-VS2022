@@ -14,8 +14,7 @@
 
 */
 
-#include <HardwareSerial.h>
-HardwareSerial RC2x15ASerial(1);	// Packet serial link to RoboClaw 2x15A Motor Controller
+#include "src/RC2x15AMC.h"
 
 #include <WiFi.h>
 #include <esp_now.h>
@@ -34,9 +33,13 @@ constexpr auto NoSerialHeartbeatLEDToggleInterval = 500;
 void ToggleBuiltinLEDCallback();
 Task ToggleBuiltinLEDTask((NormalHeartbeatLEDToggleInterval* TASK_MILLISECOND), TASK_FOREVER, &ToggleBuiltinLEDCallback, &MainScheduler, false);
 
-constexpr auto LocalDisplayUpdateInterval = 100;
+constexpr auto UpdateLocalDisplayInterval = 100;
 void UpdateLocalDisplayCallback();
-Task UpdateLocalDisplayTask((LocalDisplayUpdateInterval* TASK_MILLISECOND), TASK_FOREVER, &UpdateLocalDisplayCallback, &MainScheduler, false);
+Task UpdateLocalDisplayTask((UpdateLocalDisplayInterval* TASK_MILLISECOND), TASK_FOREVER, &UpdateLocalDisplayCallback, &MainScheduler, false);
+
+constexpr auto GetMotContStatusInterval = 250;
+void GetMotContStatusCallback();
+Task GetMotContStatusTask((GetMotContStatusInterval* TASK_MILLISECOND), TASK_FOREVER, &GetMotContStatusCallback, &MainScheduler, false);
 
 #include "src/DEBUG Macros.h"
 #include "src/MCCStatus.h"
@@ -63,18 +66,7 @@ void setup()
 
 	_PL("");
 
-	RC2x15ASerial.begin(115200, SERIAL_8N1, 18, 17);
-	if (!RC2x15ASerial)
-	{
-		MCCStatus.UART1Status = false;
-	}
-	else
-	{
-		MCCStatus.UART1Status = true;
-
-		// Test code:
-		RC2x15ASerial.println("Hello from the RC2x15ASerial port...");
-	}
+	RC2x15AMC.Init();
 
 	pinMode(HeartbeatLEDPin, OUTPUT);
 	sprintf(buf, "Heartbeat LED on GPIO%02D", HeartbeatLEDPin);
@@ -142,6 +134,7 @@ void setup()
 	}
 	UpdateLocalDisplayTask.enable();
 
+	GetMotContStatusTask.enable();
 
 	ToggleBuiltinLEDTask.enable();
 }
@@ -162,6 +155,11 @@ void UpdateLocalDisplayCallback()
 	LocalDisplay.Update();
 }
 
+void GetMotContStatusCallback()
+{
+	RC2x15AMC.ReadStatus();
+}
+
 void OnMRSRCCSSMDataSent(const uint8_t* mac_addr, esp_now_send_status_t status)
 {
 	MCCStatus.ESPNOWStatus = (status == ESP_NOW_SEND_SUCCESS);
@@ -175,9 +173,16 @@ void OnMRSRCCSSMDataReceived(const uint8_t* mac, const uint8_t* data, int lenght
 {
 	char buf[32];
 	
-	memcpy(&(MCCStatus.cssmDrivePacket), data, sizeof(MCCStatus.cssmDrivePacket));
-	sprintf(buf, MACSTR, MAC2STR(mac));
-	MCCStatus.IncomingPacketMACString = String(buf);
-	MCCStatus.ESPNOWPacketReceivedCount++;
-	//_PL(MCCStatus.ESPNOWPacketReceivedCount);
+	if (data[0] == 0x20)	// Packet type identifier for a CSSMDrivePacket
+	{
+		memcpy(&(MCCStatus.cssmDrivePacket), data, sizeof(MCCStatus.cssmDrivePacket));
+		sprintf(buf, MACSTR, MAC2STR(mac));
+		MCCStatus.IncomingPacketMACString = String(buf);
+		MCCStatus.ESPNOWPacketReceivedCount++;
+		//_PL(MCCStatus.ESPNOWPacketReceivedCount);
+
+		// Test code:
+		RC2x15AMC.Drive(MCCStatus.cssmDrivePacket.Throttle, MCCStatus.cssmDrivePacket.OmegaXY);
+		// End of test code block
+	}
 }

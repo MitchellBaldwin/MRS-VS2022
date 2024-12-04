@@ -21,6 +21,7 @@
 #endif
 
 #include "C:\Repos\MRS-VS2022\MRSCommon\src\CSSMDrivePacket.h"
+#include "C:\Repos\MRS-VS2022\MRSCommon\src\RC2x15AMCStatusPacket.h"
 
 constexpr uint8_t MAX_TEXT_LINES = 8;
 
@@ -34,17 +35,6 @@ class MCCStatusClass
 	 // MRS MCC firmware version:
 	 uint8_t MajorVersion = 1;
 	 uint8_t MinorVersion = 0;
-
-	 //enum DriveModes
-	 //{
-		// DRV,
-		// HDG,
-		// WPT,
-		// SEQ,
-
-		// NoDriveMode
-	 //};
-	 //DriveModes DriveMode = DriveModes::DRV;
 
 	 enum ComModes
 	 {
@@ -75,6 +65,7 @@ class MCCStatusClass
 	 String debugTextLines[MAX_TEXT_LINES];
 
 	 CSSMDrivePacket cssmDrivePacket;
+	 RC2x15AMCStatusPacket mcStatus;
 
 	 void Init();
 	 void AddDebugTextLine(String newLine);

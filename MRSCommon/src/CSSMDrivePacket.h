@@ -35,13 +35,13 @@ public:
 	};
 
 protected:
-
+	uint8_t PacketType = 0x20;		// Identifies packet type; fixed for all CSSMDrivePackets
 
 public:
 	DriveModes DriveMode = DriveModes::DRV;		// CSSM Drive Mode
 	int HeadingSetting = 0;						// Commanded HDG
 	int CourseSetting = 0;						// Commanded CRS
-	float OmegaXY = 0.0;						// Commanded turn rate
+	float OmegaXY = 0.0f;						// Commanded turn rate
 	float Throttle = 0.0f;						// Commanded throttle setting
 
 };
