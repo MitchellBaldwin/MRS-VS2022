@@ -24,6 +24,13 @@
 class RC2x15AMCStatusPacket
 {
 public:
+
+protected:
+	uint8_t PacketType = 0x21;		// Identifies packet type; fixed for all RC2x15AMCStatusPackets
+
+
+public:
+
 	float SupBatV;		// Supply (battery) voltage in V
 	float Temp1;		// Temperature sensor 1 measurement
 	float Temp2;		// Temperature sensor 2 measurement (if supported for this motor controller)
@@ -31,14 +38,17 @@ public:
 	float M2Current;	// Motor 2 current in mA
 	int M1Encoder;		// Motor 1 encoder reading
 	int M2Encoder;		// Motor 2 encoder reading
-	int M1Speed;		// Motor 1 speed (counts / s)
-	int M2Speed;		// Motor 2 speed (counts / s)
+	int M1Speed;		// Motor 1 speed (qpps - qradrature counts / s)
+	int M2Speed;		// Motor 2 speed (qpps - qradrature counts / s)
+	int M1SpeedSetting;	// Motor 1 speed setting (qpps - qradrature counts / s)
+	int M2SpeedSetting;	// Motor 2 speed setting (qpps - qradrature counts / s)
 
-
-protected:
-
-
-public:
+	bool VBATValid = false;
+	bool T1Valid = false;
+	bool T2Valid = false;
+	bool IMOTValid = false;
+	bool ENCPOSValid = false;
+	bool SPEEDSValid = false;
 
 };
 

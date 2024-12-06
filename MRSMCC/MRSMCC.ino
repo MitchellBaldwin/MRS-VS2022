@@ -37,17 +37,15 @@ constexpr auto UpdateLocalDisplayInterval = 100;
 void UpdateLocalDisplayCallback();
 Task UpdateLocalDisplayTask((UpdateLocalDisplayInterval* TASK_MILLISECOND), TASK_FOREVER, &UpdateLocalDisplayCallback, &MainScheduler, false);
 
-constexpr auto GetMotContStatusInterval = 250;
-void GetMotContStatusCallback();
-Task GetMotContStatusTask((GetMotContStatusInterval* TASK_MILLISECOND), TASK_FOREVER, &GetMotContStatusCallback, &MainScheduler, false);
+constexpr auto UpdateMotorControllerInterval = 100;
+void UpdateMotorControllerCallback();
+Task GetMotContStatusTask((UpdateMotorControllerInterval* TASK_MILLISECOND), TASK_FOREVER, &UpdateMotorControllerCallback, &MainScheduler, false);
 
 #include "src/DEBUG Macros.h"
 #include "src/MCCStatus.h"
 #include "src/LocalDisplay.h"
 
 #include <I2CBus.h>
-
-//#include "C:\Repos\MRS-VS2022\MRSCommon\src\CSSMDrivePacket.h"
 
 
 void setup()
@@ -66,7 +64,8 @@ void setup()
 
 	_PL("");
 
-	RC2x15AMC.Init();
+	// Initialize motor controller:
+	MCCStatus.RC2x15AMCStatus = RC2x15AMC.Init();
 
 	pinMode(HeartbeatLEDPin, OUTPUT);
 	sprintf(buf, "Heartbeat LED on GPIO%02D", HeartbeatLEDPin);
@@ -135,6 +134,18 @@ void setup()
 	UpdateLocalDisplayTask.enable();
 
 	GetMotContStatusTask.enable();
+	if (MCCStatus.RC2x15AMCStatus)
+	{
+		UpdateMotorControllerCallback();
+		UpdateMotorControllerCallback();
+		UpdateMotorControllerCallback();
+		UpdateMotorControllerCallback();
+		UpdateMotorControllerCallback();
+		UpdateMotorControllerCallback();
+		UpdateMotorControllerCallback();
+		UpdateMotorControllerCallback();
+	}
+	//GetMotContStatusTask.disable();
 
 	ToggleBuiltinLEDTask.enable();
 }
@@ -148,6 +159,10 @@ void loop()
 void ToggleBuiltinLEDCallback()
 {
 	digitalWrite(HeartbeatLEDPin, !digitalRead(HeartbeatLEDPin));
+	
+	//TODO: Determine if this is the best place to call MCCStatus.Update(), which checks health of
+	//communications links and updates status flags accordingly
+	MCCStatus.Update();
 }
 
 void UpdateLocalDisplayCallback()
@@ -155,9 +170,9 @@ void UpdateLocalDisplayCallback()
 	LocalDisplay.Update();
 }
 
-void GetMotContStatusCallback()
+void UpdateMotorControllerCallback()
 {
-	RC2x15AMC.ReadStatus();
+	RC2x15AMC.Update();
 }
 
 void OnMRSRCCSSMDataSent(const uint8_t* mac_addr, esp_now_send_status_t status)
@@ -165,7 +180,7 @@ void OnMRSRCCSSMDataSent(const uint8_t* mac_addr, esp_now_send_status_t status)
 	MCCStatus.ESPNOWStatus = (status == ESP_NOW_SEND_SUCCESS);
 	if (MCCStatus.ESPNOWStatus)
 	{
-		MCCStatus.ESPNOWPacketSentCount++;
+		MCCStatus.CSSMPacketSentCount++;
 	}
 }
 
@@ -177,12 +192,26 @@ void OnMRSRCCSSMDataReceived(const uint8_t* mac, const uint8_t* data, int lenght
 	{
 		memcpy(&(MCCStatus.cssmDrivePacket), data, sizeof(MCCStatus.cssmDrivePacket));
 		sprintf(buf, MACSTR, MAC2STR(mac));
-		MCCStatus.IncomingPacketMACString = String(buf);
-		MCCStatus.ESPNOWPacketReceivedCount++;
-		//_PL(MCCStatus.ESPNOWPacketReceivedCount);
+		MCCStatus.IncomingCSSMPacketMACString = String(buf);
+		MCCStatus.CSSMPacketReceivedCount++;
 
-		// Test code:
-		RC2x15AMC.Drive(MCCStatus.cssmDrivePacket.Throttle, MCCStatus.cssmDrivePacket.OmegaXY);
-		// End of test code block
+	// Test code (Move handling of CSSM command packets to the RC2x15AMC class):
+		//// Check UART lint to motor controller:
+		//if (!MCCStatus.RC2x15AMCStatus)
+		//{
+		//	// If the UART link is down then try to reset:
+		//	if (!RC2x15AMC.ResetUARTLink())
+		//	{
+		//		// If reset appempt fails then return:
+		//		return;
+		//	}
+		//}
+		// While UART link is up pass CSSM steering commands to the motor controller:
+		//if (MCCStatus.RC2x15AMCStatus)
+		//{
+		//	RC2x15AMC.Drive(MCCStatus.cssmDrivePacket.Throttle, MCCStatus.cssmDrivePacket.OmegaXY);
+		//}
+	// End of test code block
+
 	}
 }

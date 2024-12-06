@@ -24,18 +24,38 @@
 #include <RoboClaw.h>
 
 constexpr uint8_t RC2x15AAddress = 0x80;
+constexpr float GAMMA = 0.10f;
 
 class RC2x15AMCClass
 {
+public:
+	enum MCParamTypes
+	{
+		VBAT,
+		T1,
+		T2,
+		IMOT,
+		ENCPOS,
+		SPEEDS,
+
+		NoType
+	};
+	MCParamTypes CurrentMCParam = MCParamTypes::VBAT;
+
 protected:
-	HardwareSerial* RC2x15ASerial;	// Packet serial link to RoboClaw 2x15A Motor Controller
+	HardwareSerial* RC2x15ASerial;			// Packet serial link to RoboClaw 2x15A Motor Controller
 	RoboClaw* RC2x15A;
 	uint8_t PSAddress = RC2x15AAddress;
+	float LastSpeedSetting = 0.0f;			// For use determining whether drive commands have changed
+	float LastTurnRateSetting = 0.0f;
 
 public:
-	void Init();
+	bool Init();
 	bool ReadStatus();
-	void Drive(float throttle, float turnRate);
+	bool ResetUARTLink();
+
+	void Update();
+	void Drive(float speed, float turnRate);
 
 };
 

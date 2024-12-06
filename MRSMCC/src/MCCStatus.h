@@ -51,9 +51,13 @@ class MCCStatusClass
 	 bool UART2Status = false;
 
 	 bool ESPNOWStatus = false;
-	 int ESPNOWPacketSentCount = 0;
-	 int ESPNOWPacketReceivedCount = 0;
-	 String IncomingPacketMACString;
+
+	 uint32_t CSSMPacketSentCount = 0;
+	 uint32_t CSSMPacketReceivedCount = 0;
+	 uint32_t SaveCSSMPacketReceivedCount = 0;
+	 String IncomingCSSMPacketMACString;
+	 bool CSSMESPNOWLinkStatus = false;
+
 	 bool WiFiStatus = false;
 
 	 bool LocalDisplayStatus = false;
@@ -65,9 +69,11 @@ class MCCStatusClass
 	 String debugTextLines[MAX_TEXT_LINES];
 
 	 CSSMDrivePacket cssmDrivePacket;
+	 bool RC2x15AMCStatus = false;
 	 RC2x15AMCStatusPacket mcStatus;
 
 	 void Init();
+	 void Update();
 	 void AddDebugTextLine(String newLine);
 	 void ClearDebugText();
 };

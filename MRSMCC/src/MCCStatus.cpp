@@ -9,8 +9,11 @@
 
 void MCCStatusClass::Init()
 {
+}
 
-
+void MCCStatusClass::Update()
+{
+	CSSMESPNOWLinkStatus = (CSSMPacketReceivedCount != SaveCSSMPacketReceivedCount);
 }
 
 void MCCStatusClass::AddDebugTextLine(String newLine)

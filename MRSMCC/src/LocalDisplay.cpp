@@ -50,22 +50,9 @@ void LocalDisplayClass::DrawSYSPage()
 		DrawPageHeaderAndFooter();
 
 		tft.setTextSize(1);
-		tft.setTextColor(TFT_GREENYELLOW);
-		tft.setTextDatum(CL_DATUM);	//DONE: setTextDatum has NO AFFECT on print() output; print() effectively uses default TL_DATUM
-		uint8_t mac[6];
-		WiFi.macAddress(mac);
-		sprintf(buf, "MAC:%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-		tft.drawString(buf, 2, tft.height() / 2 + 30);
-
-		tft.setTextColor(TFT_GREEN);
-		tft.setTextDatum(CL_DATUM);
-		sprintf(buf, "IP: %s", WiFi.localIP().toString());
-		tft.drawString(buf, 2, tft.height() / 2 + 40);
-
-		tft.setTextColor(TFT_CYAN);
-		tft.drawString(I2CBus.Get1st6ActiveI2CAddressesString(), 2, tft.height() / 2 + 50);
 
 		tft.setTextColor(TFT_LIGHTGREY);
+		tft.setTextDatum(CL_DATUM);
 		sprintf(buf, "UART0 %s", MCCStatus.UART0Status ? "OK" : "NO");
 		tft.drawString(buf, 2, 30);
 
@@ -81,11 +68,33 @@ void LocalDisplayClass::DrawSYSPage()
 		sprintf(buf, "WiFi %s", MCCStatus.WiFiStatus ? "OK" : "NO");
 		tft.drawString(buf, 2, 50);
 
+		tft.setTextColor(TFT_GREEN);
+		tft.setTextDatum(CL_DATUM);
+		sprintf(buf, "IP: %s", WiFi.localIP().toString());
+		tft.drawString(buf, 50, 50);
+
+		tft.setTextColor(TFT_GREENYELLOW);
+		tft.setTextDatum(CR_DATUM);
+		uint8_t mac[6];
+		WiFi.macAddress(mac);
+		sprintf(buf, "MAC:%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+		tft.drawString(buf, tft.width() - 2, 50);
+
+		tft.setTextColor(TFT_CYAN);
+		tft.setTextDatum(CL_DATUM);
+		tft.drawString(I2CBus.Get1st6ActiveI2CAddressesString(), 2, tft.height() / 2 + 50);
+
 		lastPage = currentPage;
 	}
 
 	// Update dynamic displays:
 
+	tft.setTextColor(TFT_PINK, TFT_BLACK, true);
+	tft.setTextDatum(CR_DATUM);
+	sprintf(buf, "%s %s", "CSSM Uplink ", MCCStatus.CSSMESPNOWLinkStatus ? "OK" : "NO");
+	tft.drawString(buf, tft.width() - 2, 40);
+
+	tft.setTextDatum(CL_DATUM);
 	int16_t cursorY = tft.height() / 2 - 20;
 	tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);	//DONE: Does bgfill = true work with the print() method? -> Yes, newly printed text clears the background
 	sprintf(buf, "%s HDG %+04d CRS %+04d wXY %+6.1f%% THR %+6.1f%% ", 
@@ -95,20 +104,61 @@ void LocalDisplayClass::DrawSYSPage()
 		MCCStatus.cssmDrivePacket.OmegaXY, 
 		MCCStatus.cssmDrivePacket.Throttle);
 	tft.drawString(buf, 2, cursorY);
-	//tft.drawString(MCCStatus.IncomingPacketMACString, 2, 70);
-	cursorY += 10;
-	tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK, true);
-	sprintf(buf, "Vbat: %4.1f  T1: %4.1f°C  T2:%4.1f°C", MCCStatus.mcStatus.SupBatV, MCCStatus.mcStatus.Temp1, MCCStatus.mcStatus.Temp2);
-	tft.drawString(buf, 2, cursorY);
-	cursorY += 10;
-	sprintf(buf, "POS: %10d %10d", MCCStatus.mcStatus.M1Encoder, MCCStatus.mcStatus.M2Encoder);
-	tft.drawString(buf, 2, cursorY);
-	cursorY += 10;
-	sprintf(buf, "SPD: %10d %10d", MCCStatus.mcStatus.M1Speed, MCCStatus.mcStatus.M2Speed);
-	tft.drawString(buf, 2, cursorY);
-	cursorY += 10;
-	sprintf(buf, "Cur: %10.2f %10.2f", MCCStatus.mcStatus.M1Current, MCCStatus.mcStatus.M2Current);
-	tft.drawString(buf, 2, cursorY);
+	//tft.drawString(MCCStatus.IncomingCSSMPacketMACString, 2, 70);
+	if (MCCStatus.RC2x15AMCStatus)
+	{
+		cursorY += 10;
+		tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK, true);
+		if (MCCStatus.mcStatus.VBATValid)
+		{
+			sprintf(buf, "Vbat: %4.1f  T1: %4.1f°C  T2: %4.1f°C", MCCStatus.mcStatus.SupBatV, MCCStatus.mcStatus.Temp1, MCCStatus.mcStatus.Temp2);
+		}
+		else
+		{
+			sprintf(buf, "Vbat: ----  T1: ----°C  T2: ----°C");
+		}
+		tft.drawString(buf, 2, cursorY);
+		
+		cursorY += 10;
+		if (MCCStatus.mcStatus.ENCPOSValid)
+		{
+			sprintf(buf, "POS: %12d %12d qp", MCCStatus.mcStatus.M1Encoder, MCCStatus.mcStatus.M2Encoder);
+		}
+		else
+		{
+			sprintf(buf, "POS:          -          - qp");
+		}
+		tft.drawString(buf, 2, cursorY);
+
+		cursorY += 10;
+		if (MCCStatus.mcStatus.SPEEDSValid)
+		{
+			sprintf(buf, "SPD: %+5d(%+5d) %+5d(%+5d) qpps", MCCStatus.mcStatus.M1Speed, MCCStatus.mcStatus.M1SpeedSetting, MCCStatus.mcStatus.M2Speed, MCCStatus.mcStatus.M2SpeedSetting);
+		}
+		else
+		{
+			sprintf(buf, "SPD:     -(    -)     -(    -) qpps");
+		}
+		tft.drawString(buf, 2, cursorY);
+
+		cursorY += 10;
+		if (MCCStatus.mcStatus.IMOTValid)
+		{
+			sprintf(buf, "Cur: %12.2f %12.2f A", MCCStatus.mcStatus.M1Current, MCCStatus.mcStatus.M2Current);
+		}
+		else
+		{
+			sprintf(buf, "Cur:          -          - A");
+		}
+		tft.drawString(buf, 2, cursorY);
+	}
+	else
+	{
+		tft.fillRect(2, cursorY + 5, tft.width() - 2, 40, TFT_BLACK);
+		cursorY += 20;
+		sprintf(buf, "RC2x15A disconnected");
+		tft.drawString(buf, 2, cursorY);
+	}
 
 }
 
