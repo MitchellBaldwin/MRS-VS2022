@@ -55,6 +55,8 @@ class MCCStatusClass
 	 uint32_t CSSMPacketSentCount = 0;
 	 uint32_t CSSMPacketReceivedCount = 0;
 	 uint32_t SaveCSSMPacketReceivedCount = 0;
+	 uint64_t LastCSSMPacketReceivedTime = 0;		// ms
+	 uint64_t CSSMPacketReceiptInterval = 0;		// ms
 	 String IncomingCSSMPacketMACString;
 	 bool CSSMESPNOWLinkStatus = false;
 

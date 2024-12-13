@@ -6,6 +6,8 @@
 */
 
 #include "MCCStatus.h"
+#include "RC2x15AMC.h"
+#include "DEBUG Macros.h"
 
 void MCCStatusClass::Init()
 {
@@ -14,6 +16,17 @@ void MCCStatusClass::Init()
 void MCCStatusClass::Update()
 {
 	CSSMESPNOWLinkStatus = (CSSMPacketReceivedCount != SaveCSSMPacketReceivedCount);
+
+	//TODO: Re-establich / re-synch UART communication with the motor controller; simply ending and re-beginning
+	//the UART does not see to work.  
+	//if (!RC2x15AMCStatus)
+	//{
+	//	RC2x15AMCStatus = RC2x15AMC.ResetUARTLink();
+	//	if (!RC2x15AMCStatus)
+	//	{
+	//		_PL("Motor controller not responding")
+	//	}
+	//}
 }
 
 void MCCStatusClass::AddDebugTextLine(String newLine)

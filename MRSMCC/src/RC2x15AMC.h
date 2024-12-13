@@ -55,7 +55,7 @@ public:
 	bool ResetUARTLink();
 
 	void Update();
-	void Drive(float speed, float turnRate);
+	bool Drive(float speed, float turnRate);
 
 };
 

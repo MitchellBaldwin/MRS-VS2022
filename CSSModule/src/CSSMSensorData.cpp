@@ -238,7 +238,7 @@ float CSSMSensorData::GetThrottle()
 		actual = (actual + ThrottleDeadZone) * 100.0f / (100.0f - ThrottleDeadZone);
 	}
 	
-	CSSMStatus.cssmDrivePacket.Throttle = actual;
+	//CSSMStatus.cssmDrivePacket.Throttle = actual;
 
 	return actual;
 }

@@ -82,10 +82,28 @@ void setup()
 	}
 	//LocalDisplay.ReportHeapStatus();
 
+	int32_t channel = 0;
+	if (int32_t n = WiFi.scanNetworks())
+	{
+		for (uint8_t i = 0; i < n; i++)
+		{
+			if (!strcmp("320", WiFi.SSID(i).c_str()))
+			{
+				channel = WiFi.channel(i);
+			}
+		}
+	}
+	sprintf(buf, "Using WiFi channel %d", channel);
+	_PL(buf);
+
+	WiFi.mode(WIFI_MODE_APSTA);
+	WiFi.begin("320", "103187OS", channel);
+
+	WiFi.printDiag(Serial);
+
 	// Initialize ESP-NOW
 	// Set device as a Wi-Fi Station; turns WiFi radio ON:
 	//WiFi.mode(WIFI_STA);	// WiFi radio is already on by virtue of the call to ESP32WiFi.Init(), above
-	WiFi.mode(WIFI_MODE_APSTA);
 	MCCStatus.ESPNOWStatus = (esp_now_init() == ESP_OK);
 	if (!MCCStatus.ESPNOWStatus) {
 		_PL("Error initializing ESP-NOW")
@@ -94,14 +112,14 @@ void setup()
 	{
 		_PL("Initializing ESP-NOW")
 
-			MCCStatus.ComMode = MCCStatusClass::ComModes::ESPNOW;
+		MCCStatus.ComMode = MCCStatusClass::ComModes::ESPNOW;
 
 		// Register OnDataSent callback
 		esp_now_register_send_cb(OnMRSRCCSSMDataSent);
 
 		// Register peer
 		memcpy(MRSRCCSSMInfo.peer_addr, MRSRCCSSMMAC, 6);
-		MRSRCCSSMInfo.channel = 0;
+		MRSRCCSSMInfo.channel = channel;
 		MRSRCCSSMInfo.encrypt = false;
 
 		// Add peer        
@@ -186,14 +204,20 @@ void OnMRSRCCSSMDataSent(const uint8_t* mac_addr, esp_now_send_status_t status)
 
 void OnMRSRCCSSMDataReceived(const uint8_t* mac, const uint8_t* data, int lenght)
 {
+	// Test code:
+	//_PL(millis())
+	
 	char buf[32];
 	
 	if (data[0] == 0x20)	// Packet type identifier for a CSSMDrivePacket
 	{
 		memcpy(&(MCCStatus.cssmDrivePacket), data, sizeof(MCCStatus.cssmDrivePacket));
-		sprintf(buf, MACSTR, MAC2STR(mac));
-		MCCStatus.IncomingCSSMPacketMACString = String(buf);
+		//sprintf(buf, MACSTR, MAC2STR(mac));
+		//MCCStatus.IncomingCSSMPacketMACString = String(buf);
 		MCCStatus.CSSMPacketReceivedCount++;
+		uint64_t receiptTime = millis();
+		MCCStatus.CSSMPacketReceiptInterval = receiptTime - MCCStatus.LastCSSMPacketReceivedTime;
+		MCCStatus.LastCSSMPacketReceivedTime = receiptTime;
 
 	// Test code (Move handling of CSSM command packets to the RC2x15AMC class):
 		//// Check UART lint to motor controller:

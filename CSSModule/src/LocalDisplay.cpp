@@ -148,7 +148,7 @@ void LocalDisplayClass::DrawCOMPage()
 	// Update dynamic displays:
 	display.fillRect(0, 48, 128, 8, SSD1306_BLACK);
 	display.setCursor(0, 48);
-	snprintf(buf, 22, "ESPN Pkt Cnt: %d", CSSMStatus.ESPNOWPacketSentCount);
+	snprintf(buf, 22, "ESPN retries: %d", CSSMStatus.SendRetries);
 	display.write(buf);
 
 	display.display();

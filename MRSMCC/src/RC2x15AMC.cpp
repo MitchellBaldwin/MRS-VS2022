@@ -37,19 +37,25 @@ bool RC2x15AMCClass::Init()
 	_PL(buf)
 
 	// Test code:
-	uint32_t maxI = 0;
-	success = RC2x15A->ReadM1MaxCurrent(RC2x15AAddress, maxI);
-	sprintf(buf, "%d %d", success, maxI);
-	_PL(buf)
-
-	success = RC2x15A->SpeedM1(RC2x15AAddress, 1000);
-	delay(1000);
-	success = RC2x15A->SpeedM1(RC2x15AAddress, 0);
+	//uint32_t maxI = 0;
+	//success = RC2x15A->ReadM1MaxCurrent(RC2x15AAddress, maxI);
+	//sprintf(buf, "%d %d", success, maxI);
+	//_PL(buf)
+	//success = RC2x15A->SpeedM1(RC2x15AAddress, 1000);
+	//delay(1000);
+	//success = RC2x15A->SpeedM1(RC2x15AAddress, 0);
 	// End of test code block
 
 	return success;
 }
 
+/// <summary>
+/// Cycle through motor controller parameter list, reading one parameter category each cycle
+/// 
+/// </summary>
+/// <returns>
+/// Returns true if parameter read(s) succeed, false if not
+/// </returns>
 bool RC2x15AMCClass::ReadStatus()
 {
 	uint16_t data1, data2;
@@ -57,11 +63,6 @@ bool RC2x15AMCClass::ReadStatus()
 	int16_t data5, data6;
 	bool success = false;
 	uint8_t status[32];
-
-	//if (RC2x15ASerial->availableForWrite() > 0)
-	//{
-	//	return true;
-	//}
 
 	// Cycle to the next motor controller measurement in the list:
 	if (CurrentMCParam >= MCParamTypes::NoType)
@@ -140,17 +141,21 @@ bool RC2x15AMCClass::ReadStatus()
 		break;
 	}
 
-	return true;
-	//return success;
+	//return true;
+	return success;
 }
 
 bool RC2x15AMCClass::ResetUARTLink()
 {
+	//TODO: Re-establich / re-synch UART communication with the motor controller; simply ending and re-beginning
+	//the UART does not see to work.  
+
 	char buf[32];
 	bool success = false;
 	
 	//RC2x15ASerial->flush();
 	RC2x15ASerial->end();
+	delay(100);
 	RC2x15ASerial->begin(115200, SERIAL_8N1, 18, 17);
 	if (!RC2x15ASerial)
 	{
@@ -168,13 +173,14 @@ bool RC2x15AMCClass::ResetUARTLink()
 
 void RC2x15AMCClass::Update()
 {
-	// Determine whether drive commands have cganged since the last cycle and, if so, update and send
+	// Determine whether drive commands have changed since the last cycle and, if so, update and send
 	//the new speed and turn rate settings to the motor controller.  Otherwise, request the next 
 	//motor controller parameter update.
 
+	bool success = false;
 	float newSpeed = MCCStatus.cssmDrivePacket.Throttle;
 	float newTurnRate = MCCStatus.cssmDrivePacket.OmegaXY;
-	if (abs(newSpeed - LastSpeedSetting) >= GAMMA || abs(newTurnRate = LastTurnRateSetting) >= GAMMA)
+	if (abs(newSpeed - LastSpeedSetting) >= GAMMA || abs(newTurnRate - LastTurnRateSetting) >= GAMMA)
 	{
 		if (abs(newSpeed) < GAMMA && abs(newTurnRate) < GAMMA)
 		{
@@ -184,32 +190,38 @@ void RC2x15AMCClass::Update()
 			//clicking the "STOP ALL" button in the Basic Micro Motion Studio application cuts
 			//current draw to nil
 			// Solution: Set duty cycle for both motors to 0:
-			RC2x15A->DutyM1M2(PSAddress, 0, 0);
+			success = RC2x15A->DutyM1M2(PSAddress, 0, 0);
 			//RC2x15A->SpeedM1M2(PSAddress, 0, 0);
 		}
 		else
 		{
-			Drive(newSpeed, newTurnRate);
+			success = Drive(newSpeed, newTurnRate);
 		}
 	}
 	else
 	{
-		ReadStatus();
+		success = ReadStatus();
 	}
 	LastSpeedSetting = newSpeed;
 	LastTurnRateSetting = newTurnRate;
+
+	MCCStatus.RC2x15AMCStatus = success;
 }
 
-void RC2x15AMCClass::Drive(float speed, float turnRate)
+bool RC2x15AMCClass::Drive(float speed, float turnRate)
 {
+	bool success = false;
+	
 	// Convert commanded speed and run rate into motor speeds (qpps - quadrature pulses per second)
 	uint32_t m1Speed = speed / 100.0f * 7000.0f;
 	uint32_t m2Speed = speed / 100.0f * 7000.0f;
 	
-	RC2x15A->SpeedM1M2(PSAddress, m1Speed, m2Speed);
+	success = RC2x15A->SpeedM1M2(PSAddress, m1Speed, m2Speed);
 
 	MCCStatus.mcStatus.M1SpeedSetting = m1Speed;
 	MCCStatus.mcStatus.M2SpeedSetting = m2Speed;
+
+	return success;
 }
 
 RC2x15AMCClass RC2x15AMC;

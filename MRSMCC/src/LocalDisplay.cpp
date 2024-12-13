@@ -89,6 +89,11 @@ void LocalDisplayClass::DrawSYSPage()
 
 	// Update dynamic displays:
 
+	tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK, true);
+	tft.setTextDatum(CC_DATUM);
+	sprintf(buf, "%5d ms", MCCStatus.CSSMPacketReceiptInterval);
+	tft.drawString(buf, tft.width() / 2, 40);
+
 	tft.setTextColor(TFT_PINK, TFT_BLACK, true);
 	tft.setTextDatum(CR_DATUM);
 	sprintf(buf, "%s %s", "CSSM Uplink ", MCCStatus.CSSMESPNOWLinkStatus ? "OK" : "NO");
@@ -104,61 +109,69 @@ void LocalDisplayClass::DrawSYSPage()
 		MCCStatus.cssmDrivePacket.OmegaXY, 
 		MCCStatus.cssmDrivePacket.Throttle);
 	tft.drawString(buf, 2, cursorY);
+
 	//tft.drawString(MCCStatus.IncomingCSSMPacketMACString, 2, 70);
+
+	// Display status of motor controller
+	cursorY += 10;
 	if (MCCStatus.RC2x15AMCStatus)
 	{
-		cursorY += 10;
-		tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK, true);
-		if (MCCStatus.mcStatus.VBATValid)
-		{
-			sprintf(buf, "Vbat: %4.1f  T1: %4.1f°C  T2: %4.1f°C", MCCStatus.mcStatus.SupBatV, MCCStatus.mcStatus.Temp1, MCCStatus.mcStatus.Temp2);
-		}
-		else
-		{
-			sprintf(buf, "Vbat: ----  T1: ----°C  T2: ----°C");
-		}
+		tft.setTextColor(TFT_GREEN, TFT_BLACK, true);
+		sprintf(buf, "RC2x15A connected");
 		tft.drawString(buf, 2, cursorY);
 		
-		cursorY += 10;
-		if (MCCStatus.mcStatus.ENCPOSValid)
-		{
-			sprintf(buf, "POS: %12d %12d qp", MCCStatus.mcStatus.M1Encoder, MCCStatus.mcStatus.M2Encoder);
-		}
-		else
-		{
-			sprintf(buf, "POS:          -          - qp");
-		}
-		tft.drawString(buf, 2, cursorY);
-
-		cursorY += 10;
-		if (MCCStatus.mcStatus.SPEEDSValid)
-		{
-			sprintf(buf, "SPD: %+5d(%+5d) %+5d(%+5d) qpps", MCCStatus.mcStatus.M1Speed, MCCStatus.mcStatus.M1SpeedSetting, MCCStatus.mcStatus.M2Speed, MCCStatus.mcStatus.M2SpeedSetting);
-		}
-		else
-		{
-			sprintf(buf, "SPD:     -(    -)     -(    -) qpps");
-		}
-		tft.drawString(buf, 2, cursorY);
-
-		cursorY += 10;
-		if (MCCStatus.mcStatus.IMOTValid)
-		{
-			sprintf(buf, "Cur: %12.2f %12.2f A", MCCStatus.mcStatus.M1Current, MCCStatus.mcStatus.M2Current);
-		}
-		else
-		{
-			sprintf(buf, "Cur:          -          - A");
-		}
-		tft.drawString(buf, 2, cursorY);
 	}
 	else
 	{
-		tft.fillRect(2, cursorY + 5, tft.width() - 2, 40, TFT_BLACK);
-		cursorY += 20;
+		tft.setTextColor(TFT_RED, TFT_BLACK, true);
 		sprintf(buf, "RC2x15A disconnected");
 		tft.drawString(buf, 2, cursorY);
 	}
+
+	cursorY += 10;
+	tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK, true);
+	if (MCCStatus.mcStatus.VBATValid)
+	{
+		sprintf(buf, "Vbat: %4.1f  T1: %4.1f°C  T2: %4.1f°C", MCCStatus.mcStatus.SupBatV, MCCStatus.mcStatus.Temp1, MCCStatus.mcStatus.Temp2);
+	}
+	else
+	{
+		sprintf(buf, "Vbat: ----  T1: ----°C  T2: ----°C");
+	}
+	tft.drawString(buf, 2, cursorY);
+		
+	cursorY += 10;
+	if (MCCStatus.mcStatus.ENCPOSValid)
+	{
+		sprintf(buf, "POS: %12d %12d qp", MCCStatus.mcStatus.M1Encoder, MCCStatus.mcStatus.M2Encoder);
+	}
+	else
+	{
+		sprintf(buf, "POS:            -            - qp");
+	}
+	tft.drawString(buf, 2, cursorY);
+
+	cursorY += 10;
+	if (MCCStatus.mcStatus.SPEEDSValid)
+	{
+		sprintf(buf, "SPD: %+5d(%+5d) %+5d(%+5d) qpps", MCCStatus.mcStatus.M1Speed, MCCStatus.mcStatus.M1SpeedSetting, MCCStatus.mcStatus.M2Speed, MCCStatus.mcStatus.M2SpeedSetting);
+	}
+	else
+	{
+		sprintf(buf, "SPD:     -(    -)     -(    -) qpps");
+	}
+	tft.drawString(buf, 2, cursorY);
+
+	cursorY += 10;
+	if (MCCStatus.mcStatus.IMOTValid)
+	{
+		sprintf(buf, "Cur: %12.2f %12.2f A", MCCStatus.mcStatus.M1Current, MCCStatus.mcStatus.M2Current);
+	}
+	else
+	{
+		sprintf(buf, "Cur:            -            - A");
+	}
+	tft.drawString(buf, 2, cursorY);
 
 }
 

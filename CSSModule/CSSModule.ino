@@ -53,11 +53,13 @@
 #define FORMAT_LITTLEFS_IF_FAILED true
 
 #include <esp_now.h>
-uint8_t MRSRCPCMMAC[] = { 0x48, 0x27, 0xE2, 0xEA, 0xCA, 0x4C };		// Breadboard prototype
-esp_now_peer_info_t MRSRCPCMInfo;
-//uint8_t MRSMCCMAC[] = { 0xF0, 0xF5, 0xBD, 0x42, 0xB7, 0x78 };
-uint8_t MRSMCCMAC[] = { 0x48, 0x27, 0xE2, 0xEA, 0xCA, 0x4C };		// Breadboard prototype
+//uint8_t MRSRCPCMMAC[] = { 0x48, 0x27, 0xE2, 0xEA, 0xCA, 0x4C };		// Breadboard prototype
+//esp_now_peer_info_t MRSRCPCMInfo;
+uint8_t MRSMCCMAC[] = { 0xF0, 0xF5, 0xBD, 0x42, 0xB7, 0x78 };
+//uint8_t MRSMCCMAC[] = { 0x48, 0x27, 0xE2, 0xEA, 0xCA, 0x4C };		// Breadboard prototype
+//uint8_t MRSMCCMAC[] = { 0xF0, 0xF5, 0xBD, 0x42, 0xB3, 0xA0 };		// New module
 esp_now_peer_info_t MRSMCCInfo;
+bool MRSMCCOKToSend = true;
 
 #include "src/ESP32WiFi.h"
 
@@ -212,6 +214,9 @@ constexpr long SendCSSMPacketInterval = 300;
 void SendCSSMPacketCallback();
 Task SendCSSMPacketTask((SendCSSMPacketInterval * TASK_MILLISECOND), TASK_FOREVER, &SendCSSMPacketCallback, &MainScheduler, false);
 
+uint32_t NextPacketSendTime = 0;				// ms
+uint32_t InitiatePacketSendTime = 0;			// ms
+
 void setup()
 {
 	USBSerial.begin(115200);
@@ -224,6 +229,7 @@ void setup()
 	{
 		CSSMStatus.UART0Status = true;
 		HeartbeatLEDTogglePeriod = NormalHeartbeatLEDToggleInterval;
+		_PL();
 	}
 
 	IDCSerial.begin(115200);
@@ -246,7 +252,6 @@ void setup()
 	char buf[32];
 	snprintf(buf, 31, "Heartbeat LED pin 0x%02X", LED_BUILTIN);
 	pinMode(LED_BUILTIN, OUTPUT);
-	_PL();
 	_PL(buf);
 	//pinMode(DebugLED, OUTPUT);
 	//snprintf(buf, 31, "Debug LED pin 0x%02X", DebugLED);
@@ -291,10 +296,16 @@ void setup()
 	CSSMStatus.WiFiStatus = ESP32WiFi.Init(SensorData.GetRightRockerSwitchStateRaw() == 0);
 	CSSMStatus.ComMode = CSSMStatusClass::ComModes::WiFiTCP;
 
+	// Test code:
+	WiFi.printDiag(USBSerial);
+
 	// Initialize ESP-NOW
 	// Set device as a Wi-Fi Station; turns WiFi radio ON:
 	//WiFi.mode(WIFI_STA);	// WiFi radio is already on by virtue of the call to ESP32WiFi.Init(), above
+	//WiFi.begin();
 	WiFi.mode(WIFI_MODE_APSTA);
+	//WiFi.disconnect();
+
 	CSSMStatus.ESPNOWStatus = (esp_now_init() == ESP_OK);
 	if (!CSSMStatus.ESPNOWStatus) {
 		_PL("Error initializing ESP-NOW")
@@ -369,6 +380,14 @@ void setup()
 void loop()
 {
 	MainScheduler.execute();
+
+	//if (millis() >= NextPacketSendTime)
+	//{
+	//	CSSMStatus.SendRetries = 0;
+	//	InitiatePacketSendTime = millis();
+	//	SendCSSMPacketCallback();
+	//	NextPacketSendTime += SendCSSMPacketInterval;
+	//}
 
 	// Test code:
 
@@ -519,16 +538,18 @@ void SendCSSMPacketCallback()
 	char buf1[32];
 	char buf2[64];
 
-	//CSSMStatus.cssmDrivePacket.HeadingSetting = SensorData.HDGEncoderSetting;
-	//CSSMStatus.cssmDrivePacket.CourseSetting = SensorData.CRSEncoderSetting;
-	//CSSMStatus.cssmDrivePacket.Throttle = SensorData.GetThrottle();
-	//CSSMStatus.cssmDrivePacket.OmegaXY = 0.0;
+	esp_err_t result = ESP_OK;
 
-	esp_err_t result = esp_now_send(MRSMCCMAC, (uint8_t*)&CSSMStatus.cssmDrivePacket, sizeof(CSSMStatus.cssmDrivePacket));
-	
-	//sprintf(buf1, MACSTR, MAC2STR(MRSMCCMAC));
-	//sprintf(buf2, "ESP-NOW to %s: %s, %d bytes", buf1, esp_err_to_name(result), sizeof(cssmDrivePacket));
-	//_PL(buf2)
+	//if (MRSMCCOKToSend)
+	//{
+		MRSMCCOKToSend = false;
+		result = esp_now_send(MRSMCCMAC, (uint8_t*)&CSSMStatus.cssmDrivePacket, sizeof(CSSMStatus.cssmDrivePacket));
+	//}
+	if (result != ESP_NOW_SEND_SUCCESS)
+	{
+		sprintf(buf2, "ESP-NOW send error: %S", esp_err_to_name(result));
+		_PL(buf2)
+	}
 
 }
 
@@ -547,10 +568,32 @@ void OnMRSRCPCMDataSent(const uint8_t* mac_addr, esp_now_send_status_t status)
 
 void OnMRSMCCDataSent(const uint8_t* mac_addr, esp_now_send_status_t status)
 {
+	char buf[64];
+
+
 	CSSMStatus.ESPNOWStatus = (status == ESP_NOW_SEND_SUCCESS);
 	if (CSSMStatus.ESPNOWStatus)
 	{
 		CSSMStatus.ESPNOWPacketSentCount++;
+		CSSMStatus.SendRetries = 0;
+		MRSMCCOKToSend = true;				// Once TX callback executes it is OK to send the next packet
+		
+		// Test code:
+		//snprintf(buf, 63, "Packet send success after %d ms, %d retries", (millis() - InitiatePacketSendTime), CSSMStatus.SendRetries);
+		//_PL(buf);
+	}
+	else
+	{
+		if (millis() < NextPacketSendTime + SendCSSMPacketInterval)
+		{
+			// Try to re-send:
+			CSSMStatus.SendRetries++;
+			SendCSSMPacketCallback();
+		}
+		else
+		{
+			_PL("ESP-NOW data send FAIL")
+		}
 	}
 }
 
