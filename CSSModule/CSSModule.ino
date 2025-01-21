@@ -59,7 +59,8 @@ uint8_t MRSMCCMAC[] = { 0xF0, 0xF5, 0xBD, 0x42, 0xB7, 0x78 };
 //uint8_t MRSMCCMAC[] = { 0x48, 0x27, 0xE2, 0xEA, 0xCA, 0x4C };		// Breadboard prototype
 //uint8_t MRSMCCMAC[] = { 0xF0, 0xF5, 0xBD, 0x42, 0xB3, 0xA0 };		// New module
 esp_now_peer_info_t MRSMCCInfo;
-bool MRSMCCOKToSend = true;
+
+constexpr uint16_t MaxCSSMSendRetries = 16;
 
 #include "src/ESP32WiFi.h"
 
@@ -214,8 +215,10 @@ constexpr long SendCSSMPacketInterval = 300;
 void SendCSSMPacketCallback();
 Task SendCSSMPacketTask((SendCSSMPacketInterval * TASK_MILLISECOND), TASK_FOREVER, &SendCSSMPacketCallback, &MainScheduler, false);
 
+// For use with independent timer-based triggering to send CSSM packets:
 uint32_t NextPacketSendTime = 0;				// ms
 uint32_t InitiatePacketSendTime = 0;			// ms
+bool MRSMCCOKToSend = true;
 
 void setup()
 {
@@ -328,7 +331,6 @@ void setup()
 		if (esp_now_add_peer(&MRSMCCInfo) != ESP_OK)
 		{
 			_PL("Failed to add peer")
-			//return;
 		}
 	}
 
@@ -540,11 +542,8 @@ void SendCSSMPacketCallback()
 
 	esp_err_t result = ESP_OK;
 
-	//if (MRSMCCOKToSend)
-	//{
-		MRSMCCOKToSend = false;
-		result = esp_now_send(MRSMCCMAC, (uint8_t*)&CSSMStatus.cssmDrivePacket, sizeof(CSSMStatus.cssmDrivePacket));
-	//}
+	result = esp_now_send(MRSMCCMAC, (uint8_t*)&CSSMStatus.cssmDrivePacket, sizeof(CSSMStatus.cssmDrivePacket));
+
 	if (result != ESP_NOW_SEND_SUCCESS)
 	{
 		sprintf(buf2, "ESP-NOW send error: %S", esp_err_to_name(result));
@@ -570,13 +569,11 @@ void OnMRSMCCDataSent(const uint8_t* mac_addr, esp_now_send_status_t status)
 {
 	char buf[64];
 
-
 	CSSMStatus.ESPNOWStatus = (status == ESP_NOW_SEND_SUCCESS);
 	if (CSSMStatus.ESPNOWStatus)
 	{
 		CSSMStatus.ESPNOWPacketSentCount++;
 		CSSMStatus.SendRetries = 0;
-		MRSMCCOKToSend = true;				// Once TX callback executes it is OK to send the next packet
 		
 		// Test code:
 		//snprintf(buf, 63, "Packet send success after %d ms, %d retries", (millis() - InitiatePacketSendTime), CSSMStatus.SendRetries);
@@ -584,7 +581,10 @@ void OnMRSMCCDataSent(const uint8_t* mac_addr, esp_now_send_status_t status)
 	}
 	else
 	{
+		//TODO: Need to change this to base test on whether sufficient time is left in the current task cycle to retry
+		//Consider defining a MAX_RETRIES parameter to limit the number of potential retries and so limit the time use on retries.  
 		if (millis() < NextPacketSendTime + SendCSSMPacketInterval)
+		if (CSSMStatus.SendRetries < MaxCSSMSendRetries)
 		{
 			// Try to re-send:
 			CSSMStatus.SendRetries++;
@@ -592,6 +592,7 @@ void OnMRSMCCDataSent(const uint8_t* mac_addr, esp_now_send_status_t status)
 		}
 		else
 		{
+			CSSMStatus.SendRetries = 0;
 			_PL("ESP-NOW data send FAIL")
 		}
 	}

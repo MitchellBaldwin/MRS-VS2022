@@ -122,7 +122,16 @@ void CSSMSensorData::Update()
 	
 	if (CSSMStatus.cssmDrivePacket.DriveMode == CSSMDrivePacket::DriveModes::DRV)
 	{
-		CSSMStatus.cssmDrivePacket.OmegaXY = (float)HDGEncoder.getCount() / 10.0;
+		float turnRate = (float)HDGEncoder.getCount() * 5.0f;
+		if (turnRate > 100.0)
+		{
+			turnRate = 100.0f;
+		}
+		else if (turnRate < -100.0)
+		{
+			turnRate = -100.0f;
+		}
+		CSSMStatus.cssmDrivePacket.OmegaXY = turnRate;
 	}
 	else
 	{

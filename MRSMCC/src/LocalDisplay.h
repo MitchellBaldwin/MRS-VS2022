@@ -5,7 +5,7 @@
 *		System (SYS)	Default summary of system, power supply voltages and I/O ststus
 *		Comms (COM)		Communications with MRS RC MCC or MRS RC CSSM
 *
-*	Mitchell Baldwin copyright 2024
+*	Mitchell Baldwin copyright 2024-2025
 *
 *	v 0.00:	Initial command set
 *	v

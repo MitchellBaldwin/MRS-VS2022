@@ -66,18 +66,18 @@ void LocalDisplayClass::DrawSYSPage()
 
 	// Update dynamic displays:
 	display.fillRect(0, 16, 128, 8, SSD1306_BLACK);
-	snprintf(buf, 22, "THR %+6.1f%%", CSSMStatus.cssmDrivePacket.Throttle);
+	snprintf(buf, 22, "THR %+5.1f%%", CSSMStatus.cssmDrivePacket.Throttle);
 	display.setCursor(0, 16);
 	display.write(buf);
 	if (CSSMStatus.cssmDrivePacket.DriveMode == CSSMDrivePacket::DriveModes::DRV)
 	{
-		snprintf(buf, 22, "wXY %+4.1f", CSSMStatus.cssmDrivePacket.OmegaXY);
+		snprintf(buf, 22, "wXY %+4.0f%%", CSSMStatus.cssmDrivePacket.OmegaXY);
 	}
 	else
 	{
 		snprintf(buf, 22, "HDG %+04d", CSSMStatus.cssmDrivePacket.HeadingSetting);
 	}
-	display.setCursor(79, 16);
+	display.setCursor(69, 16);
 	display.write(buf);
 
 	//display.fillRect(0, 32, 128, 8, SSD1306_BLACK);
@@ -262,11 +262,11 @@ void LocalDisplayClass::DrawDRVPage()
 
 	// Update dynamic displays:
 	display.fillRect(0, 16, 128, 8, SSD1306_BLACK);
-	snprintf(buf, 22, "THR %+6.1f%%", CSSMStatus.cssmDrivePacket.Throttle);
+	snprintf(buf, 22, "THR %+5.1f%%", CSSMStatus.cssmDrivePacket.Throttle);
 	display.setCursor(0, 16);
 	display.write(buf);
-	snprintf(buf, 22, "wXY %+4.1f", CSSMStatus.cssmDrivePacket.OmegaXY);
-	display.setCursor(79, 16);
+	snprintf(buf, 22, "wXY %+4.0f%%", CSSMStatus.cssmDrivePacket.OmegaXY);
+	display.setCursor(69, 16);
 	display.write(buf);
 
 	display.display();

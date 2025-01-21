@@ -15,21 +15,21 @@ bool RC2x15AMCClass::Init()
 	char buf[64];
 	bool success = false;
 
-	RC2x15ASerial = new HardwareSerial(1);
-	RC2x15A = new RoboClaw(RC2x15ASerial, 10000);
+	RC2x15AUART = new HardwareSerial(1);			// Establish a new hardware UART port using the MCC MCU UART1 device
+	RC2x15A = new RoboClaw(RC2x15AUART, 10000);
 
-	RC2x15ASerial->begin(115200, SERIAL_8N1, 18, 17);
-	if (!RC2x15ASerial)
+	RC2x15AUART->begin(115200, SERIAL_8N1, 18, 17);
+	if (!RC2x15AUART)
 	{
-		MCCStatus.UART1Status = false;
+		MCCStatus.RC2x15AUARTStatus = false;
 		_PL("Failed to initialize RC2x15ASerial")
 	}
 	else
 	{
-		MCCStatus.UART1Status = true;
+		MCCStatus.RC2x15AUARTStatus = true;
 
 		// Test code:
-		//RC2x15ASerial.println("Hello from the RC2x15ASerial port...");
+		//RC2x15AUART.println("Hello from the RC2x15AUART port...");
 	}
 
 	// Test UART link to motor controller:
@@ -153,18 +153,18 @@ bool RC2x15AMCClass::ResetUARTLink()
 	char buf[32];
 	bool success = false;
 	
-	//RC2x15ASerial->flush();
-	RC2x15ASerial->end();
+	//RC2x15AUART->flush();
+	RC2x15AUART->end();
 	delay(100);
-	RC2x15ASerial->begin(115200, SERIAL_8N1, 18, 17);
-	if (!RC2x15ASerial)
+	RC2x15AUART->begin(115200, SERIAL_8N1, 18, 17);
+	if (!RC2x15AUART)
 	{
-		MCCStatus.UART1Status = false;
+		MCCStatus.RC2x15AUARTStatus = false;
 		_PL("Failed to initialize RC2x15ASerial")
 	}
 	else
 	{
-		MCCStatus.UART1Status = true;
+		MCCStatus.RC2x15AUARTStatus = true;
 		// Test UART link to motor controller:
 		success = RC2x15A->ReadVersion(PSAddress, buf);
 	}
@@ -189,7 +189,7 @@ void RC2x15AMCClass::Update()
 			// Setting speeds to 0 stops the motors but there is a significant residual current draw
 			//clicking the "STOP ALL" button in the Basic Micro Motion Studio application cuts
 			//current draw to nil
-			// Solution: Set duty cycle for both motors to 0:
+			// SOLUTION: Set duty cycle for both motors to 0:
 			success = RC2x15A->DutyM1M2(PSAddress, 0, 0);
 			//RC2x15A->SpeedM1M2(PSAddress, 0, 0);
 		}
@@ -208,18 +208,54 @@ void RC2x15AMCClass::Update()
 	MCCStatus.RC2x15AMCStatus = success;
 }
 
+/// <summary>
+/// Most basic differential drive implementation, 
+/// Converts commanded speed and trun rate values into motor speed settings for the left and right drive motors
+/// </summary>
+/// <param name="speed">
+/// Commanded speed as a percent of full speed (-100% to +100%)
+/// </param>
+/// <param name="turnRate">
+/// Commanded turn rate as a percent of maximum possible turn rate (-100% (full right turn) to +100% (full left turn))
+/// </param>
+/// <returns>
+/// Returns success reported by serial communication with the RoboClaw 2x15A motor controller
+/// </returns>
 bool RC2x15AMCClass::Drive(float speed, float turnRate)
 {
 	bool success = false;
-	
-	// Convert commanded speed and run rate into motor speeds (qpps - quadrature pulses per second)
-	uint32_t m1Speed = speed / 100.0f * 7000.0f;
-	uint32_t m2Speed = speed / 100.0f * 7000.0f;
-	
-	success = RC2x15A->SpeedM1M2(PSAddress, m1Speed, m2Speed);
 
-	MCCStatus.mcStatus.M1SpeedSetting = m1Speed;
-	MCCStatus.mcStatus.M2SpeedSetting = m2Speed;
+	//TODO: Convert these to global constants:
+	uint32_t lMotorFullSpeedQPPS = 7000;
+	uint32_t rMotorFullSpeedQPPS = 7000;
+
+	// Convert commanded speed and turn rate into motor speeds (qpps - quadrature pulses per second)
+	int32_t lMotorSpeed = 0 - speed / 100.0f * lMotorFullSpeedQPPS;
+	int32_t rMotorSpeed = 0 - speed / 100.0f * rMotorFullSpeedQPPS;
+	
+	int32_t turnDifferentialQPPS = 0;
+	if (abs(speed) > GAMMA)
+	{
+		// Blend commanded turn rate with forward / backward commanded speed:
+		int32_t avgMotorSpeedQPPS = (lMotorSpeed + rMotorSpeed) / 2;
+		turnDifferentialQPPS = avgMotorSpeedQPPS * (turnRate / 100.0f);
+	}
+	else
+	{
+		// Forward / backward commanded speed is nil so use commanded turn rate to spin in place
+		//at a rate proportional to the commanded turn rate:
+		uint32_t avgMotorFullSpeedQPPS = (lMotorFullSpeedQPPS + rMotorFullSpeedQPPS) / 2;
+		turnDifferentialQPPS = avgMotorFullSpeedQPPS * (turnRate / 100.0f);
+	}
+	
+	// Add turn rate values to each motor speed setting:
+	lMotorSpeed -= turnDifferentialQPPS;
+	rMotorSpeed += turnDifferentialQPPS;
+
+	success = RC2x15A->SpeedM1M2(PSAddress, lMotorSpeed, rMotorSpeed);
+
+	MCCStatus.mcStatus.M1SpeedSetting = lMotorSpeed;
+	MCCStatus.mcStatus.M2SpeedSetting = rMotorSpeed;
 
 	return success;
 }

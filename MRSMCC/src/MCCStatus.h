@@ -47,7 +47,7 @@ class MCCStatusClass
 	 ComModes ComMode = ComModes::ESPNOW;
 
 	 bool UART0Status = false;
-	 bool UART1Status = false;
+	 bool RC2x15AUARTStatus = false;
 	 bool UART2Status = false;
 
 	 bool ESPNOWStatus = false;

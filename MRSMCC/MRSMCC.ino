@@ -82,6 +82,8 @@ void setup()
 	}
 	//LocalDisplay.ReportHeapStatus();
 
+	// Determine the channel used by local WiFi router so we can ensure compatibility 
+	//when initializing ESP-NOW:
 	int32_t channel = 0;
 	if (int32_t n = WiFi.scanNetworks())
 	{

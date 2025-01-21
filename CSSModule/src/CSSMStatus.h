@@ -54,7 +54,7 @@ public:
 
 	bool ESPNOWStatus = false;
 	int ESPNOWPacketSentCount = 0;
-	uint32_t SendRetries = 0;
+	uint16_t SendRetries = 0;
 
 	bool WiFiStatus = false;
 	 

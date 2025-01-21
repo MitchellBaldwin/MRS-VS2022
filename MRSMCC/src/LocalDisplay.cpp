@@ -57,7 +57,7 @@ void LocalDisplayClass::DrawSYSPage()
 		tft.drawString(buf, 2, 30);
 
 		tft.setTextDatum(CR_DATUM);
-		sprintf(buf, "UART1 %s", MCCStatus.UART1Status ? "OK" : "NO");
+		sprintf(buf, "UART1 %s", MCCStatus.RC2x15AUARTStatus ? "OK" : "NO");
 		tft.drawString(buf, tft.width() / 2 - 2, 30);
 
 		tft.setTextColor(TFT_PINK);
@@ -117,7 +117,7 @@ void LocalDisplayClass::DrawSYSPage()
 	if (MCCStatus.RC2x15AMCStatus)
 	{
 		tft.setTextColor(TFT_GREEN, TFT_BLACK, true);
-		sprintf(buf, "RC2x15A connected");
+		sprintf(buf, "RC2x15A connected   ");
 		tft.drawString(buf, 2, cursorY);
 		
 	}
@@ -208,7 +208,7 @@ void LocalDisplayClass::DrawCOMPage()
 		tft.drawString(buf, 2, 30);
 
 		tft.setTextDatum(CR_DATUM);
-		sprintf(buf, "UART1 %s", MCCStatus.UART1Status ? "OK" : "NO");
+		sprintf(buf, "UART1 %s", MCCStatus.RC2x15AUARTStatus ? "OK" : "NO");
 		tft.drawString(buf, halfScreenWidth, 30);
 
 		tft.setTextColor(TFT_PINK);
@@ -286,7 +286,7 @@ void LocalDisplayClass::DrawDBGPage()
 		tft.drawString(buf, 2, halfScreenHeight);
 
 		tft.setTextDatum(CR_DATUM);
-		sprintf(buf, "UART1 %s", MCCStatus.UART1Status ? "OK" : "NO");
+		sprintf(buf, "UART1 %s", MCCStatus.RC2x15AUARTStatus ? "OK" : "NO");
 		tft.drawString(buf, halfScreenWidth, halfScreenHeight);
 
 		//tft.setTextColor(TFT_PINK);
