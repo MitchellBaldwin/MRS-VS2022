@@ -17,7 +17,8 @@ bool RC2x15AMCClass::Init()
 
 	RC2x15AUART = new HardwareSerial(1);			// Establish a new hardware UART port using the MCC MCU UART1 device
 	RC2x15A = new RoboClaw(RC2x15AUART, 10000);
-
+	
+	// The following takes the place of a call to RC2x15A->begin(), which assumes use of the primary Serial port:
 	RC2x15AUART->begin(115200, SERIAL_8N1, 18, 17);
 	if (!RC2x15AUART)
 	{
@@ -27,24 +28,16 @@ bool RC2x15AMCClass::Init()
 	else
 	{
 		MCCStatus.RC2x15AUARTStatus = true;
+		_PL("RC2x15AUART initialized")
+
+		// Test UART link to motor controller:
+		success = RC2x15A->ReadVersion(PSAddress, buf);
+		_PL(buf)
 
 		// Test code:
 		//RC2x15AUART.println("Hello from the RC2x15AUART port...");
+		//RC2x15A->
 	}
-
-	// Test UART link to motor controller:
-	success = RC2x15A->ReadVersion(PSAddress, buf);
-	_PL(buf)
-
-	// Test code:
-	//uint32_t maxI = 0;
-	//success = RC2x15A->ReadM1MaxCurrent(RC2x15AAddress, maxI);
-	//sprintf(buf, "%d %d", success, maxI);
-	//_PL(buf)
-	//success = RC2x15A->SpeedM1(RC2x15AAddress, 1000);
-	//delay(1000);
-	//success = RC2x15A->SpeedM1(RC2x15AAddress, 0);
-	// End of test code block
 
 	return success;
 }
@@ -133,8 +126,7 @@ bool RC2x15AMCClass::ReadStatus()
 	case MCParamTypes::NoType:
 		// Include a call to Drive in the rotation to ensure, in particular, that stop commands
 		//get through:
-		Drive(MCCStatus.cssmDrivePacket.Throttle, MCCStatus.cssmDrivePacket.OmegaXY);
-		success = true;
+		success = Drive(MCCStatus.cssmDrivePacket.Throttle, MCCStatus.cssmDrivePacket.OmegaXY);
 		break;
 	default:
 		success = true;
@@ -149,25 +141,40 @@ bool RC2x15AMCClass::ResetUARTLink()
 {
 	//TODO: Re-establich / re-synch UART communication with the motor controller; simply ending and re-beginning
 	//the UART does not see to work.  
+	// Clearing the incomming buffer by reading all available data and then attempting to read the RC2x15A version info causes a guru meditation error (MCU reset),
+	//but folowing teh MCU reset everything seems to work OK...
 
-	char buf[32];
+	char buf[64];
 	bool success = false;
 	
-	//RC2x15AUART->flush();
-	RC2x15AUART->end();
-	delay(100);
-	RC2x15AUART->begin(115200, SERIAL_8N1, 18, 17);
-	if (!RC2x15AUART)
+	// Clear any incomming data:
+	while (RC2x15AUART->available())
 	{
-		MCCStatus.RC2x15AUARTStatus = false;
-		_PL("Failed to initialize RC2x15ASerial")
+		RC2x15AUART->read();
 	}
-	else
-	{
-		MCCStatus.RC2x15AUARTStatus = true;
-		// Test UART link to motor controller:
-		success = RC2x15A->ReadVersion(PSAddress, buf);
-	}
+
+	_PL("RC2x15AUART re-initializing")
+
+	// Test UART link to motor controller:
+	RC2x15AUART->flush(true);
+	success = RC2x15A->ReadVersion(PSAddress, buf);
+	_PL(buf)
+
+	//RC2x15AUART->end();
+	//delay(100);
+	//RC2x15AUART->begin(115200, SERIAL_8N1, 18, 17);
+	//if (!RC2x15AUART)
+	//{
+	//	MCCStatus.RC2x15AUARTStatus = false;
+	//	_PL("Failed to initialize RC2x15ASerial")
+	//}
+	//else
+	//{
+	//	MCCStatus.RC2x15AUARTStatus = true;
+	//	// Test UART link to motor controller:
+	//	success = RC2x15A->ReadVersion(PSAddress, buf);
+	//}
+
 	return success;
 }
 
@@ -191,21 +198,41 @@ void RC2x15AMCClass::Update()
 			//current draw to nil
 			// SOLUTION: Set duty cycle for both motors to 0:
 			success = RC2x15A->DutyM1M2(PSAddress, 0, 0);
+			////Test code:
+			//if (!success)
+			//{
+			//	_PL("RC2x15A->DutyM1M2(PSAddress, 0, 0) FAILED in RC2x15AMCClass::Update()")
+			//}
 			//RC2x15A->SpeedM1M2(PSAddress, 0, 0);
 		}
 		else
 		{
 			success = Drive(newSpeed, newTurnRate);
+			////Test code:
+			//if (!success)
+			//{
+			//	_PL("Drive(newSpeed, newTurnRate) FAILED in RC2x15AMCClass::Update()")
+			//}
 		}
 	}
 	else
 	{
 		success = ReadStatus();
+		////Test code:
+		//if (!success)
+		//{
+		//	_PL("ReadStatus() FAILED in RC2x15AMCClass::Update()")
+		//}
 	}
 	LastSpeedSetting = newSpeed;
 	LastTurnRateSetting = newTurnRate;
 
-	MCCStatus.RC2x15AMCStatus = success;
+	if (!success)
+	{
+		success = ResetUARTLink();
+	}
+
+	MCCStatus.RC2x15AUARTStatus = success;
 }
 
 /// <summary>
@@ -226,12 +253,12 @@ bool RC2x15AMCClass::Drive(float speed, float turnRate)
 	bool success = false;
 
 	//TODO: Convert these to global constants:
-	uint32_t lMotorFullSpeedQPPS = 7000;
-	uint32_t rMotorFullSpeedQPPS = 7000;
+	uint32_t lMotorFullSpeedQPPS = 7500;
+	uint32_t rMotorFullSpeedQPPS = 7500;
 
 	// Convert commanded speed and turn rate into motor speeds (qpps - quadrature pulses per second)
-	int32_t lMotorSpeed = 0 - speed / 100.0f * lMotorFullSpeedQPPS;
-	int32_t rMotorSpeed = 0 - speed / 100.0f * rMotorFullSpeedQPPS;
+	int32_t lMotorSpeed = speed / 100.0f * lMotorFullSpeedQPPS;
+	int32_t rMotorSpeed = speed / 100.0f * rMotorFullSpeedQPPS;
 	
 	int32_t turnDifferentialQPPS = 0;
 	if (abs(speed) > GAMMA)

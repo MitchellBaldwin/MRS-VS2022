@@ -39,7 +39,7 @@ Task UpdateLocalDisplayTask((UpdateLocalDisplayInterval* TASK_MILLISECOND), TASK
 
 constexpr auto UpdateMotorControllerInterval = 100;
 void UpdateMotorControllerCallback();
-Task GetMotContStatusTask((UpdateMotorControllerInterval* TASK_MILLISECOND), TASK_FOREVER, &UpdateMotorControllerCallback, &MainScheduler, false);
+Task UpdateMotorControllerTask((UpdateMotorControllerInterval* TASK_MILLISECOND), TASK_FOREVER, &UpdateMotorControllerCallback, &MainScheduler, false);
 
 #include "src/DEBUG Macros.h"
 #include "src/MCCStatus.h"
@@ -65,7 +65,7 @@ void setup()
 	_PL("");
 
 	// Initialize motor controller:
-	MCCStatus.RC2x15AMCStatus = RC2x15AMC.Init();
+	MCCStatus.RC2x15AUARTStatus = RC2x15AMC.Init();
 
 	pinMode(HeartbeatLEDPin, OUTPUT);
 	sprintf(buf, "Heartbeat LED on GPIO%02D", HeartbeatLEDPin);
@@ -153,8 +153,8 @@ void setup()
 	}
 	UpdateLocalDisplayTask.enable();
 
-	GetMotContStatusTask.enable();
-	if (MCCStatus.RC2x15AMCStatus)
+	UpdateMotorControllerTask.enable();
+	if (MCCStatus.RC2x15AUARTStatus)
 	{
 		UpdateMotorControllerCallback();
 		UpdateMotorControllerCallback();
@@ -165,7 +165,6 @@ void setup()
 		UpdateMotorControllerCallback();
 		UpdateMotorControllerCallback();
 	}
-	//GetMotContStatusTask.disable();
 
 	ToggleBuiltinLEDTask.enable();
 }

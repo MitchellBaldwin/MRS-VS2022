@@ -57,7 +57,7 @@ void LocalDisplayClass::DrawSYSPage()
 		tft.drawString(buf, 2, 30);
 
 		tft.setTextDatum(CR_DATUM);
-		sprintf(buf, "UART1 %s", MCCStatus.RC2x15AUARTStatus ? "OK" : "NO");
+		sprintf(buf, "RC2x15AUART %s", MCCStatus.RC2x15AUARTStatus ? "OK" : "NO");
 		tft.drawString(buf, tft.width() / 2 - 2, 30);
 
 		tft.setTextColor(TFT_PINK);
@@ -114,7 +114,7 @@ void LocalDisplayClass::DrawSYSPage()
 
 	// Display status of motor controller
 	cursorY += 10;
-	if (MCCStatus.RC2x15AMCStatus)
+	if (MCCStatus.RC2x15AUARTStatus)
 	{
 		tft.setTextColor(TFT_GREEN, TFT_BLACK, true);
 		sprintf(buf, "RC2x15A connected   ");
