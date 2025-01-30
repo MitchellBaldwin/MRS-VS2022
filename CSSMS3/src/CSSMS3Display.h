@@ -20,14 +20,100 @@
 	#include "WProgram.h"
 #endif
 
+#include "CSSMS3Status.h"
+#include <TFT_eSPI.h>
+
+constexpr byte DefaultDisplayBrightness = 128;
+
 class CSSMS3Display
 {
- protected:
+public:
+	enum Pages
+	{
+		SYS,
+		COM,
+		DBG,
+
+		NONE
+	};
+
+protected:
+	char buf[64];
+
+	TFT_eSPI tft = TFT_eSPI();
+	static byte Brightness;
+
+	static Pages currentPage;
+	Pages lastPage = NONE;				// Aid to determine when a complete page redraw is needed
+
+	const char* PageTitles[NONE] =
+	{
+		"  System",
+		"   Comms",
+		"   Debug",
+
+	};
+
+	const char* ComModeHeadings[CSSMS3StatusClass::ComModes::NoComs] =
+	{
+		"MRS RC MCC UART1",
+		"Direct WiFi/TCP ",
+		"Direct ESP-NOW  ",
+	};
+
+	const char* DriveModeHeadings[CSSMDrivePacket::DriveModes::NoDriveMode] =
+	{
+		"DRIVE  ",
+		"HDG    ",
+		"WPT    ",
+		"SEQ    ",
+		"DRV L/R",
+		"DRV T/w",
+	};
+
+	void DrawPageHeaderAndFooter();
+	void DrawSYSPage();
+	void DrawCOMPage();
+	void DrawDBGPage();
+
+	void DrawNONEPage();
 
 
- public:
+public:
+	enum Commands
+	{
+		Clear,
+		Refresh,
+		SYSPage,
+		COMPage,
+		DBGPage,
+		I2CScan,
+
+		Prev,
+		Next,
+
+		Last
+	};
+
 	bool Init();
+
+	bool Test();
 	void Update();
+	void Control(uint8_t command);
+
+	void SetCurrentPage(Pages page);
+	Pages GetCurrentPage();
+	void RefreshCurrentPage();
+	void RefreshPage(Pages page);
+	static void PrevPage(byte value);
+	static void NextPage(byte value);
+
+	TFT_eSPI* GetTFT();
+	byte GetDisplayBrightness();
+	static void SetDisplayBrightness(byte brightness);
+
+	void AddDebugTextLine(String newLine);
+	void ReportHeapStatus();
 
 };
 

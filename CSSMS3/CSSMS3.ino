@@ -56,7 +56,7 @@ constexpr long SendCSSMPacketInterval = 300;
 void SendCSSMPacketCallback();
 Task SendCSSMPacketTask((SendCSSMPacketInterval* TASK_MILLISECOND), TASK_FOREVER, &SendCSSMPacketCallback, &MainScheduler, false);
 
-#include "src/CSSMStatus.h"
+#include "src/CSSMS3Status.h"
 #include <I2CBus.h>
 
 #include <esp_now.h>
@@ -75,12 +75,12 @@ void setup()
 	USBSerial.begin(115200);
 	if (!USBSerial)
 	{
-		CSSMStatus.UART0Status = false;
+		CSSMS3Status.UART0Status = false;
 		HeartbeatLEDTogglePeriod = NoSerialHeartbeatLEDToggleInterval;
 	}
 	else
 	{
-		CSSMStatus.UART0Status = true;
+		CSSMS3Status.UART0Status = true;
 		HeartbeatLEDTogglePeriod = NormalHeartbeatLEDToggleInterval;
 		_PL();
 	}
@@ -88,12 +88,12 @@ void setup()
 	IDCSerial.begin(115200, SERIAL_8N1, GPIO_NUM_18, GPIO_NUM_17);
 	if (!IDCSerial)
 	{
-		CSSMStatus.UART1Status = false;
+		CSSMS3Status.UART1Status = false;
 	}
 	else
 	{
-		CSSMStatus.UART1Status = true;
-		CSSMStatus.ComMode = CSSMStatusClass::ComModes::IDCPktSerial;
+		CSSMS3Status.UART1Status = true;
+		CSSMS3Status.ComMode = CSSMS3StatusClass::ComModes::IDCPktSerial;
 	}
 
 	pinMode(HeartbeatLEDPin, OUTPUT);
@@ -111,9 +111,9 @@ void setup()
 	}
 
 	// Initialize WiFi and update display to confirm success:
-	CSSMStatus.WiFiStatus = false;
-	CSSMStatus.WiFiStatus = ESP32WiFi.Init(false);
-	CSSMStatus.ComMode = CSSMStatusClass::ComModes::WiFiTCP;
+	CSSMS3Status.WiFiStatus = false;
+	CSSMS3Status.WiFiStatus = ESP32WiFi.Init(false);
+	CSSMS3Status.ComMode = CSSMS3StatusClass::ComModes::WiFiTCP;
 
 	uint8_t mac[6];
 	WiFi.macAddress(mac);
@@ -127,15 +127,15 @@ void setup()
 	// Set device as a Wi-Fi Station; turns WiFi radio ON:
 	WiFi.mode(WIFI_MODE_APSTA);
 
-	CSSMStatus.ESPNOWStatus = (esp_now_init() == ESP_OK);
-	if (!CSSMStatus.ESPNOWStatus) {
+	CSSMS3Status.ESPNOWStatus = (esp_now_init() == ESP_OK);
+	if (!CSSMS3Status.ESPNOWStatus) {
 		_PL("Error initializing ESP-NOW")
 	}
 	else
 	{
 		_PL("Initializing ESP-NOW")
 
-			CSSMStatus.ComMode = CSSMStatusClass::ComModes::ESPNOW;
+			CSSMS3Status.ComMode = CSSMS3StatusClass::ComModes::ESPNOW;
 
 		// Register OnDataSent callback
 		esp_now_register_send_cb(OnMRSMCCDataSent);
@@ -150,6 +150,33 @@ void setup()
 		{
 			_PL("Failed to add peer")
 		}
+	}
+
+	if (cssmS3Controls.Init())
+	{
+		_PL("CSSMControls initialized successfully");
+	}
+	else
+	{
+		_PL("CSSMControls initialization FAILED");
+	}
+	ReadControlsTask.enable();
+
+	if (cssmS3Display.Init())
+	{
+		CSSMS3Status.LocalDisplayStatus = true;
+		_PL("Local Display initialized successfully");
+	}
+	else
+	{
+		CSSMS3Status.LocalDisplayStatus = false;
+		_PL("Local Display initialization FAIL");
+	}
+	UpdateDisplayTask.enable();
+
+	if (CSSMS3Status.ESPNOWStatus)
+	{
+		SendCSSMPacketTask.enable();
 	}
 
 	ToggleHeartbeatLEDTask.setInterval(HeartbeatLEDTogglePeriod * TASK_MILLISECOND);
@@ -168,12 +195,12 @@ void ToggleHeartbeatLEDCallback()
 
 void ReadControlsCallback()
 {
-
+	cssmS3Controls.Update();
 }
 
 void UpdateDisplayCallback()
 {
-
+	cssmS3Display.Update();
 }
 
 void SendCSSMPacketCallback()
@@ -183,7 +210,7 @@ void SendCSSMPacketCallback()
 
 	esp_err_t result = ESP_OK;
 
-	result = esp_now_send(MRSMCCMAC, (uint8_t*)&CSSMStatus.cssmDrivePacket, sizeof(CSSMStatus.cssmDrivePacket));
+	result = esp_now_send(MRSMCCMAC, (uint8_t*)&CSSMS3Status.cssmDrivePacket, sizeof(CSSMS3Status.cssmDrivePacket));
 
 	if (result != ESP_NOW_SEND_SUCCESS)
 	{
@@ -196,11 +223,11 @@ void OnMRSMCCDataSent(const uint8_t* mac_addr, esp_now_send_status_t status)
 {
 	char buf[64];
 
-	CSSMStatus.ESPNOWStatus = (status == ESP_NOW_SEND_SUCCESS);
-	if (CSSMStatus.ESPNOWStatus)
+	CSSMS3Status.ESPNOWStatus = (status == ESP_NOW_SEND_SUCCESS);
+	if (CSSMS3Status.ESPNOWStatus)
 	{
-		CSSMStatus.ESPNOWPacketSentCount++;
-		CSSMStatus.SendRetries = 0;
+		CSSMS3Status.ESPNOWPacketSentCount++;
+		CSSMS3Status.SendRetries = 0;
 	}
 	else
 	{
@@ -208,15 +235,15 @@ void OnMRSMCCDataSent(const uint8_t* mac_addr, esp_now_send_status_t status)
 		////TODO: Need to change this to base test on whether sufficient time is left in the current task cycle to retry
 		////Consider defining a MAX_RETRIES parameter to limit the number of potential retries and so limit the time use on retries.  
 		//if (millis() < NextPacketSendTime + SendCSSMPacketInterval)
-		//	if (CSSMStatus.SendRetries < MaxCSSMSendRetries)
+		//	if (CSSMS3Status.SendRetries < MaxCSSMSendRetries)
 		//	{
 		//		// Try to re-send:
-		//		CSSMStatus.SendRetries++;
+		//		CSSMS3Status.SendRetries++;
 		//		SendCSSMPacketCallback();
 		//	}
 		//	else
 		//	{
-		//		CSSMStatus.SendRetries = 0;
+		//		CSSMS3Status.SendRetries = 0;
 		//		_PL("ESP-NOW data send FAIL")
 		//	}
 	}

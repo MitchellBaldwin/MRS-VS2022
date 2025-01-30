@@ -1,5 +1,5 @@
-/*	CSSMStatus.h
-*	CSSMStatusClass - Base class for module level status and parameters
+/*	CSSMS3Status.h
+*	CSSMS3StatusClass - Base class for module level status and parameters
 *
 *
 *
@@ -20,12 +20,16 @@
 	#include "WProgram.h"
 #endif
 
+constexpr uint8_t MAX_DEBUG_TEXT_LINES = 8;
+
 //#include "C:\Repos\MRS-VS2022\MRSCommon\src\CSSMDrivePacket.h"
 #include "..\..\MRSCommon\src\CSSMDrivePacket.h"
 
-class CSSMStatusClass
+class CSSMS3StatusClass
 {
 protected:
+	char buf[64];
+	uint8_t curDebugTextLine = 0x00;
 
 
 public:
@@ -57,6 +61,9 @@ public:
 	int ESPNOWPacketSentCount = 0;
 	uint16_t SendRetries = 0;
 
+	uint32_t CSSMPacketReceivedCount = 0;
+	uint32_t SaveCSSMPacketReceivedCount = 0;
+	bool CSSMESPNOWLinkStatus = false;
 	bool WiFiStatus = false;
 	 
 	bool LocalDisplayStatus = false;
@@ -66,10 +73,16 @@ public:
 	
 	bool IMUStatus = false;
 
+	String debugTextLines[MAX_DEBUG_TEXT_LINES];
+
 	void Init();
+	void Update();
+	void AddDebugTextLine(String newLine);
+	void ClearDebugText();
+
 };
 
-extern CSSMStatusClass CSSMStatus;
+extern CSSMS3StatusClass CSSMS3Status;
 
 #endif
 

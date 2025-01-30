@@ -8,7 +8,7 @@
 #include <DEBUG Macros.h>
 
 #ifdef _DEBUG_
-#include "CSSMStatus.h"
+#include "CSSMS3Status.h"
 #endif
 
 BME280DataClass::BME280DataClass()
@@ -74,7 +74,7 @@ bool BME280DataClass::Init()
 	{
 		char buf[32];
 		_PP(F("\BME280 initialization failed; "));
-		snprintf(buf, 31, "Firmware version: %02d.%02d", CSSMStatus.MajorVersion, CSSMStatus.MinorVersion);
+		snprintf(buf, 31, "Firmware version: %02d.%02d", CSSMS3Status.MajorVersion, CSSMS3Status.MinorVersion);
 		_PL(buf);
 	}
 	else

@@ -64,10 +64,12 @@ protected:
 
 	const char* DriveModeHeadings[CSSMDrivePacket::DriveModes::NoDriveMode] =
 	{
-		"DRIVE",
-		" HDG ",
-		" WPT ",
-		" SEQ ",
+		"DRIVE  ",
+		"HDG    ",
+		"WPT    ",
+		"SEQ    ",
+		"DRV L/R",
+		"DRV T/w",
 	};
 
 	void DrawPageHeaderAndFooter();

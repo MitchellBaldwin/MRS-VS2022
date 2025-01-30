@@ -124,9 +124,10 @@ bool RC2x15AMCClass::ReadStatus()
 		MCCStatus.mcStatus.SPEEDSValid = success;
 		break;
 	case MCParamTypes::NoType:
-		// Include a call to Drive in the rotation to ensure, in particular, that stop commands
+		// Include a call to DriveThrottleTurnRate in the rotation to ensure, in particular, that stop commands
 		//get through:
-		success = Drive(MCCStatus.cssmDrivePacket.Throttle, MCCStatus.cssmDrivePacket.OmegaXY);
+		//success = DriveThrottleTurnRate(MCCStatus.cssmDrivePacket.Speed, MCCStatus.cssmDrivePacket.OmegaXY);
+		success = true;
 		break;
 	default:
 		success = true;
@@ -178,54 +179,58 @@ bool RC2x15AMCClass::ResetUARTLink()
 	return success;
 }
 
+bool RC2x15AMCClass::DriveSettingsChanged()
+{
+	return (abs(MCCStatus.cssmDrivePacket.Speed - MCCStatus.lastCSSMDrivePacket.Speed) >= GAMMA 
+			|| abs(MCCStatus.cssmDrivePacket.OmegaXY - MCCStatus.lastCSSMDrivePacket.OmegaXY) >= GAMMA
+			|| abs(MCCStatus.cssmDrivePacket.LThrottle - MCCStatus.lastCSSMDrivePacket.LThrottle) >= GAMMA
+			|| abs(MCCStatus.cssmDrivePacket.RThrottle - MCCStatus.lastCSSMDrivePacket.RThrottle) >= GAMMA);
+}
+
 void RC2x15AMCClass::Update()
 {
-	// Determine whether drive commands have changed since the last cycle and, if so, update and send
-	//the new speed and turn rate settings to the motor controller.  Otherwise, request the next 
-	//motor controller parameter update.
-
 	bool success = false;
-	float newSpeed = MCCStatus.cssmDrivePacket.Throttle;
-	float newTurnRate = MCCStatus.cssmDrivePacket.OmegaXY;
-	if (abs(newSpeed - LastSpeedSetting) >= GAMMA || abs(newTurnRate - LastTurnRateSetting) >= GAMMA)
+
+	// Determine the Drive method to use based on the current 
+	switch (MCCStatus.cssmDrivePacket.DriveMode)
 	{
-		if (abs(newSpeed) < GAMMA && abs(newTurnRate) < GAMMA)
+	case CSSMDrivePacket::DriveModes::DRV:
+		// Determine whether drive commands have changed since the last cycle and, if so, update and send
+		//the new speed and turn rate settings to the motor controller.  Otherwise, request the next 
+		//motor controller parameter update.
+		if (DriveSettingsChanged())
 		{
-			//TODO: Determine how to not only stop the motors but cut breaking current, too.
-			// Configure pin S3 as "E-Stop" - connecting to GND stops motors and cuts current to nil.
-			// Setting speeds to 0 stops the motors but there is a significant residual current draw
-			//clicking the "STOP ALL" button in the Basic Micro Motion Studio application cuts
-			//current draw to nil
-			// SOLUTION: Set duty cycle for both motors to 0:
-			success = RC2x15A->DutyM1M2(PSAddress, 0, 0);
-			////Test code:
-			//if (!success)
-			//{
-			//	_PL("RC2x15A->DutyM1M2(PSAddress, 0, 0) FAILED in RC2x15AMCClass::Update()")
-			//}
-			//RC2x15A->SpeedM1M2(PSAddress, 0, 0);
+			success = DriveThrottleTurnRate(MCCStatus.cssmDrivePacket.Speed, MCCStatus.cssmDrivePacket.OmegaXY);
 		}
 		else
 		{
-			success = Drive(newSpeed, newTurnRate);
-			////Test code:
-			//if (!success)
-			//{
-			//	_PL("Drive(newSpeed, newTurnRate) FAILED in RC2x15AMCClass::Update()")
-			//}
+			success = ReadStatus();
 		}
+		break;
+	case CSSMDrivePacket::DriveModes::HDG:
+		// Test code for new CSSMS3 module:
+		if (DriveSettingsChanged())
+		{
+			success = DriveLRThrottle(MCCStatus.cssmDrivePacket.LThrottle, MCCStatus.cssmDrivePacket.RThrottle);
+		}
+		else
+		{
+			success = ReadStatus();
+		}
+		break;
+		//success = ReadStatus();
+		break;
+	case CSSMDrivePacket::DriveModes::WPT:
+
+		break;
+	case CSSMDrivePacket::DriveModes::SEQ:
+
+		break;
+	default:
+		break;
 	}
-	else
-	{
-		success = ReadStatus();
-		////Test code:
-		//if (!success)
-		//{
-		//	_PL("ReadStatus() FAILED in RC2x15AMCClass::Update()")
-		//}
-	}
-	LastSpeedSetting = newSpeed;
-	LastTurnRateSetting = newTurnRate;
+
+	MCCStatus.lastCSSMDrivePacket = MCCStatus.cssmDrivePacket;	// Using default C++ copy mechanism
 
 	if (!success)
 	{
@@ -236,10 +241,33 @@ void RC2x15AMCClass::Update()
 }
 
 /// <summary>
-/// Most basic differential drive implementation, 
+/// Standard drive implementation given commanded ground speed and turn rate
 /// Converts commanded speed and trun rate values into motor speed settings for the left and right drive motors
+/// Implements reverse kinematic equations to turn speed and turn rate settings from navigation systems into the
+/// motor controller commands needed to move the MRS to the navigation target
 /// </summary>
 /// <param name="speed">
+/// Commanded speed of MRS drive center point in ±mm/s
+/// </param>
+/// <param name="turnRate">
+/// Commanded turn rate about the instantaneous center of curvature (ICC) in ±rad/s
+/// </param>
+/// <returns>
+/// Returns success reported by serial communication with the RoboClaw 2x15A motor controller
+///	</returns>
+bool RC2x15AMCClass::Drive(float speed, float turnRate)
+{
+	bool success = false;
+
+	return success;
+}
+
+/// <summary>
+/// Simple differential drive implementation
+/// Converts commanded throttle and trun rate values, each as a percentage of their full speed values, 
+/// into motor speed settings for the left and right drive motors
+/// </summary>
+/// <param name="throttle">
 /// Commanded speed as a percent of full speed (-100% to +100%)
 /// </param>
 /// <param name="turnRate">
@@ -248,20 +276,16 @@ void RC2x15AMCClass::Update()
 /// <returns>
 /// Returns success reported by serial communication with the RoboClaw 2x15A motor controller
 /// </returns>
-bool RC2x15AMCClass::Drive(float speed, float turnRate)
+bool RC2x15AMCClass::DriveThrottleTurnRate(float throttle, float turnRate)
 {
 	bool success = false;
 
-	//TODO: Convert these to global constants:
-	uint32_t lMotorFullSpeedQPPS = 7500;
-	uint32_t rMotorFullSpeedQPPS = 7500;
-
 	// Convert commanded speed and turn rate into motor speeds (qpps - quadrature pulses per second)
-	int32_t lMotorSpeed = speed / 100.0f * lMotorFullSpeedQPPS;
-	int32_t rMotorSpeed = speed / 100.0f * rMotorFullSpeedQPPS;
+	int32_t lMotorSpeed = throttle / 100.0f * lMotorFullSpeedQPPS;
+	int32_t rMotorSpeed = throttle / 100.0f * rMotorFullSpeedQPPS;
 	
 	int32_t turnDifferentialQPPS = 0;
-	if (abs(speed) > GAMMA)
+	if (abs(throttle) > GAMMA)
 	{
 		// Blend commanded turn rate with forward / backward commanded speed:
 		int32_t avgMotorSpeedQPPS = (lMotorSpeed + rMotorSpeed) / 2;
@@ -279,10 +303,61 @@ bool RC2x15AMCClass::Drive(float speed, float turnRate)
 	lMotorSpeed -= turnDifferentialQPPS;
 	rMotorSpeed += turnDifferentialQPPS;
 
-	success = RC2x15A->SpeedM1M2(PSAddress, lMotorSpeed, rMotorSpeed);
+	if (abs(lMotorSpeed) < 1 && abs(rMotorSpeed) < 1)
+	{
+		success = RC2x15A->DutyM1M2(PSAddress, 0, 0);
+	}
+	else
+	{
+		success = RC2x15A->SpeedM1M2(PSAddress, lMotorSpeed, rMotorSpeed);
+	}
 
 	MCCStatus.mcStatus.M1SpeedSetting = lMotorSpeed;
 	MCCStatus.mcStatus.M2SpeedSetting = rMotorSpeed;
+
+	return success;
+}
+
+/// <summary>
+/// Most basic differential drive implementation
+/// Converts commanded left and right throttle settings, each as a percentage of their full speed values, 
+/// into motor speed settings for the left and right drive motors
+/// </summary>
+/// <param name="lThrottle">
+/// Left throttle setting as a percent of full throttle (-100% to +100%)
+/// </param>
+/// <param name="rThrottle">
+/// Right throttle setting as a percent of full throttle (-100% to +100%)
+/// </param>
+/// <returns>
+/// Returns success reported by serial communication with the RoboClaw 2x15A motor controller
+/// </returns>
+bool RC2x15AMCClass::DriveLRThrottle(float lThrottle, float rThrottle)
+{
+	bool success = false;
+
+	// Convert provided throttle settings into motor speeds (qpps - quadrature pulses per second)
+	int32_t lMotorSpeed = lThrottle / 100.0f * lMotorFullSpeedQPPS;
+	int32_t rMotorSpeed = rThrottle / 100.0f * rMotorFullSpeedQPPS;
+
+	if (abs(lMotorSpeed) < 1 && abs(rMotorSpeed) < 1)
+	{
+		success = RC2x15A->DutyM1M2(PSAddress, 0, 0);
+	}
+	else
+	{
+		success = RC2x15A->SpeedM1M2(PSAddress, rMotorSpeed, lMotorSpeed);
+	}
+
+	MCCStatus.mcStatus.M1SpeedSetting = rMotorSpeed;
+	MCCStatus.mcStatus.M2SpeedSetting = lMotorSpeed;
+
+	return success;
+}
+
+bool RC2x15AMCClass::DriveLRTrackSpeed(float leftTrackSpeed, float rightTrackSpeed)
+{
+	bool success = false;
 
 	return success;
 }

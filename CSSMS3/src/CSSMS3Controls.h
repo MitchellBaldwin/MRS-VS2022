@@ -37,10 +37,19 @@ protected:
 	byte LThrottlePin = defaultLThrottlePin;
 	byte RThrottlePin = defaultRThrottlePin;
 
+	MeasurementClass KPVoltage;			// Analog voltage from keypad ladder button array
+	MeasurementClass LThrottleSetting;	// -100.0 tp 100.0 % left slide throttle setting
+	MeasurementClass RThrottleSetting;	// -100.0 tp 100.0 % right slide throttle setting
+
 	float ThrottleDeadZone = 5.0f;				// +/- % dead zone applied around zero (for both throttles)
 
 	esp_adc_cal_characteristics_t ADC1Chars;
 	uint32_t ReadCalibratedADC1(int rawADC1);	// Returns calibrated ADC1 measurement in mV
+
+	float GetLThrottleActual();			// Get unmasked left throttle setting
+	float GetLThrottle();				// Get left throttle setting adjusted for dead zone(s)
+	float GetRThrottleActual();			// Get unmasked right throttle setting
+	float GetRThrottle();				// Get right throttle setting adjusted for dead zone(s)
 
 
 public:

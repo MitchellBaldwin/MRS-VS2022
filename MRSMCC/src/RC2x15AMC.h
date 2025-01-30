@@ -25,6 +25,8 @@
 
 constexpr uint8_t RC2x15AAddress = 0x80;
 constexpr float GAMMA = 0.10f;
+constexpr uint32_t lMotorFullSpeedQPPS = 7500;
+constexpr uint32_t rMotorFullSpeedQPPS = 7500;
 
 class RC2x15AMCClass
 {
@@ -46,16 +48,20 @@ protected:
 	HardwareSerial* RC2x15AUART;			// Packet serial link to RoboClaw 2x15A Motor Controller
 	RoboClaw* RC2x15A;
 	uint8_t PSAddress = RC2x15AAddress;		// RoboClaw MC address for Packet Serial communications
-	float LastSpeedSetting = 0.0f;			// For use determining whether drive commands have changed
-	float LastTurnRateSetting = 0.0f;
+	//float LastSpeedSetting = 0.0f;			// For use determining whether drive commands have changed
+	//float LastTurnRateSetting = 0.0f;
 
 public:
 	bool Init();
 	bool ReadStatus();
 	bool ResetUARTLink();
 
+	bool DriveSettingsChanged();
 	void Update();
 	bool Drive(float speed, float turnRate);
+	bool DriveThrottleTurnRate(float throttle, float turnRate);
+	bool DriveLRThrottle(float lThrottle, float rThrottle);
+	bool DriveLRTrackSpeed(float leftTrackSpeed, float rightTrackSpeed);
 
 };
 

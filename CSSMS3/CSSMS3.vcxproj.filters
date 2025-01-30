@@ -21,7 +21,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CSSMS3.ino" />
-    <ClCompile Include="src\CSSMStatus.cpp">
+    <ClCompile Include="src\CSSMS3Status.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\BME280Data.cpp">
@@ -47,10 +47,7 @@
     <ClInclude Include="__vm\.CSSMS3.vsarduino.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\CSSMStatus.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\MRSCommon\src\CSSMDrivePacket.h">
+    <ClInclude Include="src\CSSMS3Status.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\BME280Data.h">

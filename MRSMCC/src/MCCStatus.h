@@ -71,6 +71,7 @@ class MCCStatusClass
 	 String debugTextLines[MAX_TEXT_LINES];
 
 	 CSSMDrivePacket cssmDrivePacket;
+	 CSSMDrivePacket lastCSSMDrivePacket;
 	 bool RC2x15AMCStatus = false;
 	 RC2x15AMCStatusPacket mcStatus;
 

@@ -102,12 +102,33 @@ void LocalDisplayClass::DrawSYSPage()
 	tft.setTextDatum(CL_DATUM);
 	int16_t cursorY = tft.height() / 2 - 20;
 	tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);	//DONE: Does bgfill = true work with the print() method? -> Yes, newly printed text clears the background
-	sprintf(buf, "%s HDG %+04d CRS %+04d wXY %+6.1f%% THR %+6.1f%% ", 
-		DriveModeHeadings[MCCStatus.cssmDrivePacket.DriveMode], 
-		MCCStatus.cssmDrivePacket.HeadingSetting, 
-		MCCStatus.cssmDrivePacket.CourseSetting, 
-		MCCStatus.cssmDrivePacket.OmegaXY, 
-		MCCStatus.cssmDrivePacket.Throttle);
+	switch (MCCStatus.cssmDrivePacket.DriveMode)
+	{
+	case CSSMDrivePacket::DriveModes::DRV:
+		sprintf(buf, "%s HDG %+04d CRS %+04d wXY %+6.1f%% THR %+6.1f%% ", 
+			DriveModeHeadings[MCCStatus.cssmDrivePacket.DriveMode], 
+			MCCStatus.cssmDrivePacket.HeadingSetting, 
+			MCCStatus.cssmDrivePacket.CourseSetting, 
+			MCCStatus.cssmDrivePacket.OmegaXY, 
+			MCCStatus.cssmDrivePacket.Speed);
+		break;
+	case CSSMDrivePacket::DriveModes::HDG:
+		sprintf(buf, "%s HDG %+04d CRS %+04d LThr %+06.1f%% RThr %+06.1f%% ", 
+			DriveModeHeadings[MCCStatus.cssmDrivePacket.DriveMode], 
+			MCCStatus.cssmDrivePacket.HeadingSetting, 
+			MCCStatus.cssmDrivePacket.CourseSetting, 
+			MCCStatus.cssmDrivePacket.LThrottle, 
+			MCCStatus.cssmDrivePacket.RThrottle);
+		break;
+	case CSSMDrivePacket::DriveModes::WPT:
+
+		break;
+	case CSSMDrivePacket::DriveModes::SEQ:
+
+		break;
+	default:
+			break;
+	}
 	tft.drawString(buf, 2, cursorY);
 
 	//tft.drawString(MCCStatus.IncomingCSSMPacketMACString, 2, 70);
@@ -132,18 +153,18 @@ void LocalDisplayClass::DrawSYSPage()
 	tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK, true);
 	if (MCCStatus.mcStatus.VBATValid)
 	{
-		sprintf(buf, "Vbat: %4.1f  T1: %4.1f°C  T2: %4.1f°C", MCCStatus.mcStatus.SupBatV, MCCStatus.mcStatus.Temp1, MCCStatus.mcStatus.Temp2);
+		sprintf(buf, "Vbat: %4.1f  T2: %4.1f°C  T1: %4.1f°C", MCCStatus.mcStatus.SupBatV, MCCStatus.mcStatus.Temp2, MCCStatus.mcStatus.Temp1);
 	}
 	else
 	{
-		sprintf(buf, "Vbat: ----  T1: ----°C  T2: ----°C");
+		sprintf(buf, "Vbat: ----  T2: ----°C  T1: ----°C");
 	}
 	tft.drawString(buf, 2, cursorY);
 		
 	cursorY += 10;
 	if (MCCStatus.mcStatus.ENCPOSValid)
 	{
-		sprintf(buf, "POS: %12d %12d qp", MCCStatus.mcStatus.M1Encoder, MCCStatus.mcStatus.M2Encoder);
+		sprintf(buf, "POS: %12d %12d qp", MCCStatus.mcStatus.M2Encoder, MCCStatus.mcStatus.M1Encoder);
 	}
 	else
 	{
@@ -154,7 +175,7 @@ void LocalDisplayClass::DrawSYSPage()
 	cursorY += 10;
 	if (MCCStatus.mcStatus.SPEEDSValid)
 	{
-		sprintf(buf, "SPD: %+5d(%+5d) %+5d(%+5d) qpps", MCCStatus.mcStatus.M1Speed, MCCStatus.mcStatus.M1SpeedSetting, MCCStatus.mcStatus.M2Speed, MCCStatus.mcStatus.M2SpeedSetting);
+		sprintf(buf, "SPD: %+5d(%+5d) %+5d(%+5d) qpps", MCCStatus.mcStatus.M2Speed, MCCStatus.mcStatus.M2SpeedSetting, MCCStatus.mcStatus.M1Speed, MCCStatus.mcStatus.M1SpeedSetting);
 	}
 	else
 	{
@@ -165,7 +186,7 @@ void LocalDisplayClass::DrawSYSPage()
 	cursorY += 10;
 	if (MCCStatus.mcStatus.IMOTValid)
 	{
-		sprintf(buf, "Cur: %12.2f %12.2f A", MCCStatus.mcStatus.M1Current, MCCStatus.mcStatus.M2Current);
+		sprintf(buf, "Cur: %12.2f %12.2f A", MCCStatus.mcStatus.M2Current, MCCStatus.mcStatus.M1Current);
 	}
 	else
 	{

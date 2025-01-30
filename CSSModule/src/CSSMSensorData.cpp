@@ -96,7 +96,7 @@ void CSSMSensorData::Update()
 
 	newReading = analogRead(ThrottleSensePin);
 	ThrottleSetting.AddReading(newReading);
-	CSSMStatus.cssmDrivePacket.Throttle = GetThrottle();
+	CSSMStatus.cssmDrivePacket.Speed = GetThrottle();
 	
 	newReading = analogRead(ESP32VINSensePin);
 	newReading = ReadCalibratedADC1(newReading);
@@ -227,7 +227,7 @@ float CSSMSensorData::GetThrottleActual()
 }
 
 /// <summary>
-/// Get throttle setting in the  range [-100%:+100%] with center dead zone
+/// Get throttle setting in the range [-100%:+100%] with center dead zone
 /// </summary>
 /// <returns>Throttle setting adjusted for dead zone</returns>
 float CSSMSensorData::GetThrottle()

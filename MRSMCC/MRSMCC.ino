@@ -205,9 +205,6 @@ void OnMRSRCCSSMDataSent(const uint8_t* mac_addr, esp_now_send_status_t status)
 
 void OnMRSRCCSSMDataReceived(const uint8_t* mac, const uint8_t* data, int lenght)
 {
-	// Test code:
-	//_PL(millis())
-	
 	char buf[32];
 	
 	if (data[0] == 0x20)	// Packet type identifier for a CSSMDrivePacket
@@ -234,7 +231,7 @@ void OnMRSRCCSSMDataReceived(const uint8_t* mac, const uint8_t* data, int lenght
 		// While UART link is up pass CSSM steering commands to the motor controller:
 		//if (MCCStatus.RC2x15AMCStatus)
 		//{
-		//	RC2x15AMC.Drive(MCCStatus.cssmDrivePacket.Throttle, MCCStatus.cssmDrivePacket.OmegaXY);
+		//	RC2x15AMC.DriveThrottleTurnRate(MCCStatus.cssmDrivePacket.Throttle, MCCStatus.cssmDrivePacket.OmegaXY);
 		//}
 	// End of test code block
 
