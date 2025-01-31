@@ -113,6 +113,15 @@ void LocalDisplayClass::DrawSYSPage()
 			MCCStatus.cssmDrivePacket.Speed);
 		break;
 	case CSSMDrivePacket::DriveModes::HDG:
+
+		break;
+	case CSSMDrivePacket::DriveModes::WPT:
+
+		break;
+	case CSSMDrivePacket::DriveModes::SEQ:
+
+		break;
+	case CSSMDrivePacket::DriveModes::DRVLR:
 		sprintf(buf, "%s HDG %+04d CRS %+04d LThr %+06.1f%% RThr %+06.1f%% ", 
 			DriveModeHeadings[MCCStatus.cssmDrivePacket.DriveMode], 
 			MCCStatus.cssmDrivePacket.HeadingSetting, 
@@ -120,11 +129,13 @@ void LocalDisplayClass::DrawSYSPage()
 			MCCStatus.cssmDrivePacket.LThrottle, 
 			MCCStatus.cssmDrivePacket.RThrottle);
 		break;
-	case CSSMDrivePacket::DriveModes::WPT:
-
-		break;
-	case CSSMDrivePacket::DriveModes::SEQ:
-
+	case CSSMDrivePacket::DriveModes::DRVTw:
+		sprintf(buf, "%s HDG %+04d CRS %+04d wXY %+6.1f%% THR %+6.1f%% ", 
+			DriveModeHeadings[MCCStatus.cssmDrivePacket.DriveMode], 
+			MCCStatus.cssmDrivePacket.HeadingSetting, 
+			MCCStatus.cssmDrivePacket.CourseSetting, 
+			MCCStatus.cssmDrivePacket.OmegaXY, 
+			MCCStatus.cssmDrivePacket.Speed);
 		break;
 	default:
 			break;

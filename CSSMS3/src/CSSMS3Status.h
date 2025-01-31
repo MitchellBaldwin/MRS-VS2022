@@ -69,6 +69,9 @@ public:
 	bool LocalDisplayStatus = false;
 	bool DebugDisplayStatus = false;
 	 
+	bool NavEncoderStatus = false;
+	bool FuncEncoderStatus = false;
+
 	bool BME280Status = false;
 	
 	bool IMUStatus = false;

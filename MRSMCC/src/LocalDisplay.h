@@ -68,8 +68,8 @@ protected:
 		"HDG    ",
 		"WPT    ",
 		"SEQ    ",
-		"DRV L/R",
 		"DRV T/w",
+		"DRV L/R",
 	};
 
 	void DrawPageHeaderAndFooter();

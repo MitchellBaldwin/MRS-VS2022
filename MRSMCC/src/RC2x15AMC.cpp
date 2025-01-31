@@ -179,6 +179,14 @@ bool RC2x15AMCClass::ResetUARTLink()
 	return success;
 }
 
+/// <summary>
+///	Determine whether drive commands have changed since the last cycle and, if so, update and send
+///	the new speed and turn rate settings to the motor controller.  Otherwise, request the next 
+///	motor controller parameter update.
+/// /// </summary>
+/// <returns>
+/// true if any tested field of the drive command packet changed since the last cycle; otherwise false
+/// </returns>
 bool RC2x15AMCClass::DriveSettingsChanged()
 {
 	return (abs(MCCStatus.cssmDrivePacket.Speed - MCCStatus.lastCSSMDrivePacket.Speed) >= GAMMA 
@@ -195,20 +203,18 @@ void RC2x15AMCClass::Update()
 	switch (MCCStatus.cssmDrivePacket.DriveMode)
 	{
 	case CSSMDrivePacket::DriveModes::DRV:
-		// Determine whether drive commands have changed since the last cycle and, if so, update and send
-		//the new speed and turn rate settings to the motor controller.  Otherwise, request the next 
-		//motor controller parameter update.
-		if (DriveSettingsChanged())
-		{
-			success = DriveThrottleTurnRate(MCCStatus.cssmDrivePacket.Speed, MCCStatus.cssmDrivePacket.OmegaXY);
-		}
-		else
-		{
-			success = ReadStatus();
-		}
+
 		break;
 	case CSSMDrivePacket::DriveModes::HDG:
-		// Test code for new CSSMS3 module:
+
+		break;
+	case CSSMDrivePacket::DriveModes::WPT:
+
+		break;
+	case CSSMDrivePacket::DriveModes::SEQ:
+
+		break;
+	case CSSMDrivePacket::DriveModes::DRVLR:
 		if (DriveSettingsChanged())
 		{
 			success = DriveLRThrottle(MCCStatus.cssmDrivePacket.LThrottle, MCCStatus.cssmDrivePacket.RThrottle);
@@ -218,13 +224,15 @@ void RC2x15AMCClass::Update()
 			success = ReadStatus();
 		}
 		break;
-		//success = ReadStatus();
-		break;
-	case CSSMDrivePacket::DriveModes::WPT:
-
-		break;
-	case CSSMDrivePacket::DriveModes::SEQ:
-
+	case CSSMDrivePacket::DriveModes::DRVTw:
+		if (DriveSettingsChanged())
+		{
+			success = DriveThrottleTurnRate(MCCStatus.cssmDrivePacket.Speed, MCCStatus.cssmDrivePacket.OmegaXY);
+		}
+		else
+		{
+			success = ReadStatus();
+		}
 		break;
 	default:
 		break;

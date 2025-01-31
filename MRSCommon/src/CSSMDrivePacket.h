@@ -40,7 +40,7 @@ protected:
 	uint8_t PacketType = 0x20;		// Identifies packet type; fixed for all CSSMDrivePackets
 
 public:
-	DriveModes DriveMode = DriveModes::DRV;		// CSSM Drive Mode
+	DriveModes DriveMode = DriveModes::DRVLR;	// CSSM Drive Mode
 	int HeadingSetting = 0;						// Commanded HDG (0 - 359)
 	int CourseSetting = 0;						// Commanded CRS (0 - 359)
 	float OmegaXY = 0.0f;						// Commanded turn rate (±rad/s)

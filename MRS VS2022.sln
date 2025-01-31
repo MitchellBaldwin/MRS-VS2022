@@ -265,6 +265,7 @@ Global
 		DEBUG Helpers\DEBUG Helpers.vcxitems*{530244f0-94ac-4e9e-9304-7fb159b0023d}*SharedItemsImports = 4
 		..\..\Arduino\libraries\I2CBus\I2CBus.vcxitems*{5a4b0045-cda2-4498-8290-e4791807b4a3}*SharedItemsImports = 9
 		..\..\Arduino\libraries\I2CBus\I2CBus.vcxitems*{5b3473d2-4ec1-495b-8aaf-b1370260782d}*SharedItemsImports = 4
+		..\..\Arduino\libraries\TFTMenu\TFTMenu.vcxitems*{5b3473d2-4ec1-495b-8aaf-b1370260782d}*SharedItemsImports = 4
 		DEBUG Helpers\DEBUG Helpers.vcxitems*{5b3473d2-4ec1-495b-8aaf-b1370260782d}*SharedItemsImports = 4
 		MRSCommon\MRSCommon.vcxitems*{5b3473d2-4ec1-495b-8aaf-b1370260782d}*SharedItemsImports = 4
 		..\..\Arduino\libraries\I2CBus\I2CBus.vcxitems*{867e4c2f-02d5-44b0-824a-e3df16604fa6}*SharedItemsImports = 4

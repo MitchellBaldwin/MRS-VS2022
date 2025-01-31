@@ -152,7 +152,7 @@ void setup()
 		}
 	}
 
-	if (cssmS3Controls.Init())
+	if (cssmS3Controls.Init(cssmS3Display.GetTFT()))
 	{
 		_PL("CSSMControls initialized successfully");
 	}
@@ -173,6 +173,8 @@ void setup()
 		_PL("Local Display initialization FAIL");
 	}
 	UpdateDisplayTask.enable();
+
+	cssmS3Controls.MainMenu->Draw();
 
 	if (CSSMS3Status.ESPNOWStatus)
 	{

@@ -5,6 +5,7 @@
 */
 
 #include "CSSMS3Display.h"
+#include "CSSMS3Controls.h"
 #include <I2CBus.h>
 #include <WiFi.h>
 
@@ -96,13 +97,22 @@ void CSSMS3Display::DrawSYSPage()
 	tft.drawString(buf, 2, cursorY);
 
 	cursorY = tft.height() / 2 - 10;
-	tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);	//DONE: Does bgfill = true work with the print() method? -> Yes, newly printed text clears the background
+	tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);
 	sprintf(buf, "HDG %+04d CRS %+04d wXY %+06.1f%% Speed %+06.1f%% ",
 		CSSMS3Status.cssmDrivePacket.HeadingSetting,
 		CSSMS3Status.cssmDrivePacket.CourseSetting,
 		CSSMS3Status.cssmDrivePacket.OmegaXY,
 		CSSMS3Status.cssmDrivePacket.Speed);
 	tft.drawString(buf, 2, cursorY);
+
+	cursorY = tft.height() / 2 + 10;
+	tft.setTextColor(TFT_SILVER, TFT_BLACK, true);
+	sprintf(buf, "KP %4d %s", cssmS3Controls.GetKPRawADC(), cssmS3Controls.GetKPVoltageString());
+	tft.drawString(buf, 2, cursorY);
+
+	tft.setTextColor(TFT_SILVER, TFT_BLACK, true);
+	sprintf(buf, "VMCU %s", cssmS3Controls.GetMCUVoltageString());
+	tft.drawString(buf, tft.width() / 2, cursorY);
 
 }
 

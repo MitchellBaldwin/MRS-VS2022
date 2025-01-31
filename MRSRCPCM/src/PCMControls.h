@@ -84,7 +84,6 @@ public:
 
 	TFTMenuClass* MainMenu;
 	MenuItemClass* CSSMMenuItem;
-	//MenuItemClass* CSSMMenuItem1;
 	MenuItemClass* NMMenuItem;
 	MenuItemClass* BRTMenuItem;
 	MenuItemClass* NextPageMenuItem;

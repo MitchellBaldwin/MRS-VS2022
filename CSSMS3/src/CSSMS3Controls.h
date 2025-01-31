@@ -25,10 +25,41 @@
 #include "BME280Data.h"
 #include <ezButton.h>
 #include "esp_adc_cal.h"
+constexpr uint32_t defaultVRef = 1100;
 
 constexpr byte defaultKPSensePin = GPIO_NUM_1;
 constexpr byte defaultLThrottlePin = GPIO_NUM_2;
 constexpr byte defaultRThrottlePin = GPIO_NUM_3;
+constexpr byte defaultVMCUPin = GPIO_NUM_4;
+
+#include <seesaw_neopixel.h>
+#include <Adafruit_seesaw.h>
+constexpr byte SS_BUTTON = 0x18;
+constexpr byte SS_NEOPIX = 0x06;
+
+#include <AceButton.h>
+class SSButtonConfig : public ace_button::ButtonConfig
+{
+public:
+	SSButtonConfig(Adafruit_seesaw& enc) : encoder(enc)
+	{
+	}
+
+protected:
+	int readButton(uint8_t /* pin */) override
+	{
+		return encoder.digitalRead(SS_BUTTON);
+	}
+
+private:
+	Adafruit_seesaw& encoder;
+};
+
+constexpr byte defaultNavEncoderI2CAddress = 0x36;	// Left rotary encoder, used primarily for navigating controls on the display
+constexpr byte defaultFuncEncoderI2CAddress = 0x37;	// Right rotary encoder, used primarily for manipulating control settings
+
+//#include <TFT_eSPI.h>
+#include <TFTMenu.h>
 
 class CSSMS3Controls
 {
@@ -36,7 +67,9 @@ protected:
 	byte KPSensePin = defaultKPSensePin;
 	byte LThrottlePin = defaultLThrottlePin;
 	byte RThrottlePin = defaultRThrottlePin;
+	byte VMCUPin = defaultVMCUPin;
 
+	MeasurementClass VMCU;				// Analog voltage measured at the MCU battery JST connector
 	MeasurementClass KPVoltage;			// Analog voltage from keypad ladder button array
 	MeasurementClass LThrottleSetting;	// -100.0 tp 100.0 % left slide throttle setting
 	MeasurementClass RThrottleSetting;	// -100.0 tp 100.0 % right slide throttle setting
@@ -44,6 +77,22 @@ protected:
 	float ThrottleDeadZone = 5.0f;				// +/- % dead zone applied around zero (for both throttles)
 
 	esp_adc_cal_characteristics_t ADC1Chars;
+	uint32_t VRef = defaultVRef;
+
+	Adafruit_seesaw NavEncoder;
+	seesaw_NeoPixel NavNeoPix = seesaw_NeoPixel(1, SS_NEOPIX, NEO_GRB + NEO_KHZ800);
+	SSButtonConfig* NavButtonConfig;
+	ace_button::AceButton* NavButton;
+	static void HandleNavButtonEvents(ace_button::AceButton* b, uint8_t eventType, uint8_t buttonState);
+
+	Adafruit_seesaw FuncEncoder;
+	seesaw_NeoPixel FuncNeoPix = seesaw_NeoPixel(1, SS_NEOPIX, NEO_GRB + NEO_KHZ800);
+	SSButtonConfig* FuncButtonConfig;
+	ace_button::AceButton* FuncButton;
+	static void HandleFuncButtonEvents(ace_button::AceButton* b, uint8_t eventType, uint8_t buttonState);
+
+	TFT_eSPI* tft;
+
 	uint32_t ReadCalibratedADC1(int rawADC1);	// Returns calibrated ADC1 measurement in mV
 
 	float GetLThrottleActual();			// Get unmasked left throttle setting
@@ -53,8 +102,30 @@ protected:
 
 
 public:
-	bool Init();
+	bool Init(TFT_eSPI* parentTFT);
 	void Update();
+
+	uint16_t GetKPRawADC();
+	float GetKPVoltageReal();
+	String GetKPVoltageString();
+	String GetKPVoltageString(String format);
+
+	uint16_t GetMCURawADC();
+	float GetMCUVoltageReal();
+	String GetMCUVoltageString();
+	String GetMCUVoltageString(String format);
+
+	uint32_t NavSetting = 0;
+	static bool NavSelected;
+	uint32_t FuncSetting = 0;
+	static bool FuncSelected;
+
+	TFTMenuClass* MainMenu;
+	MenuItemClass* CSSMMenuItem;
+	MenuItemClass* NMMenuItem;
+	MenuItemClass* BRTMenuItem;
+	MenuItemClass* NextPageMenuItem;
+
 
 };
 
