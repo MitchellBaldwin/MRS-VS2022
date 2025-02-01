@@ -48,6 +48,19 @@ public:
 	float LThrottle = 0.0f;						// Commanded left throttle setting (±100.0%)
 	float RThrottle = 0.0f;						// Commanded right throttle setting (±100.0%)
 
+	void NextDriveMode()
+	{
+		if (DriveMode < DRVLR)
+		{
+			int mode = DriveMode;
+			mode++;
+			DriveMode = (DriveModes)mode;
+		}
+		else
+		{
+			DriveMode = DRV;
+		}
+	}
 };
 
 #endif

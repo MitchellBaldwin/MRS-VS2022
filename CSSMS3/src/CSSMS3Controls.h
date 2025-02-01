@@ -55,10 +55,10 @@ private:
 	Adafruit_seesaw& encoder;
 };
 
-constexpr byte defaultNavEncoderI2CAddress = 0x36;	// Left rotary encoder, used primarily for navigating controls on the display
-constexpr byte defaultFuncEncoderI2CAddress = 0x37;	// Right rotary encoder, used primarily for manipulating control settings
+constexpr byte defaultNavEncoderI2CAddress = 0x37;	// Left rotary encoder, used primarily for navigating controls on the display
+constexpr byte defaultFuncEncoderI2CAddress = 0x36;	// Right rotary encoder, used primarily for manipulating control settings
 
-//#include <TFT_eSPI.h>
+//#include <TFT_eSPI.h>		// Included in TFTMenu.h
 #include <TFTMenu.h>
 
 class CSSMS3Controls
@@ -69,10 +69,10 @@ protected:
 	byte RThrottlePin = defaultRThrottlePin;
 	byte VMCUPin = defaultVMCUPin;
 
-	MeasurementClass VMCU;				// Analog voltage measured at the MCU battery JST connector
-	MeasurementClass KPVoltage;			// Analog voltage from keypad ladder button array
-	MeasurementClass LThrottleSetting;	// -100.0 tp 100.0 % left slide throttle setting
-	MeasurementClass RThrottleSetting;	// -100.0 tp 100.0 % right slide throttle setting
+	MeasurementClass VMCU;						// Analog voltage measured at the MCU battery JST connector
+	MeasurementClass KPVoltage;					// Analog voltage from keypad ladder button array
+	MeasurementClass LThrottleSetting;			// -100.0 tp 100.0 % left slide throttle setting
+	MeasurementClass RThrottleSetting;			// -100.0 tp 100.0 % right slide throttle setting
 
 	float ThrottleDeadZone = 5.0f;				// +/- % dead zone applied around zero (for both throttles)
 
@@ -95,13 +95,34 @@ protected:
 
 	uint32_t ReadCalibratedADC1(int rawADC1);	// Returns calibrated ADC1 measurement in mV
 
-	float GetLThrottleActual();			// Get unmasked left throttle setting
-	float GetLThrottle();				// Get left throttle setting adjusted for dead zone(s)
-	float GetRThrottleActual();			// Get unmasked right throttle setting
-	float GetRThrottle();				// Get right throttle setting adjusted for dead zone(s)
+	float GetLThrottleActual();					// Get unmasked left throttle setting
+	float GetLThrottle();						// Get left throttle setting adjusted for dead zone(s)
+	float GetRThrottleActual();					// Get unmasked right throttle setting
+	float GetRThrottle();						// Get right throttle setting adjusted for dead zone(s)
 
+	static void NextDriveMode(byte value);		// Cycle to next drive mode
 
 public:
+	enum NavEncoderModes
+	{
+		MenuMode,
+		SteerMode,
+
+		NoMode
+	};
+	static NavEncoderModes navEncoderMode;
+
+	uint32_t NavSetting = 0;
+	static bool NavSelected;
+	uint32_t FuncSetting = 0;
+	static bool FuncSelected;
+
+	TFTMenuClass* MainMenu;
+	MenuItemClass* ESPNMenuItem;
+	MenuItemClass* DriveModeMenuItem;
+	MenuItemClass* BRTMenuItem;
+	MenuItemClass* NextPageMenuItem;
+
 	bool Init(TFT_eSPI* parentTFT);
 	void Update();
 
@@ -115,16 +136,10 @@ public:
 	String GetMCUVoltageString();
 	String GetMCUVoltageString(String format);
 
-	uint32_t NavSetting = 0;
-	static bool NavSelected;
-	uint32_t FuncSetting = 0;
-	static bool FuncSelected;
+	void CheckButtons();
 
-	TFTMenuClass* MainMenu;
-	MenuItemClass* CSSMMenuItem;
-	MenuItemClass* NMMenuItem;
-	MenuItemClass* BRTMenuItem;
-	MenuItemClass* NextPageMenuItem;
+	static void ToggleNavSelected();
+	static void ToggleFuncSelected();
 
 
 };

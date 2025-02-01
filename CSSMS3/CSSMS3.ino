@@ -46,6 +46,10 @@ constexpr long ReadControlsInterval = 100;
 void ReadControlsCallback();
 Task ReadControlsTask((ReadControlsInterval * TASK_MILLISECOND), TASK_FOREVER, &ReadControlsCallback, &MainScheduler, false);
 
+constexpr long ReadButtonsInterval = 5;
+void ReadButtonsCallback();
+Task ReadButtonsTask((ReadButtonsInterval * TASK_MILLISECOND), TASK_FOREVER, &ReadButtonsCallback, &MainScheduler, false);
+
 #include "src/CSSMS3Display.h"
 
 constexpr long UpdateDisplayInterval = 100;
@@ -161,6 +165,7 @@ void setup()
 		_PL("CSSMControls initialization FAILED");
 	}
 	ReadControlsTask.enable();
+	ReadButtonsTask.enable();
 
 	if (cssmS3Display.Init())
 	{
@@ -198,6 +203,11 @@ void ToggleHeartbeatLEDCallback()
 void ReadControlsCallback()
 {
 	cssmS3Controls.Update();
+}
+
+void ReadButtonsCallback()
+{
+	cssmS3Controls.CheckButtons();
 }
 
 void UpdateDisplayCallback()

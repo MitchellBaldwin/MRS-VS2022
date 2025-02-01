@@ -92,7 +92,7 @@ public:
 	void Init(byte navEncoderI2CAddress, byte funcEncoderI2CAddress);
 	void Init(byte navEncoderI2CAddress, byte funcEncoderI2CAddress, byte cssmPowerEnablePin, byte nmPowerEnablePin);
 
-	void CheckButtons();
+	void CheckButtons();	// This function is not being used?
 	void Update();
 
 	static void ToggleNavSelected();

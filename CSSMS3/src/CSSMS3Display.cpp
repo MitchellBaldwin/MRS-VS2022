@@ -26,6 +26,11 @@ void CSSMS3Display::DrawPageHeaderAndFooter()
 	sprintf(buf, "%s", PageTitles[currentPage]);
 	tft.drawString(buf, tft.width() - 2, 2);
 
+	// Draw footer menu:
+	if (cssmS3Controls.MainMenu != nullptr)
+	{
+		cssmS3Controls.MainMenu->Draw();
+	}
 }
 
 void CSSMS3Display::DrawSYSPage()
@@ -118,10 +123,26 @@ void CSSMS3Display::DrawSYSPage()
 
 void CSSMS3Display::DrawCOMPage()
 {
+	currentPage = COM;
+
+	if (lastPage != currentPage)
+	{
+		DrawPageHeaderAndFooter();
+
+		lastPage = currentPage;
+	}
 }
 
 void CSSMS3Display::DrawDBGPage()
 {
+	currentPage = DBG;
+
+	if (lastPage != currentPage)
+	{
+		DrawPageHeaderAndFooter();
+
+		lastPage = currentPage;
+	}
 }
 
 void CSSMS3Display::DrawNONEPage()
@@ -137,12 +158,12 @@ bool CSSMS3Display::Init()
 	//so must explicitly turn LCD power on:
 	pinMode(LCD_POWER_ON, OUTPUT);
 	digitalWrite(LCD_POWER_ON, HIGH);
-	SetDisplayBrightness(DefaultDisplayBrightness);
 
 	tft.init();
 	tft.setRotation(3);
 
 	Control(CSSMS3Display::Commands::SYSPage);
+	SetDisplayBrightness(DefaultDisplayBrightness);
 
 	return true;
 }

@@ -157,6 +157,7 @@ void PCMControlsClass::Init(byte navEncoderI2CAddress, byte funcEncoderI2CAddres
 
 }
 
+// This function is not being used?
 void PCMControlsClass::CheckButtons()
 {
 	if (PCMStatus.NavEncoderStatus)

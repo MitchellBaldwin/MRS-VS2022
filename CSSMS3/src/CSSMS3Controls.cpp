@@ -5,6 +5,7 @@
 
 #include "CSSMS3Controls.h"
 #include "CSSMS3Status.h"
+#include "CSSMS3Display.h"
 #include <DEBUG Macros.h>
 
 void CSSMS3Controls::HandleNavButtonEvents(ace_button::AceButton* b, uint8_t eventType, uint8_t buttonState)
@@ -96,6 +97,19 @@ float CSSMS3Controls::GetRThrottle()
 	return actual;
 }
 
+void CSSMS3Controls::NextDriveMode(byte value)
+{
+	CSSMS3Status.cssmDrivePacket.NextDriveMode();
+	if (CSSMS3Status.cssmDrivePacket.DriveMode == CSSMDrivePacket::DriveModes::DRVTw)
+	{
+		navEncoderMode = NavEncoderModes::SteerMode;
+	}
+	else
+	{
+		navEncoderMode = NavEncoderModes::MenuMode;
+	}
+}
+
 bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 {
 	char buf[64];
@@ -117,7 +131,7 @@ bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 		sprintf(buf, "ver: %d", afssVersion);
 		_PL(buf);
 
-		NavNeoPix.setPixelColor(0, NavNeoPix.Color(0x00, 0x00, 0x08));
+		NavNeoPix.setPixelColor(0, NavNeoPix.Color(0x08, 0x08, 0x00));
 		NavNeoPix.show();
 
 		NavEncoder.pinMode(SS_BUTTON, INPUT_PULLUP);
@@ -147,7 +161,7 @@ bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 		sprintf(buf, "ver: %d", afssVersion);
 		_PL(buf);
 
-		FuncNeoPix.setPixelColor(0, FuncNeoPix.Color(0x08, 0x00, 0x00));
+		FuncNeoPix.setPixelColor(0, FuncNeoPix.Color(0x00, 0x0F, 0x00));
 		FuncNeoPix.show();
 
 		FuncEncoder.pinMode(SS_BUTTON, INPUT_PULLUP);
@@ -164,32 +178,35 @@ bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 
 	MainMenu = new TFTMenuClass(tft);
 
-	CSSMMenuItem = new MenuItemClass("CSSM", 36, 157, 56, 12, MenuItemClass::MenuItemTypes::OffOn);
-	CSSMMenuItem->Init(tft);
-	MainMenu->AddItem(CSSMMenuItem);
-	CSSMMenuItem->SetOnExecuteHandler(nullptr);
+	ESPNMenuItem = new MenuItemClass("ESPN", 36, 157, 56, 12, MenuItemClass::MenuItemTypes::OffOn);
+	ESPNMenuItem->Init(tft);
+	MainMenu->AddItem(ESPNMenuItem);
+	ESPNMenuItem->SetOnExecuteHandler(nullptr);
 
-	NMMenuItem = new MenuItemClass("NM", 98, 157, 56, 12, MenuItemClass::MenuItemTypes::OffOn);
-	NMMenuItem->Init(tft);
-	MainMenu->AddItem(NMMenuItem);
-	NMMenuItem->SetOnExecuteHandler(nullptr);
+	DriveModeMenuItem = new MenuItemClass("Mode", 98, 157, 56, 12, MenuItemClass::MenuItemTypes::Action);
+	DriveModeMenuItem->Init(tft);
+	MainMenu->AddItem(DriveModeMenuItem);
+	DriveModeMenuItem->SetOnExecuteHandler(NextDriveMode);
+	DriveModeMenuItem->SetMinValue(CSSMDrivePacket::DriveModes::DRV);
+	DriveModeMenuItem->SetMaxValue(CSSMDrivePacket::DriveModes::DRVTw);
+	DriveModeMenuItem->SetValue(CSSMDrivePacket::DriveModes::DRV);
 
-	//BRTMenuItem = new MenuItemClass("BRT", 162, 157, 56, 12, MenuItemClass::MenuItemTypes::Numeric);
-	//BRTMenuItem->Init(tft);
-	//MainMenu->AddItem(BRTMenuItem);
-	//BRTMenuItem->SetOnExecuteHandler(cssm.SetDisplayBrightness);
-	//BRTMenuItem->SetMinValue(0);
-	//BRTMenuItem->SetMaxValue(255);
-	//BRTMenuItem->SetNumericStepSize(16);
-	//BRTMenuItem->SetValue(LocalDisplay.GetDisplayBrightness());
+	BRTMenuItem = new MenuItemClass("BRT", 162, 157, 56, 12, MenuItemClass::MenuItemTypes::Numeric);
+	BRTMenuItem->Init(tft);
+	MainMenu->AddItem(BRTMenuItem);
+	BRTMenuItem->SetOnExecuteHandler(cssmS3Display.SetDisplayBrightness);
+	BRTMenuItem->SetMinValue(0);
+	BRTMenuItem->SetMaxValue(255);
+	BRTMenuItem->SetNumericStepSize(16);
+	BRTMenuItem->SetValue(cssmS3Display.GetDisplayBrightness());
 
-	//NextPageMenuItem = new MenuItemClass("Next", 226, 157, 56, 12, MenuItemClass::MenuItemTypes::Action);
-	//NextPageMenuItem->Init(tft);
-	//MainMenu->AddItem(NextPageMenuItem);
-	//NextPageMenuItem->SetOnExecuteHandler(LocalDisplay.NextPage);
-	//NextPageMenuItem->SetMinValue(LocalDisplayClass::Pages::SYS);
-	//NextPageMenuItem->SetMaxValue(LocalDisplayClass::Pages::NONE);
-	//NextPageMenuItem->SetValue(LocalDisplayClass::Pages::COM);
+	NextPageMenuItem = new MenuItemClass("Next", 226, 157, 56, 12, MenuItemClass::MenuItemTypes::Action);
+	NextPageMenuItem->Init(tft);
+	MainMenu->AddItem(NextPageMenuItem);
+	NextPageMenuItem->SetOnExecuteHandler(cssmS3Display.NextPage);
+	NextPageMenuItem->SetMinValue(CSSMS3Display::Pages::SYS);
+	NextPageMenuItem->SetMaxValue(CSSMS3Display::Pages::NONE);
+	NextPageMenuItem->SetValue(CSSMS3Display::Pages::COM);
 
 
 	// Set up ADC:
@@ -239,6 +256,139 @@ bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 
 void CSSMS3Controls::Update()
 {
+	bool NavWasSelected = NavSelected;
+	bool FuncWasSelected = FuncSelected;
+	MenuItemClass* currentItem = MainMenu->GetCurrentItem();
+
+	if (CSSMS3Status.NavEncoderStatus)
+	{
+		int delta = NavEncoder.getEncoderDelta();
+		switch (navEncoderMode)
+		{
+		case NavEncoderModes::MenuMode:
+			if (delta > 0)
+			{
+				currentItem = MainMenu->NextItem();
+				NavSelected = false;
+			}
+			else if (delta < 0)
+			{
+				currentItem = MainMenu->PrevItem();
+				NavSelected = false;
+			}
+			break;
+		case NavEncoderModes::SteerMode:
+			CSSMS3Status.cssmDrivePacket.Speed = (CSSMS3Status.cssmDrivePacket.LThrottle + CSSMS3Status.cssmDrivePacket.RThrottle) / 2.0f;
+			if (delta > 0)
+			{
+				CSSMS3Status.cssmDrivePacket.OmegaXY += 5.0f;
+				NavSelected = false;
+			}
+			else if (delta < 0)
+			{
+				CSSMS3Status.cssmDrivePacket.OmegaXY -= 5.0f;
+				NavSelected = false;
+			}
+			break;
+		default:
+			break;
+		}
+
+	}
+
+	if (NavSelected) // Nav encoder button was pressed...
+	{
+		// Check display brightness setting; if very low or 0 then set to a dim but readable value:
+		if (cssmS3Display.GetDisplayBrightness() < 16)
+		{
+			cssmS3Display.SetDisplayBrightness(63);
+			BRTMenuItem->SetValue(cssmS3Display.GetDisplayBrightness());
+			BRTMenuItem->Draw(tft, true);
+			NavSelected = false;
+		}
+		else if (currentItem != nullptr)
+		{
+			switch (currentItem->MenuItemType)
+			{
+			case MenuItemClass::MenuItemTypes::Action:
+				currentItem->InvokeOnExecuteHandler();
+				NavSelected = false;
+				break;
+			case MenuItemClass::MenuItemTypes::OffOn:
+				currentItem->SetValue(currentItem->GetValue() ? 0 : 1);
+				currentItem->Draw(tft, true);
+				currentItem->InvokeOnExecuteHandler();
+				NavSelected = false;
+				break;
+			case MenuItemClass::MenuItemTypes::Numeric:
+				// Show the item in its Activated state:
+				currentItem->Activate(true);
+				// Item is selected for data entry, so set FuncEncoder accordingly:
+				FuncSetting = currentItem->GetValue();
+				currentItem->Draw(tft, true);
+				// Do not unselect NavSelect until control input using Func encoder is complete:
+				// (this will be reset when the Func encoder button is pressed)
+				//NavSelected = false;
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+	if (CSSMS3Status.FuncEncoderStatus)
+	{
+		int delta = FuncEncoder.getEncoderDelta();
+		if (currentItem != nullptr && delta != 0 && NavSelected)
+		{
+			if (currentItem->MenuItemType == MenuItemClass::MenuItemTypes::Numeric)
+			{
+				delta > 0 ? FuncSetting += currentItem->GetNumericStepSize() : FuncSetting -= currentItem->GetNumericStepSize();
+			}
+			else
+			{
+				FuncSetting = FuncSetting + delta;
+			}
+
+			switch (currentItem->MenuItemType)
+			{
+			case MenuItemClass::MenuItemTypes::Numeric:
+				currentItem->SetValue(FuncSetting);
+				currentItem->Draw(tft, true);
+				break;
+			default:
+				break;
+			}
+		}
+		//FuncButton->check();
+	}
+
+	if (FuncSelected) // Func encoder button was pressed...
+	{
+		if (currentItem != nullptr)
+		{
+			switch (currentItem->MenuItemType)
+			{
+			case MenuItemClass::MenuItemTypes::Action:
+				currentItem->InvokeOnExecuteHandler();
+				FuncSelected = false;
+				break;
+			case MenuItemClass::MenuItemTypes::Numeric:
+				// Do something with the current Value of the current item:
+				// The OnExecute handler (of type MenuItemOnExecuteHandler) is passed the current Value when invoked
+				currentItem->InvokeOnExecuteHandler();
+				// Reset selection of this item for input:
+				currentItem->Activate(false);
+				FuncSelected = false;
+				NavSelected = false;
+				break;
+			default:
+				FuncSelected = false;
+				break;
+			}
+		}
+	}
+	
 	uint16_t newReading = analogRead(KPSensePin);
 	//KPVoltage.AddReading(newReading * (float)(ADC1Chars.vref / 1000.0f));
 	KPVoltage.AddReading(newReading);
@@ -296,8 +446,32 @@ String CSSMS3Controls::GetMCUVoltageString(String format)
 	return VMCU.GetRealString(format);
 }
 
+void CSSMS3Controls::CheckButtons()
+{
+	if (CSSMS3Status.NavEncoderStatus)
+	{
+		NavButton->check();
+	}
+
+	if (CSSMS3Status.FuncEncoderStatus)
+	{
+		FuncButton->check();
+	}
+}
+
+void CSSMS3Controls::ToggleNavSelected()
+{
+	NavSelected = !NavSelected;
+}
+
+void CSSMS3Controls::ToggleFuncSelected()
+{
+	FuncSelected = !FuncSelected;
+}
+
 
 // Global and static variable declarations:
 CSSMS3Controls cssmS3Controls;
+CSSMS3Controls::NavEncoderModes CSSMS3Controls::navEncoderMode = CSSMS3Controls::NavEncoderModes::MenuMode;
 bool CSSMS3Controls::NavSelected = false;
 bool CSSMS3Controls::FuncSelected = false;
