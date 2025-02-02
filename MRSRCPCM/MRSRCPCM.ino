@@ -19,7 +19,6 @@
 
  */
 
-#include <Adafruit_INA219.h>
 #include <HardwareSerial.h>
 HardwareSerial IDCSerial(1);
 
@@ -40,6 +39,10 @@ Task ToggleBuiltinLEDTask((NormalHeartbeatLEDToggleInterval * TASK_MILLISECOND),
 constexpr auto SensorUpdateInterval = 250;
 void UpdateSensorsCallback();
 Task UpdateSensorsTask((SensorUpdateInterval* TASK_MILLISECOND), TASK_FOREVER, &UpdateSensorsCallback, &MainScheduler, false);
+
+constexpr auto ReadButtonsInterval = 5;
+void ReadButtonsCallback();
+Task ReadButtonsTask((ReadButtonsInterval* TASK_MILLISECOND), TASK_FOREVER, &ReadButtonsCallback, &MainScheduler, false);
 
 constexpr auto ControlUpdateInterval = 50;
 void UpdateControlsCallback();
@@ -120,6 +123,7 @@ void setup()
 	PCMControls.MainMenu->Draw();
 	LocalDisplay.ReportHeapStatus();
 
+	ReadButtonsTask.enable();
 	UpdateControlsTask.enable();
 
 	ToggleBuiltinLEDTask.enable();
@@ -140,6 +144,11 @@ void ToggleBuiltinLEDCallback()
 void UpdateSensorsCallback()
 {
 	SensorData.Update();
+}
+
+void ReadButtonsCallback()
+{
+	PCMControls.CheckButtons();
 }
 
 void UpdateControlsCallback()

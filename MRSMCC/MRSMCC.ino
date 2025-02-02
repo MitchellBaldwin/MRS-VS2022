@@ -33,6 +33,16 @@ constexpr auto NoSerialHeartbeatLEDToggleInterval = 500;
 void ToggleBuiltinLEDCallback();
 Task ToggleBuiltinLEDTask((NormalHeartbeatLEDToggleInterval* TASK_MILLISECOND), TASK_FOREVER, &ToggleBuiltinLEDCallback, &MainScheduler, false);
 
+#include "src/MCCControls.h"
+
+constexpr long ReadControlsInterval = 100;
+void ReadControlsCallback();
+Task ReadControlsTask((ReadControlsInterval* TASK_MILLISECOND), TASK_FOREVER, &ReadControlsCallback, &MainScheduler, false);
+
+constexpr long ReadButtonsInterval = 5;
+void ReadButtonsCallback();
+Task ReadButtonsTask((ReadButtonsInterval* TASK_MILLISECOND), TASK_FOREVER, &ReadButtonsCallback, &MainScheduler, false);
+
 constexpr auto UpdateLocalDisplayInterval = 100;
 void UpdateLocalDisplayCallback();
 Task UpdateLocalDisplayTask((UpdateLocalDisplayInterval* TASK_MILLISECOND), TASK_FOREVER, &UpdateLocalDisplayCallback, &MainScheduler, false);
@@ -141,6 +151,17 @@ void setup()
 	snprintf(buf, 22, "MAC:%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 	_PL(buf)
 
+	if (mccControls.Init(LocalDisplay.GetTFT()))
+	{
+		_PL("mccControls initialized successfully");
+	}
+	else
+	{
+		_PL("mccControls initialization FAILED");
+	}
+	ReadButtonsTask.enable();
+	ReadControlsTask.enable();
+
 	if (LocalDisplay.Init())
 	{
 		MCCStatus.LocalDisplayStatus = true;
@@ -182,6 +203,16 @@ void ToggleBuiltinLEDCallback()
 	//TODO: Determine if this is the best place to call MCCStatus.Update(), which checks health of
 	//communications links and updates status flags accordingly
 	MCCStatus.Update();
+}
+
+void ReadControlsCallback()
+{
+	mccControls.Update();
+}
+
+void ReadButtonsCallback()
+{
+	mccControls.CheckButtons();
 }
 
 void UpdateLocalDisplayCallback()

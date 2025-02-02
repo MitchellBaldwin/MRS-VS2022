@@ -44,11 +44,27 @@ bool PCMSensorData::Init()
 	pinMode(VMCUSensePin, INPUT);
 	pinMode(VExtSensePin, INPUT);
 
+	if (!WSUPS3SINA219->begin())
+	{
+		_PL("INA219 initialization FAILED")
+	}
+	else
+	{
+		_PL("INA219 initialized")
+	}
+
 	return SetupADC();
+
 }
 
 void PCMSensorData::Update()
 {
+	INA219VBus = WSUPS3SINA219->getBusVoltage_V();
+	INA219VShunt = WSUPS3SINA219->getShuntVoltage_mV();
+	INA219Current = WSUPS3SINA219->getCurrent_mA();
+	INA219Power = WSUPS3SINA219->getPower_mW();
+	INA219VLoad = INA219VBus + (INA219VShunt / 1000.0f);
+	
 	// General voltage measurement function, assuming 1/2 voltage divider:
 	//		V = ((float)rawADC / 4095.0) * 2.0 * 3.3 * (Vref / 1000.0);
 	// Primary 18650 battery voltage scale adjustment (20240701)

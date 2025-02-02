@@ -7,8 +7,7 @@
 #include "LocalDisplay.h"
 #include <I2CBus.h>
 #include "MCCStatus.h"
-//#include "PCMSensorData.h"
-//#include "PCMControls.h"
+#include "MCCControls.h"
 #include "DEBUG Macros.h"
 
 #include <WiFi.h>
@@ -30,14 +29,11 @@ void LocalDisplayClass::DrawPageHeaderAndFooter()
 	sprintf(buf, "%s", PageTitles[currentPage]);
 	tft.drawString(buf, tft.width() - 2, 2);
 
-	//// Draw footer menu:
-	//if (MCCControls.MainMenu != nullptr)
-	//{
-	//	MCCControls.MainMenu->Draw();
-	//}
-	// 
-	//// Draw rectangle at screen bounds to aid framing physical display to panel:
-	//tft.drawRect(0, 0, tft.getViewportWidth(), tft.getViewportHeight(), TFT_DARKCYAN);
+	// Draw footer menu:
+	if (mccControls.MainMenu != nullptr)
+	{
+		mccControls.MainMenu->Draw();
+	}
 }
 
 void LocalDisplayClass::DrawSYSPage()
@@ -211,6 +207,11 @@ void LocalDisplayClass::DrawSYSPage()
 	}
 	tft.drawString(buf, 2, cursorY);
 
+	cursorY = tft.height() / 2 + 50;
+	tft.setTextColor(TFT_SILVER, TFT_BLACK, true);
+	sprintf(buf, "VMCU %s", mccControls.GetMCUVoltageString());
+	tft.drawString(buf, tft.width() / 2, cursorY);
+
 }
 
 void LocalDisplayClass::DrawCOMPage()
@@ -380,12 +381,12 @@ bool LocalDisplayClass::Init()
 	//so must explicitly turn LCD power on:
 	pinMode(LCD_POWER_ON, OUTPUT);
 	digitalWrite(LCD_POWER_ON, HIGH);
-	SetDisplayBrightness(DefaultDisplayBrightness);
 
 	tft.init();
 	tft.setRotation(3);
 
 	Control(LocalDisplayClass::SYSPage);
+	SetDisplayBrightness(DefaultDisplayBrightness);
 
 	return true;
 }

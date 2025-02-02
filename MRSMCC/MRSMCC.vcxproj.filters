@@ -282,6 +282,12 @@
     <ClCompile Include="src\RC2x15AMC.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\MCCControls.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Measurement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="__vm\.MRSMCC.vsarduino.h">
@@ -534,6 +540,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\MCCStatus.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MCCControls.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Measurement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

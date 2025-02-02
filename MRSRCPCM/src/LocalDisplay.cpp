@@ -103,7 +103,7 @@ void LocalDisplayClass::DrawSYSPage()
 	tft.drawString("MCU", cursorX, cursorY);	// Subscript
 	tft.setTextSize(2);
 	tft.setTextDatum(BR_DATUM);
-	sprintf(buf, "%5.2F V", SensorData.VMCU);
+	sprintf(buf, "%5.2F  V", SensorData.VMCU);
 	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
 
 	// Measure & display backup battery voltage:
@@ -111,13 +111,13 @@ void LocalDisplayClass::DrawSYSPage()
 	tft.setTextSize(2);
 	cursorX = tft.width() / 2 + 2;
 	cursorY -= 20;
-	tft.drawString("V", cursorX, cursorY);
+	tft.drawString("P", cursorX, cursorY);
 	cursorX += tft.textWidth("V", 2) + 1;
 	tft.setTextSize(1);
-	tft.drawString("BBAT", cursorX, cursorY);	// Subscript
+	tft.drawString("Bus", cursorX, cursorY);	// Subscript
 	tft.setTextSize(2);
 	tft.setTextDatum(BR_DATUM);
-	sprintf(buf, "%5.2F V", SensorData.VBBat);
+	sprintf(buf, "%5.0F mW", SensorData.INA219Power);
 	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
 
 	// Measure & display internal 18650 cell voltage:
@@ -125,13 +125,13 @@ void LocalDisplayClass::DrawSYSPage()
 	tft.setTextSize(2);
 	cursorX = tft.width() / 2 + 2;
 	cursorY -= 20;
-	tft.drawString("V", cursorX, cursorY);
+	tft.drawString("I", cursorX, cursorY);
 	cursorX += tft.textWidth("V", 2) + 1;
 	tft.setTextSize(1);
-	tft.drawString("BAT", cursorX, cursorY);	// Subscript
+	tft.drawString("Bus", cursorX, cursorY);	// Subscript
 	tft.setTextSize(2);
 	tft.setTextDatum(BR_DATUM);
-	sprintf(buf, "%5.2F V", SensorData.VBat);
+	sprintf(buf, "%5.1F mA", SensorData.INA219Current);
 	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
 
 	// Measure & display internally regulated (5 v) voltage:
@@ -142,10 +142,10 @@ void LocalDisplayClass::DrawSYSPage()
 	tft.drawString("V", cursorX, cursorY);
 	cursorX += tft.textWidth("V", 2) + 1;
 	tft.setTextSize(1);
-	tft.drawString("5", cursorX, cursorY);	// Subscript
+	tft.drawString("Load", cursorX, cursorY);	// Subscript
 	tft.setTextSize(2);
 	tft.setTextDatum(BR_DATUM);
-	sprintf(buf, "%5.2F V", SensorData.V5);
+	sprintf(buf, "%5.2F  V", SensorData.INA219VLoad);
 	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
 
 	// Measure & display external supply voltage:
@@ -156,10 +156,10 @@ void LocalDisplayClass::DrawSYSPage()
 	tft.drawString("V", cursorX, cursorY);
 	cursorX += tft.textWidth("V", 2) + 1;
 	tft.setTextSize(1);
-	tft.drawString("EXT", cursorX, cursorY);	// Subscript
+	tft.drawString("Bus", cursorX, cursorY);	// Subscript
 	tft.setTextSize(2);
 	tft.setTextDatum(BR_DATUM);
-	sprintf(buf, "%5.2F V", SensorData.VExt);
+	sprintf(buf, "%5.2F  V", SensorData.INA219VBus);
 	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
 
 	// Display rotary encoder settings:
@@ -346,12 +346,12 @@ bool LocalDisplayClass::Init()
 	//so must explicitly turn LCD power on:
 	pinMode(LCD_POWER_ON, OUTPUT);
 	digitalWrite(LCD_POWER_ON, HIGH);
-	SetDisplayBrightness(DefaultDisplayBrightness);
 
 	tft.init();
 	tft.setRotation(3);
 
 	Control(LocalDisplayClass::SYSPage);
+	SetDisplayBrightness(DefaultDisplayBrightness);
 
 	return true;
 }

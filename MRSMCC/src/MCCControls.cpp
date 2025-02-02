@@ -1,16 +1,13 @@
-/*	PCMControls.h
-*	PCMControlsClass - Base class for managing data from control panel of the MRS RC Power Control Module
-*
-*	Mitchell Baldwin copyright 2023-2024
+/*	MCCControls.h
+*	MCCControls - Base class for managing control inputs from the MRS Master Control Computer module
 *
 */
 
-#include "PCMControls.h"
-#include "PCMStatus.h"
-#include "DEBUG Macros.h"
+#include "MCCControls.h"
+#include "MCCStatus.h"
 #include "LocalDisplay.h"
 
-void PCMControlsClass::HandleNavButtonEvents(ace_button::AceButton* b, uint8_t eventType, uint8_t buttonState)
+void MCCControls::HandleNavButtonEvents(ace_button::AceButton* b, uint8_t eventType, uint8_t buttonState)
 {
 	if (eventType == ace_button::AceButton::kEventPressed)
 	{
@@ -19,7 +16,7 @@ void PCMControlsClass::HandleNavButtonEvents(ace_button::AceButton* b, uint8_t e
 	}
 }
 
-void PCMControlsClass::HandleFuncButtonEvents(ace_button::AceButton* b, uint8_t eventType, uint8_t buttonState)
+void MCCControls::HandleFuncButtonEvents(ace_button::AceButton* b, uint8_t eventType, uint8_t buttonState)
 {
 	if (eventType == ace_button::AceButton::kEventPressed)
 	{
@@ -28,52 +25,33 @@ void PCMControlsClass::HandleFuncButtonEvents(ace_button::AceButton* b, uint8_t 
 	}
 }
 
-void PCMControlsClass::ControlCSSMPower(byte value)
+uint32_t MCCControls::ReadCalibratedADC1(int rawADC1)
 {
-	char buffer[32];
-
-	digitalWrite(CSSMPowerEnablePin, value);
-	sprintf(buffer, "CSSM power %s", value ? "ON" : "OFF");
-	LocalDisplay.AddDebugTextLine(buffer);
+	return esp_adc_cal_raw_to_voltage(rawADC1, &ADC1Chars);
 }
 
-void PCMControlsClass::ControlNMPower(byte value)
+bool MCCControls::Init(TFT_eSPI* parentTFT)
 {
-	char buffer[32];
-	digitalWrite(NMPowerEnablePin, value);
-	sprintf(buffer, "NM power %s", value ? "ON" : "OFF");
-	LocalDisplay.AddDebugTextLine(buffer);
-}
-
-void PCMControlsClass::Init(TFT_eSPI* parentTFT)
-{
+	char buf[64];
+	
 	tft = parentTFT;
-	Init(DefaultNavEncoderI2CAddress, DefaultFuncEncoderI2CAddress);
-}
 
-void PCMControlsClass::Init(byte navEncoderI2CAddress, byte funcEncoderI2CAddress)
-{
-	Init(navEncoderI2CAddress, funcEncoderI2CAddress, DefaultCSSMPowerEnablePin, DefaultNMPowerEnablePin);
-}
-
-void PCMControlsClass::Init(byte navEncoderI2CAddress, byte funcEncoderI2CAddress, byte cssmPowerEnablePin, byte nmPowerEnablePin)
-{
-	if (!NavEncoder.begin(navEncoderI2CAddress) || !NavNeoPix.begin(navEncoderI2CAddress))
+	if (!NavEncoder.begin(defaultNavEncoderI2CAddress) || !NavNeoPix.begin(defaultNavEncoderI2CAddress))
 	{
-		sprintf(buf, "Nav encoder not found at 0x%02X", navEncoderI2CAddress);
+		sprintf(buf, "Nav encoder not found at 0x%02X", defaultNavEncoderI2CAddress);
 		_PL(buf);
-		PCMStatus.NavEncoderStatus = false;
+		MCCStatus.NavEncoderStatus = false;
 	}
 	else
 	{
-		sprintf(buf, "Nav encoder started at 0x%02X; ", navEncoderI2CAddress);
+		sprintf(buf, "Nav encoder started at 0x%02X; ", defaultNavEncoderI2CAddress);
 		_PP(buf);
 
 		uint32_t afssVersion = ((NavEncoder.getVersion() >> 0x10) & 0xFFFF);
 		sprintf(buf, "ver: %d", afssVersion);
 		_PL(buf);
 
-		NavNeoPix.setPixelColor(0, NavNeoPix.Color(0x00, 0x00, 0x08));
+		NavNeoPix.setPixelColor(0, NavNeoPix.Color(0x08, 0x08, 0x00));
 		NavNeoPix.show();
 
 		NavEncoder.pinMode(SS_BUTTON, INPUT_PULLUP);
@@ -85,25 +63,25 @@ void PCMControlsClass::Init(byte navEncoderI2CAddress, byte funcEncoderI2CAddres
 		//NavButtonConfig->setFeature(ace_button::ButtonConfig::kFeatureClick);
 		NavButtonConfig->setEventHandler(HandleNavButtonEvents);
 
-		PCMStatus.NavEncoderStatus = true;
+		MCCStatus.NavEncoderStatus = true;
 	}
 
-	if (!FuncEncoder.begin(funcEncoderI2CAddress) || !FuncNeoPix.begin(funcEncoderI2CAddress))
+	if (!FuncEncoder.begin(defaultFuncEncoderI2CAddress) || !FuncNeoPix.begin(defaultFuncEncoderI2CAddress))
 	{
-		sprintf(buf, "Func encoder not found at 0x%02X", funcEncoderI2CAddress);
+		sprintf(buf, "Func encoder not found at 0x%02X", defaultFuncEncoderI2CAddress);
 		_PL(buf);
-		PCMStatus.FuncEncoderStatus = false;
+		MCCStatus.FuncEncoderStatus = false;
 	}
 	else
 	{
-		sprintf(buf, "Func encoder started at 0x%02X; ", funcEncoderI2CAddress);
+		sprintf(buf, "Func encoder started at 0x%02X; ", defaultFuncEncoderI2CAddress);
 		_PP(buf);
 
 		uint32_t afssVersion = ((FuncEncoder.getVersion() >> 0x10) & 0xFFFF);
 		sprintf(buf, "ver: %d", afssVersion);
 		_PL(buf);
 
-		FuncNeoPix.setPixelColor(0, FuncNeoPix.Color(0x00, 0x00, 0x08));
+		FuncNeoPix.setPixelColor(0, FuncNeoPix.Color(0x00, 0x0F, 0x00));
 		FuncNeoPix.show();
 
 		FuncEncoder.pinMode(SS_BUTTON, INPUT_PULLUP);
@@ -113,30 +91,25 @@ void PCMControlsClass::Init(byte navEncoderI2CAddress, byte funcEncoderI2CAddres
 		FuncButton = new ace_button::AceButton(FuncButtonConfig);
 		//FuncButtonConfig->setFeature(ace_button::ButtonConfig::kFeatureClick);
 		FuncButtonConfig->setEventHandler(HandleFuncButtonEvents);
-		
-		PCMStatus.FuncEncoderStatus = true;
+
+		MCCStatus.FuncEncoderStatus = true;
 
 	}
 	
-	CSSMPowerEnablePin = cssmPowerEnablePin;
-	pinMode(CSSMPowerEnablePin, OUTPUT);
-	digitalWrite(CSSMPowerEnablePin, 0);
-	
-	NMPowerEnablePin = nmPowerEnablePin;
-	pinMode(NMPowerEnablePin, OUTPUT);
-	digitalWrite(NMPowerEnablePin, 0);
-
 	MainMenu = new TFTMenuClass(tft);
 
-	CSSMMenuItem = new MenuItemClass("CSSM", 36, 157, 56, 12, MenuItemClass::MenuItemTypes::OffOn);
-	CSSMMenuItem->Init(tft);
-	MainMenu->AddItem(CSSMMenuItem);
-	CSSMMenuItem->SetOnExecuteHandler(ControlCSSMPower);
+	ESPNMenuItem = new MenuItemClass("ESPN", 36, 157, 56, 12, MenuItemClass::MenuItemTypes::OffOn);
+	ESPNMenuItem->Init(tft);
+	MainMenu->AddItem(ESPNMenuItem);
+	ESPNMenuItem->SetOnExecuteHandler(nullptr);
 
-	NMMenuItem = new MenuItemClass("NM", 98, 157, 56, 12, MenuItemClass::MenuItemTypes::OffOn);
-	NMMenuItem->Init(tft);
-	MainMenu->AddItem(NMMenuItem);
-	NMMenuItem->SetOnExecuteHandler(ControlNMPower);
+	DriveModeMenuItem = new MenuItemClass("Mode", 98, 157, 56, 12, MenuItemClass::MenuItemTypes::Action);
+	DriveModeMenuItem->Init(tft);
+	MainMenu->AddItem(DriveModeMenuItem);
+	DriveModeMenuItem->SetOnExecuteHandler(nullptr);
+	DriveModeMenuItem->SetMinValue(CSSMDrivePacket::DriveModes::DRV);
+	DriveModeMenuItem->SetMaxValue(CSSMDrivePacket::DriveModes::DRVTw);
+	DriveModeMenuItem->SetValue(CSSMDrivePacket::DriveModes::DRV);
 
 	BRTMenuItem = new MenuItemClass("BRT", 162, 157, 56, 12, MenuItemClass::MenuItemTypes::Numeric);
 	BRTMenuItem->Init(tft);
@@ -155,29 +128,39 @@ void PCMControlsClass::Init(byte navEncoderI2CAddress, byte funcEncoderI2CAddres
 	NextPageMenuItem->SetMaxValue(LocalDisplayClass::Pages::NONE);
 	NextPageMenuItem->SetValue(LocalDisplayClass::Pages::COM);
 
-}
-
-// This function is not being used?
-void PCMControlsClass::CheckButtons()
-{
-	if (PCMStatus.NavEncoderStatus)
-	{
-		NavButton->check();
+	// Set up ADC:
+	esp_adc_cal_value_t val_type = esp_adc_cal_characterize(ADC_UNIT_1, ADC_ATTEN_DB_11, ADC_WIDTH_BIT_12, 1100, &ADC1Chars);    //Check type of calibration value used to characterize ADC
+	if (val_type == ESP_ADC_CAL_VAL_EFUSE_VREF) {
+		sprintf(buf, "eFuse Vref: %u mV", ADC1Chars.vref);
+		_PL(buf);
+		//Vref = adc_chars.vref;
+	}
+	else if (val_type == ESP_ADC_CAL_VAL_EFUSE_TP) {
+		sprintf(buf, "Two Point --> coeff_a:%umV coeff_b:%umV\n", ADC1Chars.coeff_a, ADC1Chars.coeff_b);
+		_PL(buf);
+	}
+	else {
+		//Serial.println("Default Vref: 1100mV");
+		sprintf(buf, "ADC1Chars.vref: %u mV", ADC1Chars.vref);
+		_PL(buf);
+		VRef = defaultVRef;
+		sprintf(buf, "Defaul VRef: %u mV", VRef);
+		_PL(buf);
 	}
 
-	if (PCMStatus.FuncEncoderStatus)
-	{
-		FuncButton->check();
-	}
+	pinMode(defaultVMCUPin, INPUT);
+	VMCU.Init(0, 66, 40960, "V");
+
+	return true;
 }
 
-void PCMControlsClass::Update()
+void MCCControls::Update()
 {
 	bool NavWasSelected = NavSelected;
 	bool FuncWasSelected = FuncSelected;
 	MenuItemClass* currentItem = MainMenu->GetCurrentItem();
 
-	if (PCMStatus.NavEncoderStatus)
+	if (MCCStatus.NavEncoderStatus)
 	{
 		int delta = NavEncoder.getEncoderDelta();
 		if (delta > 0)
@@ -190,7 +173,6 @@ void PCMControlsClass::Update()
 			currentItem = MainMenu->PrevItem();
 			NavSelected = false;
 		}
-		//NavButton->check();
 	}
 
 	if (NavSelected) // Nav encoder button was pressed...
@@ -233,7 +215,7 @@ void PCMControlsClass::Update()
 		}
 	}
 
-	if (PCMStatus.FuncEncoderStatus)
+	if (MCCStatus.FuncEncoderStatus)
 	{
 		int delta = FuncEncoder.getEncoderDelta();
 		if (currentItem != nullptr && delta != 0 && NavSelected)
@@ -242,7 +224,7 @@ void PCMControlsClass::Update()
 			{
 				delta > 0 ? FuncSetting += currentItem->GetNumericStepSize() : FuncSetting -= currentItem->GetNumericStepSize();
 			}
-			else 
+			else
 			{
 				FuncSetting = FuncSetting + delta;
 			}
@@ -285,21 +267,55 @@ void PCMControlsClass::Update()
 			}
 		}
 	}
+
+
+	uint16_t newReading = analogRead(defaultVMCUPin);
+	VMCU.AddReading(newReading);
 }
 
-void PCMControlsClass::ToggleNavSelected()
+uint16_t MCCControls::GetMCURawADC()
+{
+	return VMCU.GetAverageRawValue();
+}
+
+float MCCControls::GetMCUVoltageReal()
+{
+	return VMCU.GetAverageRealValue();
+}
+
+String MCCControls::GetMCUVoltageString()
+{
+	return VMCU.GetRealString();
+}
+
+String MCCControls::GetMCUVoltageString(String format)
+{
+	return VMCU.GetRealString(format);
+}
+
+void MCCControls::CheckButtons()
+{
+	if (MCCStatus.NavEncoderStatus)
+	{
+		NavButton->check();
+	}
+
+	if (MCCStatus.FuncEncoderStatus)
+	{
+		FuncButton->check();
+	}
+}
+
+void MCCControls::ToggleNavSelected()
 {
 	NavSelected = !NavSelected;
 }
 
-void PCMControlsClass::ToggleFuncSelected()
+void MCCControls::ToggleFuncSelected()
 {
 	FuncSelected = !FuncSelected;
 }
 
-// Global and static declarations:
-PCMControlsClass PCMControls;
-bool PCMControlsClass::NavSelected = false;
-bool PCMControlsClass::FuncSelected = false;
-byte PCMControlsClass::CSSMPowerEnablePin = DefaultCSSMPowerEnablePin;
-byte PCMControlsClass::NMPowerEnablePin = DefaultNMPowerEnablePin;
+MCCControls mccControls;
+bool MCCControls::NavSelected = false;
+bool MCCControls::FuncSelected = false;
