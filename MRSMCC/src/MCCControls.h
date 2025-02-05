@@ -55,54 +55,66 @@ constexpr byte defaultFuncEncoderI2CAddress = 0x36;	// Right rotary encoder, use
 
 #include <TFTMenu.h>
 
+#include <Adafruit_INA219.h>
+
+constexpr byte defaultINA219Address = 0x41;			// I2C address of INA219 sensor on WaveShare UPS 3S module
+
 class MCCControls
 {
- protected:
-	 MeasurementClass VMCU;						// Analog voltage measured at the MCU battery JST connector
+protected:
+	MeasurementClass VMCU;						// Analog voltage measured at the MCU battery JST connector
 
-	 esp_adc_cal_characteristics_t ADC1Chars;
-	 uint32_t VRef = defaultVRef;
+	esp_adc_cal_characteristics_t ADC1Chars;
+	uint32_t VRef = defaultVRef;
 
-	 Adafruit_seesaw NavEncoder;
-	 seesaw_NeoPixel NavNeoPix = seesaw_NeoPixel(1, SS_NEOPIX, NEO_GRB + NEO_KHZ800);
-	 SSButtonConfig* NavButtonConfig;
-	 ace_button::AceButton* NavButton;
-	 static void HandleNavButtonEvents(ace_button::AceButton* b, uint8_t eventType, uint8_t buttonState);
+	Adafruit_seesaw NavEncoder;
+	seesaw_NeoPixel NavNeoPix = seesaw_NeoPixel(1, SS_NEOPIX, NEO_GRB + NEO_KHZ800);
+	SSButtonConfig* NavButtonConfig;
+	ace_button::AceButton* NavButton;
+	static void HandleNavButtonEvents(ace_button::AceButton* b, uint8_t eventType, uint8_t buttonState);
 
-	 Adafruit_seesaw FuncEncoder;
-	 seesaw_NeoPixel FuncNeoPix = seesaw_NeoPixel(1, SS_NEOPIX, NEO_GRB + NEO_KHZ800);
-	 SSButtonConfig* FuncButtonConfig;
-	 ace_button::AceButton* FuncButton;
-	 static void HandleFuncButtonEvents(ace_button::AceButton* b, uint8_t eventType, uint8_t buttonState);
+	Adafruit_seesaw FuncEncoder;
+	seesaw_NeoPixel FuncNeoPix = seesaw_NeoPixel(1, SS_NEOPIX, NEO_GRB + NEO_KHZ800);
+	SSButtonConfig* FuncButtonConfig;
+	ace_button::AceButton* FuncButton;
+	static void HandleFuncButtonEvents(ace_button::AceButton* b, uint8_t eventType, uint8_t buttonState);
 
-	 TFT_eSPI* tft;
+	TFT_eSPI* tft;
 
-	 uint32_t ReadCalibratedADC1(int rawADC1);	// Returns calibrated ADC1 measurement in mV
+	uint32_t ReadCalibratedADC1(int rawADC1);	// Returns calibrated ADC1 measurement in mV
 
- public:
-	 uint32_t NavSetting = 0;
-	 static bool NavSelected;
-	 uint32_t FuncSetting = 0;
-	 static bool FuncSelected;
+	Adafruit_INA219* WSUPS3SINA219 = new Adafruit_INA219(defaultINA219Address);
 
-	 TFTMenuClass* MainMenu;
-	 MenuItemClass* ESPNMenuItem;
-	 MenuItemClass* DriveModeMenuItem;
-	 MenuItemClass* BRTMenuItem;
-	 MenuItemClass* NextPageMenuItem;
+public:
+	uint32_t NavSetting = 0;
+	static bool NavSelected;
+	uint32_t FuncSetting = 0;
+	static bool FuncSelected;
 
-	 bool Init(TFT_eSPI* parentTFT);
-	 void Update();
+	TFTMenuClass* MainMenu;
+	MenuItemClass* ESPNMenuItem;
+	MenuItemClass* DriveModeMenuItem;
+	MenuItemClass* BRTMenuItem;
+	MenuItemClass* NextPageMenuItem;
 
-	 uint16_t GetMCURawADC();
-	 float GetMCUVoltageReal();
-	 String GetMCUVoltageString();
-	 String GetMCUVoltageString(String format);
+	float INA219VShunt = 0.0f;		// mV
+	float INA219VBus = 0.0f;		// V
+	float INA219VLoad = 0.0f;		// V
+	float INA219Current = 0.0f;		// mA
+	float INA219Power = 0.0f;		// mW
 
-	 void CheckButtons();
+	bool Init(TFT_eSPI* parentTFT);
+	void Update();
 
-	 static void ToggleNavSelected();
-	 static void ToggleFuncSelected();
+	uint16_t GetMCURawADC();
+	float GetMCUVoltageReal();
+	String GetMCUVoltageString();
+	String GetMCUVoltageString(String format);
+
+	void CheckButtons();
+
+	static void ToggleNavSelected();
+	static void ToggleFuncSelected();
 
 };
 

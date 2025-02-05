@@ -7,6 +7,7 @@
 
 #include "PCMControls.h"
 #include "PCMStatus.h"
+#include "PCMSensorData.h"
 #include "DEBUG Macros.h"
 #include "LocalDisplay.h"
 
@@ -34,6 +35,29 @@ void PCMControlsClass::ControlCSSMPower(byte value)
 
 	digitalWrite(CSSMPowerEnablePin, value);
 	sprintf(buffer, "CSSM power %s", value ? "ON" : "OFF");
+	LocalDisplay.AddDebugTextLine(buffer);
+}
+
+void PCMControlsClass::ToggleWSUPS3SINA219(byte value)
+{
+	char buffer[32];
+
+	if (PCMControls.UPSMenuItem->GetValue())
+	{
+		if (!PCMStatus.WSUPS3SINA219Status)
+		{
+			PCMStatus.WSUPS3SINA219Status = SensorData.StartWSUPS3SINA219();
+			if (!PCMStatus.WSUPS3SINA219Status)
+			{
+				PCMControls.UPSMenuItem->SetValue(0);
+			}
+		}
+	}
+	else
+	{
+		PCMStatus.WSUPS3SINA219Status = false;
+	}
+	sprintf(buffer, "WS UPS 3S %s", PCMStatus.WSUPS3SINA219Status ? "ON" : "OFF");
 	LocalDisplay.AddDebugTextLine(buffer);
 }
 
@@ -128,10 +152,16 @@ void PCMControlsClass::Init(byte navEncoderI2CAddress, byte funcEncoderI2CAddres
 
 	MainMenu = new TFTMenuClass(tft);
 
-	CSSMMenuItem = new MenuItemClass("CSSM", 36, 157, 56, 12, MenuItemClass::MenuItemTypes::OffOn);
-	CSSMMenuItem->Init(tft);
-	MainMenu->AddItem(CSSMMenuItem);
-	CSSMMenuItem->SetOnExecuteHandler(ControlCSSMPower);
+	UPSMenuItem = new MenuItemClass("UPS", 36, 157, 56, 12, MenuItemClass::MenuItemTypes::OffOn);
+	UPSMenuItem->Init(tft);
+	MainMenu->AddItem(UPSMenuItem);
+	UPSMenuItem->SetOnExecuteHandler(ToggleWSUPS3SINA219);
+	UPSMenuItem->SetValue(PCMStatus.WSUPS3SINA219Status ? 1 : 0);
+
+	//CSSMMenuItem = new MenuItemClass("CSSM", 36, 157, 56, 12, MenuItemClass::MenuItemTypes::OffOn);
+	//CSSMMenuItem->Init(tft);
+	//MainMenu->AddItem(CSSMMenuItem);
+	//CSSMMenuItem->SetOnExecuteHandler(ControlCSSMPower);
 
 	NMMenuItem = new MenuItemClass("NM", 98, 157, 56, 12, MenuItemClass::MenuItemTypes::OffOn);
 	NMMenuItem->Init(tft);

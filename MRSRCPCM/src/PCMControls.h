@@ -75,6 +75,7 @@ protected:
 
 	static void ControlCSSMPower(byte value);
 	static void ControlNMPower(byte value);
+	static void ToggleWSUPS3SINA219(byte value);
 
 public:
 	uint32_t NavSetting = 0;
@@ -83,7 +84,8 @@ public:
 	static bool FuncSelected;
 
 	TFTMenuClass* MainMenu;
-	MenuItemClass* CSSMMenuItem;
+	MenuItemClass* UPSMenuItem;
+	//MenuItemClass* CSSMMenuItem;
 	MenuItemClass* NMMenuItem;
 	MenuItemClass* BRTMenuItem;
 	MenuItemClass* NextPageMenuItem;

@@ -93,7 +93,7 @@ void LocalDisplayClass::DrawSYSPage()
 	int16_t cursorY = tft.height() - 20;
 	tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);	//DONE: Does bgfill = true work with the print() method? -> Yes, newly printed text clears the background
 	
-	// Measure & display backup battery voltage:
+	// Display MCU supply voltage:
 	tft.setTextDatum(BL_DATUM);
 	tft.setTextSize(2);
 	int32_t cursorX = tft.width() / 2 + 2;
@@ -106,7 +106,7 @@ void LocalDisplayClass::DrawSYSPage()
 	sprintf(buf, "%5.2F  V", SensorData.VMCU);
 	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
 
-	// Measure & display backup battery voltage:
+	// WS UPS 3S INA219 bus power:
 	tft.setTextDatum(BL_DATUM);
 	tft.setTextSize(2);
 	cursorX = tft.width() / 2 + 2;
@@ -120,7 +120,7 @@ void LocalDisplayClass::DrawSYSPage()
 	sprintf(buf, "%5.0F mW", SensorData.INA219Power);
 	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
 
-	// Measure & display internal 18650 cell voltage:
+	// WS UPS 3S INA219 bus current:
 	tft.setTextDatum(BL_DATUM);
 	tft.setTextSize(2);
 	cursorX = tft.width() / 2 + 2;
@@ -134,7 +134,7 @@ void LocalDisplayClass::DrawSYSPage()
 	sprintf(buf, "%5.1F mA", SensorData.INA219Current);
 	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
 
-	// Measure & display internally regulated (5 v) voltage:
+	// WS UPS 3S INA219 load voltage:
 	tft.setTextDatum(BL_DATUM);
 	tft.setTextSize(2);
 	cursorX = tft.width() / 2 + 2;
@@ -148,7 +148,7 @@ void LocalDisplayClass::DrawSYSPage()
 	sprintf(buf, "%5.2F  V", SensorData.INA219VLoad);
 	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
 
-	// Measure & display external supply voltage:
+	// WS UPS 3S INA219 bus voltage:
 	tft.setTextDatum(BL_DATUM);
 	tft.setTextSize(2);
 	cursorX = tft.width() / 2 + 2;
@@ -173,10 +173,6 @@ void LocalDisplayClass::DrawSYSPage()
 	sprintf(buf, "%04D", PCMControls.FuncSetting);
 	tft.drawString(buf, tft.width() - 2, tft.height() - 2);
 
-	//// Test code:
-	//tft.setTextDatum(BL_DATUM);
-	//sprintf(buf, "BRT: %04D", Brightness);
-	//tft.drawString(buf, 240, tft.height() - 2);
 }
 
 void LocalDisplayClass::DrawCOMPage()

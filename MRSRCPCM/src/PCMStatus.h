@@ -49,6 +49,7 @@ public:
 	 bool NavEncoderStatus = false;
 	 bool FuncEncoderStatus = false;
 
+	 bool WSUPS3SINA219Status = false;
 	 bool BMEx80Status = false;
 
 	 String debugTextLines[MAX_TEXT_LINES];

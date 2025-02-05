@@ -185,6 +185,8 @@ void setup()
 	{
 		SendCSSMPacketTask.enable();
 	}
+	// Set ESPNOWStatus FALSE to start; user initiates telemetry to the MRS through the on-screen menu system when ready:
+	CSSMS3Status.ESPNOWStatus = false;
 
 	ToggleHeartbeatLEDTask.setInterval(HeartbeatLEDTogglePeriod * TASK_MILLISECOND);
 	ToggleHeartbeatLEDTask.enable();
@@ -222,12 +224,16 @@ void SendCSSMPacketCallback()
 
 	esp_err_t result = ESP_OK;
 
-	result = esp_now_send(MRSMCCMAC, (uint8_t*)&CSSMS3Status.cssmDrivePacket, sizeof(CSSMS3Status.cssmDrivePacket));
-
-	if (result != ESP_NOW_SEND_SUCCESS)
+	if (CSSMS3Status.ESPNOWStatus)
 	{
-		sprintf(buf2, "ESP-NOW send error: %S", esp_err_to_name(result));
-		_PL(buf2)
+		result = esp_now_send(MRSMCCMAC, (uint8_t*)&CSSMS3Status.cssmDrivePacket, sizeof(CSSMS3Status.cssmDrivePacket));
+
+		if (result != ESP_NOW_SEND_SUCCESS)
+		{
+			sprintf(buf2, "ESP-NOW send error: %S", esp_err_to_name(result));
+			_PL(buf2)
+		}
+
 	}
 }
 

@@ -124,6 +124,8 @@ public:
 	MenuItemClass* NextPageMenuItem;
 
 	bool Init(TFT_eSPI* parentTFT);
+	bool SetupADC();
+
 	void Update();
 
 	uint16_t GetKPRawADC();
@@ -140,7 +142,7 @@ public:
 
 	static void ToggleNavSelected();
 	static void ToggleFuncSelected();
-
+	static void SetESPNOW(byte value);
 
 };
 

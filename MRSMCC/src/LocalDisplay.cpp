@@ -1,7 +1,7 @@
 /*	LocalDisplayClass - Class for implementing paged graphical display interface for
 *	ESP32 based MRS Master Communications Controller (MRS MCC)
 *
-*	Mitchell Baldwin copyright 2024
+*	Mitchell Baldwin copyright 2024-2025
 */
 
 #include "LocalDisplay.h"
@@ -214,6 +214,105 @@ void LocalDisplayClass::DrawSYSPage()
 
 }
 
+void LocalDisplayClass::DrawPOWPage()
+{
+	int16_t cursorX, cursorY;
+	int16_t halfScreenWidth = tft.width() / 2;
+	int16_t halfScreenHeight = tft.height() / 2;
+
+	currentPage = POW;
+
+	if (lastPage != currentPage)	// Clear display and redraw static elements of the page format:
+	{
+		DrawPageHeaderAndFooter();
+
+		cursorY = tft.height() - 20;
+		tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);	//DONE: Does bgfill = true work with the print() method? -> Yes, newly printed text clears the background
+
+		tft.setTextDatum(BL_DATUM);
+		tft.setTextSize(2);
+		cursorX = halfScreenWidth + 2;
+		tft.drawString("V", cursorX, cursorY);
+		cursorX += tft.textWidth("V", 2) + 1;
+		tft.setTextSize(1);
+		tft.drawString("MCU", cursorX, cursorY);	// Subscript
+
+		tft.setTextSize(2);
+		cursorX = halfScreenWidth + 2;
+		cursorY -= 20;
+		tft.drawString("P", cursorX, cursorY);
+		cursorX += tft.textWidth("V", 2) + 1;
+		tft.setTextSize(1);
+		tft.drawString("Bus", cursorX, cursorY);	// Subscript
+
+		tft.setTextSize(2);
+		cursorX = halfScreenWidth + 2;
+		cursorY -= 20;
+		tft.drawString("I", cursorX, cursorY);
+		cursorX += tft.textWidth("V", 2) + 1;
+		tft.setTextSize(1);
+		tft.drawString("Bus", cursorX, cursorY);	// Subscript
+
+		tft.setTextSize(2);
+		cursorX = halfScreenWidth + 2;
+		cursorY -= 20;
+		tft.drawString("V", cursorX, cursorY);
+		cursorX += tft.textWidth("V", 2) + 1;
+		tft.setTextSize(1);
+		tft.drawString("Load", cursorX, cursorY);	// Subscript
+
+		tft.setTextSize(2);
+		cursorX = halfScreenWidth + 2;
+		cursorY -= 20;
+		tft.drawString("V", cursorX, cursorY);
+		cursorX += tft.textWidth("V", 2) + 1;
+		tft.setTextSize(1);
+		tft.drawString("Bus", cursorX, cursorY);	// Subscript
+
+		lastPage = currentPage;
+	}
+
+	// Update dynamic displays:
+
+	cursorY = tft.height() - 20;
+	tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);	//DONE: Does bgfill = true work with the print() method? -> Yes, newly printed text clears the background
+	tft.setTextSize(2);
+	tft.setTextDatum(BR_DATUM);
+	sprintf(buf, "%5.2F  V", mccControls.GetMCUVoltageReal());
+	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
+
+	cursorY -= 20;
+	tft.setTextDatum(BR_DATUM);
+	sprintf(buf, "%5.0F mW", mccControls.INA219Power);
+	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
+
+	cursorY -= 20;
+	tft.setTextDatum(BR_DATUM);
+	sprintf(buf, "%5.1F mA", mccControls.INA219Current);
+	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
+
+	cursorY -= 20;
+	tft.setTextDatum(BR_DATUM);
+	sprintf(buf, "%5.2F  V", mccControls.INA219VLoad);
+	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
+
+	cursorY -= 20;
+	tft.setTextDatum(BR_DATUM);
+	sprintf(buf, "%5.2F  V", mccControls.INA219VBus);
+	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
+
+	// Display rotary encoder settings:
+	tft.setTextDatum(BL_DATUM);
+	tft.setTextSize(1);
+	tft.setTextColor(TFT_CYAN, TFT_BLACK, true);
+	sprintf(buf, "%04D", mccControls.NavSetting);
+	tft.drawString(buf, 2, tft.height() - 2);
+	tft.setTextDatum(BR_DATUM);
+	sprintf(buf, "%04D", mccControls.FuncSetting);
+	tft.drawString(buf, tft.width() - 2, tft.height() - 2);
+
+}
+
 void LocalDisplayClass::DrawCOMPage()
 {
 	currentPage = COM;
@@ -397,6 +496,9 @@ void LocalDisplayClass::Update()
 	{
 	case SYS:
 		DrawSYSPage();
+		break;
+	case POW:
+		DrawPOWPage();
 		break;
 	case COM:
 		DrawCOMPage();

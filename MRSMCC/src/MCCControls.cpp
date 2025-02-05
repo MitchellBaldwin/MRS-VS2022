@@ -151,6 +151,15 @@ bool MCCControls::Init(TFT_eSPI* parentTFT)
 	pinMode(defaultVMCUPin, INPUT);
 	VMCU.Init(0, 66, 40960, "V");
 
+	if (!WSUPS3SINA219->begin())
+	{
+		_PL("INA219 initialization FAILED")
+	}
+	else
+	{
+		_PL("INA219 initialized")
+	}
+
 	return true;
 }
 
@@ -271,6 +280,13 @@ void MCCControls::Update()
 
 	uint16_t newReading = analogRead(defaultVMCUPin);
 	VMCU.AddReading(newReading);
+
+	INA219VBus = WSUPS3SINA219->getBusVoltage_V();
+	INA219VShunt = WSUPS3SINA219->getShuntVoltage_mV();
+	INA219Current = WSUPS3SINA219->getCurrent_mA();
+	INA219Power = WSUPS3SINA219->getPower_mW();
+	INA219VLoad = INA219VBus + (INA219VShunt / 1000.0f);
+
 }
 
 uint16_t MCCControls::GetMCURawADC()

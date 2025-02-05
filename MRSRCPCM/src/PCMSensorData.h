@@ -62,6 +62,8 @@ public:
 	bool Init();
 	void Update();
 
+	static bool StartWSUPS3SINA219();
+
 };
 
 extern PCMSensorData SensorData;

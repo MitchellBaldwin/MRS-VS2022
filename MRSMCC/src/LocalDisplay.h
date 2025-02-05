@@ -32,6 +32,7 @@ public:
 	enum Pages
 	{
 		SYS,
+		POW,
 		COM,
 		DBG,
 
@@ -50,6 +51,7 @@ protected:
 	const char* PageTitles[NONE] =
 	{
 		"  System",
+		"   Power",
 		"   Comms",
 		"   Debug",
 
@@ -74,6 +76,7 @@ protected:
 
 	void DrawPageHeaderAndFooter();
 	void DrawSYSPage();
+	void DrawPOWPage();
 	void DrawCOMPage();
 	void DrawDBGPage();
 
@@ -85,6 +88,7 @@ public:
 		Clear,
 		Refresh,
 		SYSPage,
+		POWPage,
 		COMPage,
 		DBGPage,
 		I2CScan,

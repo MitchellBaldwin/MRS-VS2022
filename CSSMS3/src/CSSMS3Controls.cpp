@@ -181,7 +181,7 @@ bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 	ESPNMenuItem = new MenuItemClass("ESPN", 36, 157, 56, 12, MenuItemClass::MenuItemTypes::OffOn);
 	ESPNMenuItem->Init(tft);
 	MainMenu->AddItem(ESPNMenuItem);
-	ESPNMenuItem->SetOnExecuteHandler(nullptr);
+	ESPNMenuItem->SetOnExecuteHandler(cssmS3Controls.SetESPNOW);
 
 	DriveModeMenuItem = new MenuItemClass("Mode", 98, 157, 56, 12, MenuItemClass::MenuItemTypes::Action);
 	DriveModeMenuItem->Init(tft);
@@ -210,24 +210,7 @@ bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 
 
 	// Set up ADC:
-	esp_adc_cal_value_t val_type = esp_adc_cal_characterize(ADC_UNIT_1, ADC_ATTEN_DB_11, ADC_WIDTH_BIT_12, 1100, &ADC1Chars);    //Check type of calibration value used to characterize ADC
-	if (val_type == ESP_ADC_CAL_VAL_EFUSE_VREF) {
-		sprintf(buf, "eFuse Vref: %u mV", ADC1Chars.vref);
-		_PL(buf);
-		//Vref = adc_chars.vref;
-	}
-	else if (val_type == ESP_ADC_CAL_VAL_EFUSE_TP) {
-		sprintf(buf, "Two Point --> coeff_a:%umV coeff_b:%umV\n", ADC1Chars.coeff_a, ADC1Chars.coeff_b);
-		_PL(buf);
-	}
-	else {
-		//Serial.println("Default Vref: 1100mV");
-		sprintf(buf, "ADC1Chars.vref: %u mV", ADC1Chars.vref);
-		_PL(buf);
-		VRef = defaultVRef;
-		sprintf(buf, "Defaul VRef: %u mV", VRef);
-		_PL(buf);
-	}
+	SetupADC();
 
 	pinMode(KPSensePin, INPUT);
 	// Assumes use of a unity gain OpAmp buffer (3.3 V max);
@@ -247,7 +230,7 @@ bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 	RThrottleSetting.Init(2048, 1000, 20480, "%");
 
 	pinMode(VMCUPin, INPUT);
-	VMCU.Init(0, 66, 40960, "V");
+	VMCU.Init(0, 69, 40960, "V");
 
 	return true;
 
@@ -405,6 +388,31 @@ void CSSMS3Controls::Update()
 
 }
 
+bool CSSMS3Controls::SetupADC()
+{
+	char buf[64];
+	
+	esp_adc_cal_value_t val_type = esp_adc_cal_characterize(ADC_UNIT_1, ADC_ATTEN_DB_11, ADC_WIDTH_BIT_12, 1100, &ADC1Chars);    //Check type of calibration value used to characterize ADC
+	if (val_type == ESP_ADC_CAL_VAL_EFUSE_VREF) {
+		sprintf(buf, "eFuse Vref: %u mV", ADC1Chars.vref);
+		_PL(buf);
+		//Vref = adc_chars.vref;
+	}
+	else if (val_type == ESP_ADC_CAL_VAL_EFUSE_TP) {
+		sprintf(buf, "Two Point --> coeff_a:%umV coeff_b:%umV\n", ADC1Chars.coeff_a, ADC1Chars.coeff_b);
+		_PL(buf);
+	}
+	else {
+		//Serial.println("Default Vref: 1100mV");
+		sprintf(buf, "ADC1Chars.vref: %u mV", ADC1Chars.vref);
+		_PL(buf);
+		VRef = defaultVRef;
+		sprintf(buf, "Defaul VRef: %u mV", VRef);
+		_PL(buf);
+	}
+	return true;
+}
+
 uint16_t CSSMS3Controls::GetKPRawADC()
 {
 	return KPVoltage.GetAverageRawValue();
@@ -466,6 +474,18 @@ void CSSMS3Controls::ToggleNavSelected()
 void CSSMS3Controls::ToggleFuncSelected()
 {
 	FuncSelected = !FuncSelected;
+}
+
+void CSSMS3Controls::SetESPNOW(byte value)
+{
+	if (cssmS3Controls.ESPNMenuItem->GetValue())
+	{
+		CSSMS3Status.ESPNOWStatus = true;
+	}
+	else
+	{
+		CSSMS3Status.ESPNOWStatus = false;
+	}
 }
 
 

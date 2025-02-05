@@ -90,7 +90,7 @@ void setup()
 	{
 		_PL("Error initializing I2C bus...");
 	}
-	//LocalDisplay.ReportHeapStatus();
+	LocalDisplay.ReportHeapStatus();
 
 	// Determine the channel used by local WiFi router so we can ensure compatibility 
 	//when initializing ESP-NOW:
