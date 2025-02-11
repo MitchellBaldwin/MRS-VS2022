@@ -124,12 +124,12 @@ void setup()
 	snprintf(buf, 22, "MAC:%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 	_PL(buf)
 
-	// Test code:
-	WiFi.printDiag(USBSerial);
-
 	// Initialize ESP-NOW
 	// Set device as a Wi-Fi Station; turns WiFi radio ON:
 	WiFi.mode(WIFI_MODE_APSTA);
+
+	// Test code:
+	WiFi.printDiag(USBSerial);
 
 	CSSMS3Status.ESPNOWStatus = (esp_now_init() == ESP_OK);
 	if (!CSSMS3Status.ESPNOWStatus) {

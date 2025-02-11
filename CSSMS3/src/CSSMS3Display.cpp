@@ -89,7 +89,7 @@ void CSSMS3Display::DrawSYSPage()
 
 	tft.setTextColor(TFT_PINK, TFT_BLACK, true);
 	tft.setTextDatum(CR_DATUM);
-	sprintf(buf, "%s %s", "CSSM Uplink ", CSSMS3Status.CSSMESPNOWLinkStatus ? "OK" : "NO");
+	sprintf(buf, "%s %s", "CSSM Uplink ", CSSMS3Status.MRSMCCESPNOWLinkStatus ? "OK" : "NO");
 	tft.drawString(buf, tft.width() - 2, 40);
 
 	tft.setTextDatum(CL_DATUM);
@@ -129,6 +129,46 @@ void CSSMS3Display::DrawCOMPage()
 	{
 		DrawPageHeaderAndFooter();
 
+		int32_t halfScreenWidth = tft.width() / 2;
+		int32_t halfScreenHeight = tft.height() / 2;
+
+		tft.setTextSize(1);
+
+		tft.setTextDatum(CL_DATUM);
+		tft.setTextColor(TFT_LIGHTGREY);
+		sprintf(buf, "UART0 %s", CSSMS3Status.UART0Status ? "OK" : "NO");
+		tft.drawString(buf, 2, 30);
+
+		tft.setTextDatum(CR_DATUM);
+		sprintf(buf, "UART1 %s", CSSMS3Status.UART1Status ? "OK" : "NO");
+		tft.drawString(buf, halfScreenWidth, 30);
+
+		tft.setTextColor(TFT_PINK);
+		tft.setTextDatum(CL_DATUM);
+		tft.drawString(ComModeHeadings[CSSMS3Status.ComMode], 2, 40);
+
+		tft.setTextColor(TFT_GREENYELLOW);
+		tft.setTextDatum(CL_DATUM);	//DONE: setTextDatum has NO AFFECT on print() output; print() effectively uses default TL_DATUM
+		uint8_t mac[6];
+		WiFi.macAddress(mac);
+		sprintf(buf, "MAC:%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+		tft.drawString(buf, 2, halfScreenHeight);
+
+		tft.setTextColor(TFT_GREENYELLOW);
+		sprintf(buf, "ESPNow %s", CSSMS3Status.ESPNOWStatus ? "OK" : "NO");
+		tft.drawString(buf, 2, halfScreenHeight + 10);
+
+		tft.setTextDatum(CL_DATUM);
+		tft.setTextColor(TFT_GREEN);
+		sprintf(buf, "WiFi Ch %d %s %s", WiFi.channel(), CSSMS3Status.WiFiStatus ? "SSID:" : "NO", WiFi.SSID());
+		tft.drawString(buf, 2, halfScreenHeight + 20);
+
+		sprintf(buf, "IP: %s %d dBm", WiFi.localIP().toString(), WiFi.RSSI());
+		tft.drawString(buf, 2, halfScreenHeight + 30);
+
+		tft.setTextColor(TFT_CYAN);
+		tft.drawString(I2CBus.Get1st6ActiveI2CAddressesString(), 2, halfScreenHeight + 50);
+
 		lastPage = currentPage;
 	}
 }
@@ -140,6 +180,89 @@ void CSSMS3Display::DrawDBGPage()
 	if (lastPage != currentPage)
 	{
 		DrawPageHeaderAndFooter();
+
+		int32_t halfScreenWidth = tft.width() / 2;
+		int32_t halfScreenHeight = tft.height() / 2;
+
+		tft.setTextSize(1);
+
+		tft.setTextColor(TFT_GREEN);
+		tft.setTextDatum(CL_DATUM);
+		sprintf(buf, "%s %d core", ESP.getChipModel(), ESP.getChipCores());
+		tft.drawString(buf, 2, 30, 1);
+		sprintf(buf, "CPU v%d %d MHz", ESP.getChipRevision(), ESP.getCpuFreqMHz());
+		tft.drawString(buf, 2, 40, 1);
+
+		tft.setTextColor(TFT_ORANGE, TFT_BLACK, true);
+		sprintf(buf, "Heap (F/T): %d/%d", ESP.getFreeHeap(), ESP.getHeapSize());
+		tft.drawString(buf, 2, 50, 1);
+		sprintf(buf, "Prog (U/F): %d/%d", ESP.getSketchSize(), ESP.getFreeSketchSpace());
+		tft.drawString(buf, 2, 60, 1);
+		if (ESP.getPsramSize() > 0)
+		{
+			sprintf(buf, "PSRAM: %d/%d", ESP.getFreePsram(), ESP.getPsramSize());
+		}
+		else
+		{
+			sprintf(buf, "No PSRAM");
+		}
+		tft.drawString(buf, 2, 70, 1);
+
+		tft.setTextColor(TFT_GREENYELLOW);
+		tft.setTextDatum(CL_DATUM);
+		uint8_t mac[6];
+		WiFi.macAddress(mac);
+		sprintf(buf, "MAC:%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+		tft.drawString(buf, 2, halfScreenHeight + 20);
+
+		tft.setTextColor(TFT_GREEN);
+		tft.setTextDatum(CL_DATUM);
+		sprintf(buf, "SSID: %s %d dBm", WiFi.SSID().c_str(), WiFi.RSSI());
+		tft.drawString(buf, 2, halfScreenHeight + 30, 1);
+		sprintf(buf, "IP: %s", WiFi.localIP().toString());
+		tft.drawString(buf, 2, halfScreenHeight + 40);
+
+		tft.setTextColor(TFT_CYAN);
+		tft.drawString(I2CBus.Get1st6ActiveI2CAddressesString(), 2, halfScreenHeight + 50);
+
+		tft.setTextColor(TFT_LIGHTGREY);
+		sprintf(buf, "UART0 %s", CSSMS3Status.UART0Status ? "OK" : "NO");
+		tft.drawString(buf, 2, halfScreenHeight);
+
+		tft.setTextDatum(CR_DATUM);
+		sprintf(buf, "UART1 %s", CSSMS3Status.UART1Status ? "OK" : "NO");
+		tft.drawString(buf, halfScreenWidth, halfScreenHeight);
+
+		tft.setTextColor(TFT_GREENYELLOW);
+		tft.setTextDatum(CL_DATUM);
+		sprintf(buf, "ESPNow %s", CSSMS3Status.ESPNOWStatus ? "OK" : "NO");
+		tft.drawString(buf, 2, halfScreenHeight + 10);
+
+		tft.setTextColor(TFT_GREEN);
+		tft.setTextDatum(CR_DATUM);
+		sprintf(buf, "WiFi %s", CSSMS3Status.WiFiStatus ? "OK" : "NO");
+		tft.drawString(buf, halfScreenWidth, halfScreenHeight + 10);
+
+		tft.setTextColor(TFT_GREENYELLOW);
+		tft.setTextDatum(CL_DATUM);
+		for (int i = 0; i < MAX_DEBUG_TEXT_LINES; ++i)
+		{
+			tft.drawString(CSSMS3Status.debugTextLines[i].c_str(), halfScreenWidth + 2, 30 + i * 10);
+		}
+
+		// Draw 16x16 font table:
+		int32_t xTL = halfScreenWidth + 10;
+		int32_t yTL = 10;
+		yTL -= 20;	// Subtract starting row index x row height (2 * 10 = 20)
+		tft.setTextDatum(TL_DATUM);
+		tft.setTextColor(TFT_GOLD, TFT_BLACK, true);
+		for (byte i = 2; i < 16; ++i)
+		{
+			for (byte j = 0; j < 16; ++j)
+			{
+				tft.drawString(String((char)(i * 16 + j)), xTL + 8 * j, yTL + 10 * i);
+			}
+		}
 
 		lastPage = currentPage;
 	}

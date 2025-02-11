@@ -61,9 +61,10 @@ public:
 	int ESPNOWPacketSentCount = 0;
 	uint16_t SendRetries = 0;
 
-	uint32_t CSSMPacketReceivedCount = 0;
-	uint32_t SaveCSSMPacketReceivedCount = 0;
-	bool CSSMESPNOWLinkStatus = false;
+	uint32_t MRSMCCPacketReceivedCount = 0;
+	uint32_t SaveMRSMCCPacketReceivedCount = 0;
+	bool MRSMCCESPNOWLinkStatus = false;
+	
 	bool WiFiStatus = false;
 	 
 	bool LocalDisplayStatus = false;

@@ -162,11 +162,13 @@ void LocalDisplayClass::DrawSYSPage()
 		tft.drawString(buf, 2, cursorY);
 	}
 
+	char degreeSymbol[1] = { 0xF7 };
+
 	cursorY += 10;
 	tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK, true);
 	if (MCCStatus.mcStatus.VBATValid)
 	{
-		sprintf(buf, "Vbat: %4.1f  T2: %4.1f°C  T1: %4.1f°C", MCCStatus.mcStatus.SupBatV, MCCStatus.mcStatus.Temp2, MCCStatus.mcStatus.Temp1);
+		sprintf(buf, "Vbat: %4.1f  T2: %4.1f%sC  T1: %4.1f°C", MCCStatus.mcStatus.SupBatV, MCCStatus.mcStatus.Temp2, degreeSymbol, MCCStatus.mcStatus.Temp1);
 	}
 	else
 	{

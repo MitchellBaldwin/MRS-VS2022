@@ -176,7 +176,8 @@ bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 
 	}
 
-	MainMenu = new TFTMenuClass(tft);
+	MainMenu = new TFTMenuClass();
+	MainMenu->Init(tft);
 
 	ESPNMenuItem = new MenuItemClass("ESPN", 36, 157, 56, 12, MenuItemClass::MenuItemTypes::OffOn);
 	ESPNMenuItem->Init(tft);

@@ -138,7 +138,6 @@ void setup()
 		if (esp_now_add_peer(&MRSRCCSSMInfo) != ESP_OK)
 		{
 			_PL("Failed to add peer")
-				//return;
 		}
 
 		// Register OnDataReceived callback

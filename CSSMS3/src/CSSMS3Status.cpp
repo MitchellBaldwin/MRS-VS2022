@@ -11,7 +11,7 @@ void CSSMS3StatusClass::Init()
 
 void CSSMS3StatusClass::Update()
 {
-	CSSMESPNOWLinkStatus = (CSSMPacketReceivedCount != SaveCSSMPacketReceivedCount);
+	MRSMCCESPNOWLinkStatus = (MRSMCCPacketReceivedCount != SaveMRSMCCPacketReceivedCount);
 }
 
 void CSSMS3StatusClass::AddDebugTextLine(String newLine)
