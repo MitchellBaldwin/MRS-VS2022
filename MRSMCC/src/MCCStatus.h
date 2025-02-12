@@ -23,7 +23,7 @@
 #include "C:\Repos\MRS-VS2022\MRSCommon\src\CSSMDrivePacket.h"
 #include "C:\Repos\MRS-VS2022\MRSCommon\src\RC2x15AMCStatusPacket.h"
 
-constexpr uint8_t MAX_TEXT_LINES = 8;
+constexpr uint8_t MAX_TEXT_LINES = 14;
 
 class MCCStatusClass
 {

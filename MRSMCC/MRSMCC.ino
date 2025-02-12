@@ -74,6 +74,18 @@ void setup()
 
 	_PL("");
 
+	// Initialize LocalDisplay and show Debug page to provide information on progress initializing other components:
+	if (LocalDisplay.Init())
+	{
+		MCCStatus.LocalDisplayStatus = true;
+		_PL("Local Display initialized successfully");
+	}
+	else
+	{
+		MCCStatus.LocalDisplayStatus = false;
+		_PL("Local Display initialization FAIL");
+	}
+
 	// Initialize motor controller:
 	MCCStatus.RC2x15AUARTStatus = RC2x15AMC.Init();
 
@@ -161,18 +173,6 @@ void setup()
 	ReadButtonsTask.enable();
 	ReadControlsTask.enable();
 
-	if (LocalDisplay.Init())
-	{
-		MCCStatus.LocalDisplayStatus = true;
-		_PL("Local Display initialized successfully");
-	}
-	else
-	{
-		MCCStatus.LocalDisplayStatus = false;
-		_PL("Local Display initialization FAIL");
-	}
-	UpdateLocalDisplayTask.enable();
-
 	UpdateMotorControllerTask.enable();
 	if (MCCStatus.RC2x15AUARTStatus)
 	{
@@ -185,6 +185,10 @@ void setup()
 		UpdateMotorControllerCallback();
 		UpdateMotorControllerCallback();
 	}
+
+	// Components initialzed; switch LocalDisplay to normal operation:
+	LocalDisplay.Control(LocalDisplayClass::Commands::SYSPage);
+	UpdateLocalDisplayTask.enable();
 
 	ToggleBuiltinLEDTask.enable();
 }

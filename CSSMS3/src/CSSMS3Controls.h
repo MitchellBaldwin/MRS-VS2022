@@ -117,11 +117,19 @@ public:
 	uint32_t FuncSetting = 0;
 	static bool FuncSelected;
 
-	TFTMenuClass* MainMenu;
+	TFTMenuClass* MainMenu;				// SYS page menu
 	MenuItemClass* ESPNMenuItem;
 	MenuItemClass* DriveModeMenuItem;
 	MenuItemClass* BRTMenuItem;
 	MenuItemClass* NextPageMenuItem;
+
+	TFTMenuClass* CommsMenu;			// COM page menu
+	MenuItemClass* WiFiMenuItem;
+	
+	TFTMenuClass* DebugMenu;			// DBG page menu
+	MenuItemClass* ReportMemoryMenuItem;
+	MenuItemClass* ShowFontMenuItem;
+	//MenuItemClass* NextPageMenuItem;
 
 	bool Init(TFT_eSPI* parentTFT);
 	bool SetupADC();
@@ -143,6 +151,7 @@ public:
 	static void ToggleNavSelected();
 	static void ToggleFuncSelected();
 	static void SetESPNOW(byte value);
+	static void SetWiFi(byte value);
 
 };
 

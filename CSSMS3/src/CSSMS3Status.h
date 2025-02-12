@@ -20,7 +20,7 @@
 	#include "WProgram.h"
 #endif
 
-constexpr uint8_t MAX_DEBUG_TEXT_LINES = 8;
+constexpr uint8_t MAX_DEBUG_TEXT_LINES = 14;
 
 //#include "C:\Repos\MRS-VS2022\MRSCommon\src\CSSMDrivePacket.h"
 #include "..\..\MRSCommon\src\CSSMDrivePacket.h"

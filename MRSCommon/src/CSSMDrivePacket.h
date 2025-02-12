@@ -41,12 +41,17 @@ protected:
 
 public:
 	DriveModes DriveMode = DriveModes::DRVLR;	// CSSM Drive Mode
+
 	int HeadingSetting = 0;						// Commanded HDG (0 - 359)
 	int CourseSetting = 0;						// Commanded CRS (0 - 359)
 	float OmegaXY = 0.0f;						// Commanded turn rate (±rad/s)
 	float Speed = 0.0f;							// Commanded throttle setting (±mm/s)
 	float LThrottle = 0.0f;						// Commanded left throttle setting (±100.0%)
 	float RThrottle = 0.0f;						// Commanded right throttle setting (±100.0%)
+
+	float GroundSpeed = 0.0f;					// Measured ground speed (±mm/s)
+	float TurnRate = 0.0f;						// Measured turn rate (±rad/s)
+	int Heading = 0;							// Indicated heading (degrees)
 
 	void NextDriveMode()
 	{

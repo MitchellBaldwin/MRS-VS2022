@@ -18,80 +18,22 @@ void CSSMS3Display::DrawPageHeaderAndFooter()
 	tft.setTextSize(1);
 	tft.setTextColor(TFT_BLUE, TFT_BLACK, false);
 	tft.setTextDatum(TL_DATUM);
-	tft.drawString("MRSRC CSSMS3", 2, 2);
-	sprintf(buf, "v%d.%d", CSSMS3Status.MajorVersion, CSSMS3Status.MinorVersion);
-	tft.drawString(buf, 2, 12);
+	sprintf(buf, "MRS RC CSSMS3 v%d.%d", CSSMS3Status.MajorVersion, CSSMS3Status.MinorVersion);
+	tft.drawString(buf, 2, 2);
 
-	tft.setTextDatum(TR_DATUM);
+	tft.setTextColor(TFT_SKYBLUE, TFT_BLACK, false);
+	tft.setTextDatum(TC_DATUM);
 	sprintf(buf, "%s", PageTitles[currentPage]);
-	tft.drawString(buf, tft.width() - 2, 2);
+	tft.drawString(buf, tft.width() / 2, 2);
 
-	// Draw footer menu:
-	if (cssmS3Controls.MainMenu != nullptr)
-	{
-		cssmS3Controls.MainMenu->Draw();
-	}
+	tft.setTextColor(TFT_CYAN);
+	tft.setTextDatum(TR_DATUM);
+	tft.drawString(ComModeHeadings[CSSMS3Status.ComMode], tft.width() - 2, 2);
+
 }
 
-void CSSMS3Display::DrawSYSPage()
+void CSSMS3Display::DrawDashboard()
 {
-	currentPage = SYS;
-
-	if (lastPage != currentPage)
-	{
-		// Clear display and redraw static elements of the page format:
-		DrawPageHeaderAndFooter();
-
-		tft.setTextSize(1);
-
-		tft.setTextColor(TFT_LIGHTGREY);
-		tft.setTextDatum(CL_DATUM);
-		sprintf(buf, "UART0 %s", CSSMS3Status.UART0Status ? "OK" : "NO");
-		tft.drawString(buf, 2, 30);
-
-		tft.setTextDatum(CR_DATUM);
-		sprintf(buf, "UART1 %s", CSSMS3Status.UART1Status ? "OK" : "NO");
-		tft.drawString(buf, tft.width() / 2 - 2, 30);
-
-		tft.setTextColor(TFT_PINK);
-		tft.setTextDatum(CL_DATUM);
-		tft.drawString(ComModeHeadings[CSSMS3Status.ComMode], 2, 40);
-
-		tft.setTextColor(TFT_ORANGE);
-		sprintf(buf, "WiFi %s", CSSMS3Status.WiFiStatus ? "OK" : "NO");
-		tft.drawString(buf, 2, 50);
-
-		tft.setTextColor(TFT_GREEN);
-		tft.setTextDatum(CL_DATUM);
-		sprintf(buf, "IP: %s", WiFi.localIP().toString());
-		tft.drawString(buf, 50, 50);
-
-		tft.setTextColor(TFT_GREENYELLOW);
-		tft.setTextDatum(CR_DATUM);
-		uint8_t mac[6];
-		WiFi.macAddress(mac);
-		sprintf(buf, "MAC:%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-		tft.drawString(buf, tft.width() - 2, 50);
-
-		tft.setTextColor(TFT_CYAN);
-		tft.setTextDatum(CL_DATUM);
-		tft.drawString(I2CBus.Get1st6ActiveI2CAddressesString(), 2, tft.height() / 2 + 50);
-
-		lastPage = currentPage;
-	}
-
-	// Update dynamic displays:
-
-	//tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK, true);
-	//tft.setTextDatum(CC_DATUM);
-	//sprintf(buf, "%5d ms", CSSMS3Status.CSSMPacketReceiptInterval);
-	//tft.drawString(buf, tft.width() / 2, 40);
-
-	tft.setTextColor(TFT_PINK, TFT_BLACK, true);
-	tft.setTextDatum(CR_DATUM);
-	sprintf(buf, "%s %s", "CSSM Uplink ", CSSMS3Status.MRSMCCESPNOWLinkStatus ? "OK" : "NO");
-	tft.drawString(buf, tft.width() - 2, 40);
-
 	tft.setTextDatum(CL_DATUM);
 	int16_t cursorY = tft.height() / 2 - 20;
 	tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);	//DONE: Does bgfill = true work with the print() method? -> Yes, newly printed text clears the background
@@ -109,9 +51,71 @@ void CSSMS3Display::DrawSYSPage()
 		CSSMS3Status.cssmDrivePacket.OmegaXY,
 		CSSMS3Status.cssmDrivePacket.Speed);
 	tft.drawString(buf, 2, cursorY);
+}
 
-	cursorY = tft.height() / 2 + 10;
+void CSSMS3Display::DrawSYSPage()
+{
+	currentPage = SYS;
+
+	if (lastPage != currentPage)
+	{
+		// Clear display and redraw static elements of the page format:
+		DrawPageHeaderAndFooter();
+
+		tft.setTextSize(1);
+
+		//tft.setTextColor(TFT_LIGHTGREY);
+		//tft.setTextDatum(CL_DATUM);
+		//sprintf(buf, "UART0 %s", CSSMS3Status.UART0Status ? "OK" : "NO");
+		//tft.drawString(buf, 2, 30);
+
+		//tft.setTextDatum(CR_DATUM);
+		//sprintf(buf, "UART1 %s", CSSMS3Status.UART1Status ? "OK" : "NO");
+		//tft.drawString(buf, tft.width() / 2 - 2, 30);
+
+		tft.setTextColor(TFT_ORANGE);
+		tft.setTextDatum(CL_DATUM);
+		sprintf(buf, "WiFi %s  IP: %s", CSSMS3Status.WiFiStatus ? "OK" : "NO", WiFi.localIP().toString());
+		tft.drawString(buf, 2, 30);
+
+		tft.setTextColor(TFT_GREENYELLOW);
+		tft.setTextDatum(CR_DATUM);
+		uint8_t mac[6];
+		WiFi.macAddress(mac);
+		sprintf(buf, "MAC:%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+		tft.drawString(buf, tft.width() - 2, 30);
+
+		tft.setTextColor(TFT_CYAN);
+		tft.setTextDatum(CL_DATUM);
+		tft.drawString(I2CBus.Get1st6ActiveI2CAddressesString(), 2, 40);
+
+		// Draw footer menu:
+		if (cssmS3Controls.MainMenu != nullptr)
+		{
+			cssmS3Controls.MainMenu->Draw();
+		}
+
+		lastPage = currentPage;
+	}
+
+	// Update dynamic displays:
+
+	DrawDashboard();
+	
+	//tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK, true);
+	//tft.setTextDatum(CC_DATUM);
+	//sprintf(buf, "%5d ms", CSSMS3Status.CSSMPacketReceiptInterval);
+	//tft.drawString(buf, tft.width() / 2, 40);
+
+	tft.setTextColor(TFT_PINK, TFT_BLACK, true);
+	tft.setTextDatum(CR_DATUM);
+	sprintf(buf, "%s %s", "CSSM Uplink ", CSSMS3Status.MRSMCCESPNOWLinkStatus ? "OK" : "NO");
+	tft.drawString(buf, tft.width() - 2, 40);
+
+
+	int16_t cursorY = tft.height() / 2 + 10;
 	tft.setTextColor(TFT_SILVER, TFT_BLACK, true);
+	tft.setTextDatum(CL_DATUM);
 	sprintf(buf, "KP %4d %s", cssmS3Controls.GetKPRawADC(), cssmS3Controls.GetKPVoltageString());
 	tft.drawString(buf, 2, cursorY);
 
@@ -168,6 +172,12 @@ void CSSMS3Display::DrawCOMPage()
 
 		tft.setTextColor(TFT_CYAN);
 		tft.drawString(I2CBus.Get1st6ActiveI2CAddressesString(), 2, halfScreenHeight + 50);
+
+		// Draw footer menu:
+		if (cssmS3Controls.CommsMenu != nullptr)
+		{
+			cssmS3Controls.CommsMenu->Draw();
+		}
 
 		lastPage = currentPage;
 	}
@@ -247,21 +257,19 @@ void CSSMS3Display::DrawDBGPage()
 		tft.setTextDatum(CL_DATUM);
 		for (int i = 0; i < MAX_DEBUG_TEXT_LINES; ++i)
 		{
-			tft.drawString(CSSMS3Status.debugTextLines[i].c_str(), halfScreenWidth + 2, 30 + i * 10);
+			tft.drawString(CSSMS3Status.debugTextLines[i].c_str(), halfScreenWidth + 2, 20 + i * 10);
 		}
 
-		// Draw 16x16 font table:
-		int32_t xTL = halfScreenWidth + 10;
-		int32_t yTL = 10;
-		yTL -= 20;	// Subtract starting row index x row height (2 * 10 = 20)
-		tft.setTextDatum(TL_DATUM);
-		tft.setTextColor(TFT_GOLD, TFT_BLACK, true);
-		for (byte i = 2; i < 16; ++i)
+		if (ShowingFontTable)
 		{
-			for (byte j = 0; j < 16; ++j)
-			{
-				tft.drawString(String((char)(i * 16 + j)), xTL + 8 * j, yTL + 10 * i);
-			}
+			// Draw 16x16 font table:
+			ShowFontTable(halfScreenWidth + 10, 10);
+		}
+
+		// Draw footer menu:
+		if (cssmS3Controls.DebugMenu != nullptr)
+		{
+			cssmS3Controls.DebugMenu->Draw();
 		}
 
 		lastPage = currentPage;
@@ -285,7 +293,8 @@ bool CSSMS3Display::Init()
 	tft.init();
 	tft.setRotation(3);
 
-	Control(CSSMS3Display::Commands::SYSPage);
+	//Control(CSSMS3Display::Commands::SYSPage);
+	cssmS3Display.Control(CSSMS3Display::Commands::DBGPage);
 	SetDisplayBrightness(DefaultDisplayBrightness);
 
 	return true;
@@ -419,11 +428,35 @@ void CSSMS3Display::AddDebugTextLine(String newLine)
 	RefreshPage(DBG);
 }
 
-void CSSMS3Display::ReportHeapStatus()
+void CSSMS3Display::ReportHeapStatus(byte /*value*/)
 {
+	char buf[64];
+
 	sprintf(buf, "Heap (F/T): %d/%d", ESP.getFreeHeap(), ESP.getHeapSize());
 	CSSMS3Status.AddDebugTextLine(buf);
-	RefreshPage(DBG);
+	cssmS3Display.RefreshPage(CSSMS3Display::Pages::DBG);
+}
+
+void CSSMS3Display::ShowFontTableFixed(byte /*value*/)
+{
+	cssmS3Display.ShowingFontTable = !cssmS3Display.ShowingFontTable;
+	cssmS3Display.RefreshCurrentPage();
+	//cssmS3Display.ShowFontTable(cssmS3Display.tft.width() / 2 + 10, 10);
+}
+
+void CSSMS3Display::ShowFontTable(int32_t xTL, int32_t yTL)
+{
+	yTL -= 20;	// Subtract starting row index x row height (2 * 10 = 20)
+	tft.fillRect(xTL, yTL, 128, 160, TFT_BLACK);
+	tft.setTextDatum(TL_DATUM);
+	tft.setTextColor(TFT_GOLD, TFT_BLACK, true);
+	for (byte i = 2; i < 16; ++i)
+	{
+		for (byte j = 0; j < 16; ++j)
+		{
+			tft.drawString(String((char)(i * 16 + j)), xTL + 8 * j, yTL + 10 * i);
+		}
+	}
 }
 
 

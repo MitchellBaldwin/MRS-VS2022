@@ -48,17 +48,17 @@ protected:
 
 	const char* PageTitles[NONE] =
 	{
-		"  System",
-		"   Comms",
-		"   Debug",
+		"System",
+		"Comms",
+		"Debug",
 
 	};
 
 	const char* ComModeHeadings[CSSMS3StatusClass::ComModes::NoComs] =
 	{
 		"MRS RC MCC UART1",
-		"Direct WiFi/TCP ",
-		"Direct ESP-NOW  ",
+		"Direct WiFi/TCP",
+		"Direct ESP-NOW",
 	};
 
 	const char* DriveModeHeadings[CSSMDrivePacket::DriveModes::NoDriveMode] =
@@ -71,7 +71,10 @@ protected:
 		"DRV L/R",
 	};
 
+	bool ShowingFontTable = false;
+
 	void DrawPageHeaderAndFooter();
+	void DrawDashboard();
 	void DrawSYSPage();
 	void DrawCOMPage();
 	void DrawDBGPage();
@@ -113,7 +116,9 @@ public:
 	static void SetDisplayBrightness(byte brightness);
 
 	void AddDebugTextLine(String newLine);
-	void ReportHeapStatus();
+	static void ReportHeapStatus(byte value);
+	static void ShowFontTableFixed(byte value);
+	void ShowFontTable(int32_t xTL, int32_t yTL);
 
 };
 

@@ -209,6 +209,32 @@ bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 	NextPageMenuItem->SetMaxValue(CSSMS3Display::Pages::NONE);
 	NextPageMenuItem->SetValue(CSSMS3Display::Pages::COM);
 
+	CommsMenu = new TFTMenuClass();
+	CommsMenu->Init(tft);
+
+	CommsMenu->AddItem(ESPNMenuItem);
+
+	WiFiMenuItem = new MenuItemClass("WiFi", 98, 157, 56, 12, MenuItemClass::MenuItemTypes::OffOn);
+	WiFiMenuItem->Init(tft);
+	CommsMenu->AddItem(WiFiMenuItem);
+	WiFiMenuItem->SetOnExecuteHandler(SetWiFi);
+
+	CommsMenu->AddItem(NextPageMenuItem);
+
+	DebugMenu = new TFTMenuClass();
+	DebugMenu->Init(tft);
+
+	ReportMemoryMenuItem = new MenuItemClass("Mem", 36, 157, 56, 12, MenuItemClass::MenuItemTypes::Action);
+	ReportMemoryMenuItem->Init(tft);
+	DebugMenu->AddItem(ReportMemoryMenuItem);
+	ReportMemoryMenuItem->SetOnExecuteHandler(cssmS3Display.ReportHeapStatus);
+
+	ShowFontMenuItem = new MenuItemClass("Font", 98, 157, 56, 12, MenuItemClass::MenuItemTypes::Action);
+	ShowFontMenuItem->Init(tft);
+	DebugMenu->AddItem(ShowFontMenuItem);
+	ShowFontMenuItem->SetOnExecuteHandler(cssmS3Display.ShowFontTableFixed);
+
+	DebugMenu->AddItem(NextPageMenuItem);
 
 	// Set up ADC:
 	SetupADC();
@@ -241,7 +267,31 @@ void CSSMS3Controls::Update()
 {
 	bool NavWasSelected = NavSelected;
 	bool FuncWasSelected = FuncSelected;
-	MenuItemClass* currentItem = MainMenu->GetCurrentItem();
+
+	TFTMenuClass* currentMenu = nullptr;
+
+	switch (cssmS3Display.GetCurrentPage())
+	{
+	case CSSMS3Display::Pages::SYS:
+	{
+		currentMenu = MainMenu;
+		break;
+	}
+	case CSSMS3Display::Pages::COM:
+	{
+		currentMenu = CommsMenu;
+		break;
+	}
+	case CSSMS3Display::Pages::DBG:
+	{
+		currentMenu = DebugMenu;
+		break;
+	}
+	default:
+		currentMenu = MainMenu;
+		break;
+	}
+	MenuItemClass* currentItem = currentMenu->GetCurrentItem();
 
 	if (CSSMS3Status.NavEncoderStatus)
 	{
@@ -251,12 +301,12 @@ void CSSMS3Controls::Update()
 		case NavEncoderModes::MenuMode:
 			if (delta > 0)
 			{
-				currentItem = MainMenu->NextItem();
+				currentItem = currentMenu->NextItem();
 				NavSelected = false;
 			}
 			else if (delta < 0)
 			{
-				currentItem = MainMenu->PrevItem();
+				currentItem = currentMenu->PrevItem();
 				NavSelected = false;
 			}
 			break;
@@ -486,6 +536,18 @@ void CSSMS3Controls::SetESPNOW(byte value)
 	else
 	{
 		CSSMS3Status.ESPNOWStatus = false;
+	}
+}
+
+void CSSMS3Controls::SetWiFi(byte value)
+{
+	if (cssmS3Controls.WiFiMenuItem->GetValue())
+	{
+		CSSMS3Status.WiFiStatus = true;
+	}
+	else
+	{
+		CSSMS3Status.WiFiStatus = false;
 	}
 }
 

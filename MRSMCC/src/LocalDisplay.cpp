@@ -162,17 +162,17 @@ void LocalDisplayClass::DrawSYSPage()
 		tft.drawString(buf, 2, cursorY);
 	}
 
-	char degreeSymbol[1] = { 0xF7 };
-
+	// Two ways to display the ° character: as a string (%s) or as a char (%c)
+	char degreeSymbol[2] = { 0xF7, 0x00 };
 	cursorY += 10;
 	tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK, true);
 	if (MCCStatus.mcStatus.VBATValid)
 	{
-		sprintf(buf, "Vbat: %4.1f  T2: %4.1f%sC  T1: %4.1f°C", MCCStatus.mcStatus.SupBatV, MCCStatus.mcStatus.Temp2, degreeSymbol, MCCStatus.mcStatus.Temp1);
+		sprintf(buf, "Vbat: %4.1f  T2: %4.1f%sC  T1: %4.1f%cC", MCCStatus.mcStatus.SupBatV, MCCStatus.mcStatus.Temp2, degreeSymbol, MCCStatus.mcStatus.Temp1, 0xF7);
 	}
 	else
 	{
-		sprintf(buf, "Vbat: ----  T2: ----°C  T1: ----°C");
+		sprintf(buf, "Vbat: ----  T2: ----%cC  T1: ----%cC", 0xF7, 0xF7);
 	}
 	tft.drawString(buf, 2, cursorY);
 		
@@ -486,7 +486,8 @@ bool LocalDisplayClass::Init()
 	tft.init();
 	tft.setRotation(3);
 
-	Control(LocalDisplayClass::SYSPage);
+	//Control(LocalDisplayClass::Commands::SYSPage);
+	Control(LocalDisplayClass::Commands::DBGPage);
 	SetDisplayBrightness(DefaultDisplayBrightness);
 
 	return true;

@@ -114,8 +114,21 @@ void setup()
 		_PL("Error initializing I2C bus...");
 	}
 
+	// Initialize local display and show Debug page to provide information on progress initializing other components:
+	if (cssmS3Display.Init())
+	{
+		CSSMS3Status.LocalDisplayStatus = true;
+		_PL("Local Display initialized successfully");
+	}
+	else
+	{
+		CSSMS3Status.LocalDisplayStatus = false;
+		_PL("Local Display initialization FAIL");
+	}
+
 	// Initialize WiFi and update display to confirm success:
 	CSSMS3Status.WiFiStatus = false;
+	CSSMS3Status.AddDebugTextLine("Initializing WiFi...");
 	CSSMS3Status.WiFiStatus = ESP32WiFi.Init(false);
 	CSSMS3Status.ComMode = CSSMS3StatusClass::ComModes::WiFiTCP;
 
@@ -131,6 +144,7 @@ void setup()
 	// Test code:
 	WiFi.printDiag(USBSerial);
 
+	CSSMS3Status.AddDebugTextLine("Initializing ESP-NOW...");
 	CSSMS3Status.ESPNOWStatus = (esp_now_init() == ESP_OK);
 	if (!CSSMS3Status.ESPNOWStatus) {
 		_PL("Error initializing ESP-NOW")
@@ -155,6 +169,9 @@ void setup()
 			_PL("Failed to add peer")
 		}
 	}
+	sprintf(buf, "CSSMDrivePacket: %d b", sizeof(CSSMDrivePacket));
+	CSSMS3Status.AddDebugTextLine(buf);
+	_PL(buf)
 
 	if (cssmS3Controls.Init(cssmS3Display.GetTFT()))
 	{
@@ -167,19 +184,10 @@ void setup()
 	ReadControlsTask.enable();
 	ReadButtonsTask.enable();
 
-	if (cssmS3Display.Init())
-	{
-		CSSMS3Status.LocalDisplayStatus = true;
-		_PL("Local Display initialized successfully");
-	}
-	else
-	{
-		CSSMS3Status.LocalDisplayStatus = false;
-		_PL("Local Display initialization FAIL");
-	}
+	cssmS3Display.Control(CSSMS3Display::Commands::SYSPage);
 	UpdateDisplayTask.enable();
 
-	cssmS3Controls.MainMenu->Draw();
+	//cssmS3Controls.MainMenu->Draw();
 
 	if (CSSMS3Status.ESPNOWStatus)
 	{
