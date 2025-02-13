@@ -44,8 +44,8 @@ public:
 
 	int HeadingSetting = 0;						// Commanded HDG (0 - 359)
 	int CourseSetting = 0;						// Commanded CRS (0 - 359)
-	float OmegaXY = 0.0f;						// Commanded turn rate (±rad/s)
-	float Speed = 0.0f;							// Commanded throttle setting (±mm/s)
+	float OmegaXYSetting = 0.0f;				// Commanded turn rate (±rad/s)
+	float SpeedSetting = 0.0f;					// Commanded throttle setting (±mm/s)
 	float LThrottle = 0.0f;						// Commanded left throttle setting (±100.0%)
 	float RThrottle = 0.0f;						// Commanded right throttle setting (±100.0%)
 

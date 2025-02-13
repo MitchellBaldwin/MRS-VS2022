@@ -102,12 +102,23 @@ void CSSMS3Controls::NextDriveMode(byte value)
 	CSSMS3Status.cssmDrivePacket.NextDriveMode();
 	if (CSSMS3Status.cssmDrivePacket.DriveMode == CSSMDrivePacket::DriveModes::DRVTw)
 	{
-		navEncoderMode = NavEncoderModes::SteerMode;
+		funcEncoderMode = FuncEncoderModes::SteerMode;
 	}
 	else
 	{
-		navEncoderMode = NavEncoderModes::MenuMode;
+		funcEncoderMode = FuncEncoderModes::MenuFuncEncMode;
 	}
+}
+
+void CSSMS3Controls::SetHDG(byte value)
+{
+	CSSMS3Status.cssmDrivePacket.HeadingSetting = value * 2;
+}
+
+void CSSMS3Controls::CaptureHDG(byte value)
+{
+	CSSMS3Status.cssmDrivePacket.HeadingSetting = CSSMS3Status.cssmDrivePacket.Heading;
+	CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::HDG;
 }
 
 bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
@@ -207,7 +218,7 @@ bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 	NextPageMenuItem->SetOnExecuteHandler(cssmS3Display.NextPage);
 	NextPageMenuItem->SetMinValue(CSSMS3Display::Pages::SYS);
 	NextPageMenuItem->SetMaxValue(CSSMS3Display::Pages::NONE);
-	NextPageMenuItem->SetValue(CSSMS3Display::Pages::COM);
+	NextPageMenuItem->SetValue(CSSMS3Display::Pages::SYS);
 
 	CommsMenu = new TFTMenuClass();
 	CommsMenu->Init(tft);
@@ -235,6 +246,37 @@ bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 	ShowFontMenuItem->SetOnExecuteHandler(cssmS3Display.ShowFontTableFixed);
 
 	DebugMenu->AddItem(NextPageMenuItem);
+
+	HDGPageMenu = new TFTMenuClass();
+	HDGPageMenu->Init(tft);
+
+	HDGHoldMenuItem = new MenuItemClass("HOLD", 36, 157, 56, 12, MenuItemClass::MenuItemTypes::Action);
+	HDGHoldMenuItem->Init(tft);
+	HDGPageMenu->AddItem(HDGHoldMenuItem);
+	HDGHoldMenuItem->SetOnExecuteHandler(nullptr);
+
+	HDGSetMenuItem = new MenuItemClass("HDG", 98, 157, 56, 12, MenuItemClass::MenuItemTypes::Numeric);
+	HDGSetMenuItem->Init(tft);
+	HDGPageMenu->AddItem(HDGSetMenuItem);
+	HDGSetMenuItem->SetOnExecuteHandler(SetHDG);
+	HDGSetMenuItem->SetMinValue(0);
+	HDGSetMenuItem->SetMaxValue(179);
+	//TODO: HDG & CRS settings should be in the range 0 - 359, but the MenuItem numeric value is of type byte; change to int32_t or something more generally useful!
+	HDGSetMenuItem->SetNumericStepSize(1);
+	HDGSetMenuItem->SetValue(CSSMS3Status.cssmDrivePacket.HeadingSetting / 2);
+
+	HDGPageMenu->AddItem(NextPageMenuItem);
+	
+	DRVPageMenu = new TFTMenuClass();
+	DRVPageMenu->Init(tft);
+
+	CaptureHDGMenuItem = new MenuItemClass("CAP HDG", 36, 157, 56, 12, MenuItemClass::MenuItemTypes::Action);
+	CaptureHDGMenuItem->Init(tft);
+	DRVPageMenu->AddItem(CaptureHDGMenuItem);
+	CaptureHDGMenuItem->SetOnExecuteHandler(CaptureHDG);
+
+	DRVPageMenu->AddItem(HDGSetMenuItem);
+	DRVPageMenu->AddItem(NextPageMenuItem);
 
 	// Set up ADC:
 	SetupADC();
@@ -287,6 +329,16 @@ void CSSMS3Controls::Update()
 		currentMenu = DebugMenu;
 		break;
 	}
+	case CSSMS3Display::Pages::DRV:
+	{
+		currentMenu = DRVPageMenu;
+		break;
+	}
+	case CSSMS3Display::Pages::HDG:
+	{
+		currentMenu = HDGPageMenu;
+		break;
+	}
 	default:
 		currentMenu = MainMenu;
 		break;
@@ -298,7 +350,7 @@ void CSSMS3Controls::Update()
 		int delta = NavEncoder.getEncoderDelta();
 		switch (navEncoderMode)
 		{
-		case NavEncoderModes::MenuMode:
+		case NavEncoderModes::MenuNavEncMode:
 			if (delta > 0)
 			{
 				currentItem = currentMenu->NextItem();
@@ -310,18 +362,8 @@ void CSSMS3Controls::Update()
 				NavSelected = false;
 			}
 			break;
-		case NavEncoderModes::SteerMode:
-			CSSMS3Status.cssmDrivePacket.Speed = (CSSMS3Status.cssmDrivePacket.LThrottle + CSSMS3Status.cssmDrivePacket.RThrottle) / 2.0f;
-			if (delta > 0)
-			{
-				CSSMS3Status.cssmDrivePacket.OmegaXY += 5.0f;
-				NavSelected = false;
-			}
-			else if (delta < 0)
-			{
-				CSSMS3Status.cssmDrivePacket.OmegaXY -= 5.0f;
-				NavSelected = false;
-			}
+		case NavEncoderModes::HDGSetMode:
+
 			break;
 		default:
 			break;
@@ -372,28 +414,48 @@ void CSSMS3Controls::Update()
 	if (CSSMS3Status.FuncEncoderStatus)
 	{
 		int delta = FuncEncoder.getEncoderDelta();
-		if (currentItem != nullptr && delta != 0 && NavSelected)
+		switch (funcEncoderMode)
 		{
-			if (currentItem->MenuItemType == MenuItemClass::MenuItemTypes::Numeric)
+		case FuncEncoderModes::MenuFuncEncMode:
+			if (currentItem != nullptr && delta != 0 && NavSelected)
 			{
-				delta > 0 ? FuncSetting += currentItem->GetNumericStepSize() : FuncSetting -= currentItem->GetNumericStepSize();
-			}
-			else
-			{
-				FuncSetting = FuncSetting + delta;
-			}
+				if (currentItem->MenuItemType == MenuItemClass::MenuItemTypes::Numeric)
+				{
+					delta > 0 ? FuncSetting += currentItem->GetNumericStepSize() : FuncSetting -= currentItem->GetNumericStepSize();
+				}
+				else
+				{
+					FuncSetting = FuncSetting + delta;
+				}
 
-			switch (currentItem->MenuItemType)
-			{
-			case MenuItemClass::MenuItemTypes::Numeric:
-				currentItem->SetValue(FuncSetting);
-				currentItem->Draw(tft, true);
-				break;
-			default:
-				break;
+				switch (currentItem->MenuItemType)
+				{
+				case MenuItemClass::MenuItemTypes::Numeric:
+					currentItem->SetValue(FuncSetting);
+					currentItem->Draw(tft, true);
+					break;
+				default:
+					break;
+				}
 			}
+			break;
+		case FuncEncoderModes::SteerMode:
+			CSSMS3Status.cssmDrivePacket.SpeedSetting = (CSSMS3Status.cssmDrivePacket.LThrottle + CSSMS3Status.cssmDrivePacket.RThrottle) / 2.0f;
+			if (delta > 0)
+			{
+				CSSMS3Status.cssmDrivePacket.OmegaXYSetting += 5.0f;
+				//NavSelected = false;
+			}
+			else if (delta < 0)
+			{
+				CSSMS3Status.cssmDrivePacket.OmegaXYSetting -= 5.0f;
+				//NavSelected = false;
+			}
+			break;
+		default:
+			break;
 		}
-		//FuncButton->check();
+		
 	}
 
 	if (FuncSelected) // Func encoder button was pressed...
@@ -554,6 +616,7 @@ void CSSMS3Controls::SetWiFi(byte value)
 
 // Global and static variable declarations:
 CSSMS3Controls cssmS3Controls;
-CSSMS3Controls::NavEncoderModes CSSMS3Controls::navEncoderMode = CSSMS3Controls::NavEncoderModes::MenuMode;
+CSSMS3Controls::NavEncoderModes CSSMS3Controls::navEncoderMode = CSSMS3Controls::NavEncoderModes::MenuNavEncMode;
+CSSMS3Controls::FuncEncoderModes CSSMS3Controls::funcEncoderMode = CSSMS3Controls::FuncEncoderModes::MenuFuncEncMode;
 bool CSSMS3Controls::NavSelected = false;
 bool CSSMS3Controls::FuncSelected = false;

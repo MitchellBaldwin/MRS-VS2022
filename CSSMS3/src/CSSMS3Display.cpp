@@ -32,25 +32,53 @@ void CSSMS3Display::DrawPageHeaderAndFooter()
 
 }
 
-void CSSMS3Display::DrawDashboard()
+void CSSMS3Display::DrawDashboard(int32_t xTL, int32_t yTL)
 {
-	tft.setTextDatum(CL_DATUM);
-	int16_t cursorY = tft.height() / 2 - 20;
-	tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);	//DONE: Does bgfill = true work with the print() method? -> Yes, newly printed text clears the background
-	sprintf(buf, "%s LThr %+6.1f%% RThr %+6.1f%% ",
-		DriveModeHeadings[CSSMS3Status.cssmDrivePacket.DriveMode],
-		CSSMS3Status.cssmDrivePacket.LThrottle,
-		CSSMS3Status.cssmDrivePacket.RThrottle);
-	tft.drawString(buf, 2, cursorY);
-
-	cursorY = tft.height() / 2 - 10;
+	// Control inputs line:
+	int32_t cursorY = yTL;
 	tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);
-	sprintf(buf, "HDG %+04d CRS %+04d wXY %+06.1f%% Speed %+06.1f%% ",
-		CSSMS3Status.cssmDrivePacket.HeadingSetting,
-		CSSMS3Status.cssmDrivePacket.CourseSetting,
-		CSSMS3Status.cssmDrivePacket.OmegaXY,
-		CSSMS3Status.cssmDrivePacket.Speed);
-	tft.drawString(buf, 2, cursorY);
+	tft.setTextDatum(TC_DATUM);
+	sprintf(buf, "LTh %+06.1f%% RTh %+06.1f%% GSpd %+6.1f%% wXY %+6.1f%%",
+		CSSMS3Status.cssmDrivePacket.LThrottle,
+		CSSMS3Status.cssmDrivePacket.RThrottle,
+		CSSMS3Status.cssmDrivePacket.SpeedSetting,
+		CSSMS3Status.cssmDrivePacket.OmegaXYSetting);
+	tft.drawString(buf, xTL + 2, cursorY);
+
+	// Basic motion data line (from MRS telemetry);
+	cursorY += 10;
+	tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);
+	sprintf(buf, "%s Hdg %03d GSpd %+6.1fmm/s wXY %+6.3frad/s",
+		DriveModeHeadings[CSSMS3Status.cssmDrivePacket.DriveMode],
+		CSSMS3Status.cssmDrivePacket.Heading,
+		CSSMS3Status.cssmDrivePacket.GroundSpeed,
+		CSSMS3Status.cssmDrivePacket.TurnRate);
+	tft.drawString(buf, xTL + 2, cursorY);
+
+	// Proximity sensor line (from MRS telemetry):
+	cursorY += 10;
+	tft.setTextColor(TFT_GREEN, TFT_BLACK, true);
+	sprintf(buf, "%s", "CLEAR");
+	tft.drawString(buf, tft.width() / 2, cursorY, 2);
+
+	// Heading (HDG) box (lower left corner):
+	tft.drawRect(1, tft.height() - 30, 33, 29, TFT_ORANGE);
+	tft.setTextColor(0xd4c5, TFT_BLACK, true);
+	sprintf(buf, "%03D", CSSMS3Status.cssmDrivePacket.HeadingSetting);
+	tft.drawString(buf, 16, tft.height() - 27);
+	tft.setTextColor(0xf5e8, TFT_BLACK, true);
+	sprintf(buf, "%03D", CSSMS3Status.cssmDrivePacket.Heading);
+	tft.drawString(buf, 16, tft.height() - 12);
+
+	// Course (CRS) box (lower right corner):
+	tft.drawRect(tft.width() - 34, tft.height() - 30, 33, 29, TFT_SKYBLUE);
+	tft.setTextColor(TFT_CYAN, TFT_BLACK, true);
+	sprintf(buf, "%03D", CSSMS3Status.cssmDrivePacket.CourseSetting);
+	tft.drawString(buf, tft.width() - 16, tft.height() - 27);
+	tft.setTextColor(0x7fbe, TFT_BLACK, true);
+	sprintf(buf, "%s", "TO");
+	tft.drawString(buf, tft.width() - 16, tft.height() - 12);
+
 }
 
 void CSSMS3Display::DrawSYSPage()
@@ -100,7 +128,7 @@ void CSSMS3Display::DrawSYSPage()
 
 	// Update dynamic displays:
 
-	DrawDashboard();
+	DrawDashboard(tft.width() / 2, tft.height() - 50);
 	
 	//tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK, true);
 	//tft.setTextDatum(CC_DATUM);
@@ -276,6 +304,174 @@ void CSSMS3Display::DrawDBGPage()
 	}
 }
 
+void CSSMS3Display::DrawSENPage()
+{
+	currentPage = SEN;
+
+	if (lastPage != currentPage)
+	{
+		// Clear display and redraw static elements of the page format:
+		DrawPageHeaderAndFooter();
+
+		tft.setTextSize(1);
+
+
+		// Draw footer menu:
+		if (cssmS3Controls.MainMenu != nullptr)
+		{
+			cssmS3Controls.MainMenu->Draw();
+		}
+
+		lastPage = currentPage;
+	}
+
+	// Update dynamic displays:
+
+	DrawDashboard(tft.width() / 2, tft.height() - 50);
+
+
+}
+
+void CSSMS3Display::DrawMRSPage()
+{
+	currentPage = MRS;
+
+	if (lastPage != currentPage)
+	{
+		// Clear display and redraw static elements of the page format:
+		DrawPageHeaderAndFooter();
+
+		tft.setTextSize(1);
+
+
+		// Draw footer menu:
+		if (cssmS3Controls.MainMenu != nullptr)
+		{
+			cssmS3Controls.MainMenu->Draw();
+		}
+
+		lastPage = currentPage;
+	}
+
+	// Update dynamic displays:
+
+	DrawDashboard(tft.width() / 2, tft.height() - 50);
+
+
+}
+
+void CSSMS3Display::DrawDRVPage()
+{
+	currentPage = DRV;
+
+	if (lastPage != currentPage)
+	{
+		// Clear display and redraw static elements of the page format:
+		DrawPageHeaderAndFooter();
+
+		tft.setTextSize(1);
+
+
+		// Draw footer menu:
+		if (cssmS3Controls.DRVPageMenu != nullptr)
+		{
+			cssmS3Controls.DRVPageMenu->Draw();
+		}
+
+		lastPage = currentPage;
+	}
+
+	// Update dynamic displays:
+
+	DrawDashboard(tft.width() / 2, tft.height() - 50);
+
+
+}
+
+void CSSMS3Display::DrawHDGPage()
+{
+	currentPage = HDG;
+
+	if (lastPage != currentPage)
+	{
+		// Clear display and redraw static elements of the page format:
+		DrawPageHeaderAndFooter();
+
+		tft.setTextSize(1);
+
+
+		// Draw footer menu:
+		if (cssmS3Controls.HDGPageMenu != nullptr)
+		{
+			cssmS3Controls.HDGPageMenu->Draw();
+		}
+
+		lastPage = currentPage;
+	}
+
+	// Update dynamic displays:
+
+	DrawDashboard(tft.width() / 2, tft.height() - 50);
+
+
+}
+
+void CSSMS3Display::DrawWPTPage()
+{
+	currentPage = WPT;
+
+	if (lastPage != currentPage)
+	{
+		// Clear display and redraw static elements of the page format:
+		DrawPageHeaderAndFooter();
+
+		tft.setTextSize(1);
+
+
+		// Draw footer menu:
+		if (cssmS3Controls.MainMenu != nullptr)
+		{
+			cssmS3Controls.MainMenu->Draw();
+		}
+
+		lastPage = currentPage;
+	}
+
+	// Update dynamic displays:
+
+	DrawDashboard(tft.width() / 2, tft.height() - 50);
+
+
+}
+
+void CSSMS3Display::DrawSEQPage()
+{
+	currentPage = SEQ;
+
+	if (lastPage != currentPage)
+	{
+		// Clear display and redraw static elements of the page format:
+		DrawPageHeaderAndFooter();
+
+		tft.setTextSize(1);
+
+
+		// Draw footer menu:
+		if (cssmS3Controls.MainMenu != nullptr)
+		{
+			cssmS3Controls.MainMenu->Draw();
+		}
+
+		lastPage = currentPage;
+	}
+
+	// Update dynamic displays:
+
+	DrawDashboard(tft.width() / 2, tft.height() - 50);
+
+
+}
+
 void CSSMS3Display::DrawNONEPage()
 {
 	currentPage = NONE;
@@ -318,6 +514,24 @@ void CSSMS3Display::Update()
 	case DBG:
 		DrawDBGPage();
 		break;
+	case SEN:
+		DrawSENPage();
+		break;
+	case MRS:
+		DrawMRSPage();
+		break;
+	case DRV:
+		DrawDRVPage();
+		break;
+	case HDG:
+		DrawHDGPage();
+		break;
+	case WPT:
+		DrawWPTPage();
+		break;
+	case SEQ:
+		DrawSEQPage();
+		break;
 
 	default:
 		DrawNONEPage();
@@ -339,6 +553,24 @@ void CSSMS3Display::Control(uint8_t command)
 		break;
 	case DBGPage:
 		DrawDBGPage();
+		break;
+	case SENPage:
+		DrawSENPage();
+		break;
+	case MRSPage:
+		DrawMRSPage();
+		break;
+	case DRVPage:
+		DrawDRVPage();
+		break;
+	case HDGPage:
+		DrawHDGPage();
+		break;
+	case WPTPage:
+		DrawWPTPage();
+		break;
+	case SEQPage:
+		DrawSEQPage();
 		break;
 	case Next:
 		NextPage(0);

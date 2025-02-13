@@ -101,16 +101,28 @@ protected:
 	float GetRThrottle();						// Get right throttle setting adjusted for dead zone(s)
 
 	static void NextDriveMode(byte value);		// Cycle to next drive mode
+	static void SetHDG(byte value);				// Set the HDG from the value field of the HDGSetMenuItem object
+	static void CaptureHDG(byte value);			// Capture current heading and enter HDG drive mode
 
 public:
 	enum NavEncoderModes
 	{
-		MenuMode,
-		SteerMode,
+		MenuNavEncMode,
+		HDGSetMode,
+		CRSSetMode,
 
-		NoMode
+		NoNavEncMode
 	};
 	static NavEncoderModes navEncoderMode;
+
+	enum FuncEncoderModes
+	{
+		MenuFuncEncMode,
+		SteerMode,
+
+		NoFuncEncMode
+	};
+	static FuncEncoderModes funcEncoderMode;
 
 	uint32_t NavSetting = 0;
 	static bool NavSelected;
@@ -129,7 +141,14 @@ public:
 	TFTMenuClass* DebugMenu;			// DBG page menu
 	MenuItemClass* ReportMemoryMenuItem;
 	MenuItemClass* ShowFontMenuItem;
-	//MenuItemClass* NextPageMenuItem;
+
+	TFTMenuClass* HDGPageMenu;
+	MenuItemClass* HDGHoldMenuItem;
+	MenuItemClass* HDGSetMenuItem;
+	MenuItemClass* SpeedSetMenuItem;
+
+	TFTMenuClass* DRVPageMenu;
+	MenuItemClass* CaptureHDGMenuItem;
 
 	bool Init(TFT_eSPI* parentTFT);
 	bool SetupADC();

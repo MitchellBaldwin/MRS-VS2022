@@ -33,6 +33,13 @@ public:
 		SYS,
 		COM,
 		DBG,
+		SEN,
+		MRS,
+
+		DRV,
+		HDG,
+		WPT,
+		SEQ,
 
 		NONE
 	};
@@ -51,6 +58,13 @@ protected:
 		"System",
 		"Comms",
 		"Debug",
+		"Sensors",
+		"MRS",
+
+		"Drive",
+		"Heading",
+		"Waypoint",
+		"Sequence",
 
 	};
 
@@ -74,10 +88,16 @@ protected:
 	bool ShowingFontTable = false;
 
 	void DrawPageHeaderAndFooter();
-	void DrawDashboard();
+	void DrawDashboard(int32_t xTL, int32_t yTL);
 	void DrawSYSPage();
 	void DrawCOMPage();
 	void DrawDBGPage();
+	void DrawSENPage();
+	void DrawMRSPage();
+	void DrawDRVPage();
+	void DrawHDGPage();
+	void DrawWPTPage();
+	void DrawSEQPage();
 
 	void DrawNONEPage();
 
@@ -90,7 +110,12 @@ public:
 		SYSPage,
 		COMPage,
 		DBGPage,
-		I2CScan,
+		SENPage,
+		MRSPage,
+		DRVPage,
+		HDGPage,
+		WPTPage,
+		SEQPage,
 
 		Prev,
 		Next,
