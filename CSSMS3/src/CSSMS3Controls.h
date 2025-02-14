@@ -27,6 +27,8 @@
 #include "esp_adc_cal.h"
 constexpr uint32_t defaultVRef = 1100;
 
+constexpr byte defaultTS2Pin = GPIO_NUM_21;
+
 constexpr byte defaultKPSensePin = GPIO_NUM_1;
 constexpr byte defaultLThrottlePin = GPIO_NUM_2;
 constexpr byte defaultRThrottlePin = GPIO_NUM_3;
@@ -64,6 +66,9 @@ constexpr byte defaultFuncEncoderI2CAddress = 0x36;	// Right rotary encoder, use
 class CSSMS3Controls
 {
 protected:
+	ace_button::AceButton* TS2;
+	static void HandleDefaultButtonEvents(ace_button::AceButton* button, uint8_t eventType, uint8_t buttonState);
+	
 	byte KPSensePin = defaultKPSensePin;
 	byte LThrottlePin = defaultLThrottlePin;
 	byte RThrottlePin = defaultRThrottlePin;
@@ -100,9 +105,9 @@ protected:
 	float GetRThrottleActual();					// Get unmasked right throttle setting
 	float GetRThrottle();						// Get right throttle setting adjusted for dead zone(s)
 
-	static void NextDriveMode(byte value);		// Cycle to next drive mode
-	static void SetHDG(byte value);				// Set the HDG from the value field of the HDGSetMenuItem object
-	static void CaptureHDG(byte value);			// Capture current heading and enter HDG drive mode
+	static void NextDriveMode(int value);		// Cycle to next drive mode
+	static void SetHDG(int value);				// Set the HDG from the value field of the HDGSetMenuItem object
+	static void CaptureHDG(int value);			// Capture current heading and enter HDG drive mode
 
 public:
 	enum NavEncoderModes
@@ -126,7 +131,7 @@ public:
 
 	uint32_t NavSetting = 0;
 	static bool NavSelected;
-	uint32_t FuncSetting = 0;
+	int FuncSetting = 0;
 	static bool FuncSelected;
 
 	TFTMenuClass* MainMenu;				// SYS page menu
@@ -169,8 +174,8 @@ public:
 
 	static void ToggleNavSelected();
 	static void ToggleFuncSelected();
-	static void SetESPNOW(byte value);
-	static void SetWiFi(byte value);
+	static void SetESPNOW(int value);
+	static void SetWiFi(int value);
 
 };
 

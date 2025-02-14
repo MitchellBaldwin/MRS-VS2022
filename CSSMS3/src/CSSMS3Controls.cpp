@@ -8,6 +8,19 @@
 #include "CSSMS3Display.h"
 #include <DEBUG Macros.h>
 
+void CSSMS3Controls::HandleDefaultButtonEvents(ace_button::AceButton* button, uint8_t eventType, uint8_t buttonState)
+{
+	if (button == cssmS3Controls.TS2)
+	{
+		if (eventType == ace_button::AceButton::kEventPressed)
+		{
+			CSSMS3Status.TS2State = buttonState;
+			_PL("TS2 changed state");
+		}
+
+	}
+}
+
 void CSSMS3Controls::HandleNavButtonEvents(ace_button::AceButton* b, uint8_t eventType, uint8_t buttonState)
 {
 	if (eventType == ace_button::AceButton::kEventPressed)
@@ -97,7 +110,7 @@ float CSSMS3Controls::GetRThrottle()
 	return actual;
 }
 
-void CSSMS3Controls::NextDriveMode(byte value)
+void CSSMS3Controls::NextDriveMode(int value)
 {
 	CSSMS3Status.cssmDrivePacket.NextDriveMode();
 	if (CSSMS3Status.cssmDrivePacket.DriveMode == CSSMDrivePacket::DriveModes::DRVTw)
@@ -110,12 +123,12 @@ void CSSMS3Controls::NextDriveMode(byte value)
 	}
 }
 
-void CSSMS3Controls::SetHDG(byte value)
+void CSSMS3Controls::SetHDG(int value)
 {
-	CSSMS3Status.cssmDrivePacket.HeadingSetting = value * 2;
+	CSSMS3Status.cssmDrivePacket.HeadingSetting = value;
 }
 
-void CSSMS3Controls::CaptureHDG(byte value)
+void CSSMS3Controls::CaptureHDG(int value)
 {
 	CSSMS3Status.cssmDrivePacket.HeadingSetting = CSSMS3Status.cssmDrivePacket.Heading;
 	CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::HDG;
@@ -126,6 +139,12 @@ bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 	char buf[64];
 
 	tft = parentTFT;
+
+	// Configure TS2 for use switching between display of systems pages and drive mode pages:
+	pinMode(defaultTS2Pin, INPUT);
+	TS2 = new ace_button::AceButton(defaultTS2Pin, true, 0);
+	ace_button::ButtonConfig* defaultACEButtonConfig = TS2->getButtonConfig();
+	defaultACEButtonConfig->setEventHandler(HandleDefaultButtonEvents);
 
 	if (!NavEncoder.begin(defaultNavEncoderI2CAddress) || !NavNeoPix.begin(defaultNavEncoderI2CAddress))
 	{
@@ -260,10 +279,10 @@ bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 	HDGPageMenu->AddItem(HDGSetMenuItem);
 	HDGSetMenuItem->SetOnExecuteHandler(SetHDG);
 	HDGSetMenuItem->SetMinValue(0);
-	HDGSetMenuItem->SetMaxValue(179);
+	HDGSetMenuItem->SetMaxValue(359);
 	//TODO: HDG & CRS settings should be in the range 0 - 359, but the MenuItem numeric value is of type byte; change to int32_t or something more generally useful!
 	HDGSetMenuItem->SetNumericStepSize(1);
-	HDGSetMenuItem->SetValue(CSSMS3Status.cssmDrivePacket.HeadingSetting / 2);
+	HDGSetMenuItem->SetValue(CSSMS3Status.cssmDrivePacket.HeadingSetting);
 
 	HDGPageMenu->AddItem(NextPageMenuItem);
 	
@@ -374,9 +393,9 @@ void CSSMS3Controls::Update()
 	if (NavSelected) // Nav encoder button was pressed...
 	{
 		// Check display brightness setting; if very low or 0 then set to a dim but readable value:
-		if (cssmS3Display.GetDisplayBrightness() < 16)
+		if (cssmS3Display.GetDisplayBrightness() <= 32)
 		{
-			cssmS3Display.SetDisplayBrightness(63);
+			cssmS3Display.SetDisplayBrightness(64);
 			BRTMenuItem->SetValue(cssmS3Display.GetDisplayBrightness());
 			BRTMenuItem->Draw(tft, true);
 			NavSelected = false;
@@ -568,6 +587,8 @@ String CSSMS3Controls::GetMCUVoltageString(String format)
 
 void CSSMS3Controls::CheckButtons()
 {
+	TS2->check();
+
 	if (CSSMS3Status.NavEncoderStatus)
 	{
 		NavButton->check();
@@ -589,7 +610,7 @@ void CSSMS3Controls::ToggleFuncSelected()
 	FuncSelected = !FuncSelected;
 }
 
-void CSSMS3Controls::SetESPNOW(byte value)
+void CSSMS3Controls::SetESPNOW(int value)
 {
 	if (cssmS3Controls.ESPNMenuItem->GetValue())
 	{
@@ -601,7 +622,7 @@ void CSSMS3Controls::SetESPNOW(byte value)
 	}
 }
 
-void CSSMS3Controls::SetWiFi(byte value)
+void CSSMS3Controls::SetWiFi(int value)
 {
 	if (cssmS3Controls.WiFiMenuItem->GetValue())
 	{

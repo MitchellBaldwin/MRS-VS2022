@@ -79,6 +79,8 @@ public:
 
 	String debugTextLines[MAX_DEBUG_TEXT_LINES];
 
+	bool TS2State = false;
+
 	void Init();
 	void Update();
 	void AddDebugTextLine(String newLine);

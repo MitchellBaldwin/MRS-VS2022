@@ -609,7 +609,7 @@ void CSSMS3Display::RefreshPage(Pages page)
 	}
 }
 
-void CSSMS3Display::PrevPage(byte /*value*/)
+void CSSMS3Display::PrevPage(int /*value*/)
 {
 	//TODO: Untested
 	if (currentPage <= CSSMS3Display::Pages::SYS)
@@ -624,7 +624,7 @@ void CSSMS3Display::PrevPage(byte /*value*/)
 	}
 }
 
-void CSSMS3Display::NextPage(byte /*value*/)
+void CSSMS3Display::NextPage(int /*value*/)
 {
 	if (currentPage >= CSSMS3Display::Pages::NONE)
 	{
@@ -648,7 +648,7 @@ byte CSSMS3Display::GetDisplayBrightness()
 	return Brightness;
 }
 
-void CSSMS3Display::SetDisplayBrightness(byte brightness)
+void CSSMS3Display::SetDisplayBrightness(int brightness)
 {
 	Brightness = brightness;
 	analogWrite(LCD_BL, Brightness);
@@ -660,7 +660,7 @@ void CSSMS3Display::AddDebugTextLine(String newLine)
 	RefreshPage(DBG);
 }
 
-void CSSMS3Display::ReportHeapStatus(byte /*value*/)
+void CSSMS3Display::ReportHeapStatus(int /*value*/)
 {
 	char buf[64];
 
@@ -669,7 +669,7 @@ void CSSMS3Display::ReportHeapStatus(byte /*value*/)
 	cssmS3Display.RefreshPage(CSSMS3Display::Pages::DBG);
 }
 
-void CSSMS3Display::ShowFontTableFixed(byte /*value*/)
+void CSSMS3Display::ShowFontTableFixed(int /*value*/)
 {
 	cssmS3Display.ShowingFontTable = !cssmS3Display.ShowingFontTable;
 	cssmS3Display.RefreshCurrentPage();
