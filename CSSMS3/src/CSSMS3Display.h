@@ -84,6 +84,8 @@ protected:
 		"SEQ    ",
 		"DRV T/w",
 		"DRV L/R",
+		"E-STOP ",
+
 	};
 
 	bool ShowingFontTable = false;

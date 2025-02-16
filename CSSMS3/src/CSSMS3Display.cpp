@@ -38,7 +38,7 @@ void CSSMS3Display::DrawDashboard(int32_t xTL, int32_t yTL)
 	int32_t cursorY = yTL;
 	tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);
 	tft.setTextDatum(TC_DATUM);
-	sprintf(buf, "LTh %+06.1f%% RTh %+06.1f%% GSpd %+6.1f%% wXY %+6.1f%%",
+	sprintf(buf, "LTh %+06.1f%% RTh %+06.1f%% Speed %+6.1f%% wXY %+6.1f%%",
 		CSSMS3Status.cssmDrivePacket.LThrottle,
 		CSSMS3Status.cssmDrivePacket.RThrottle,
 		CSSMS3Status.cssmDrivePacket.SpeedSetting,

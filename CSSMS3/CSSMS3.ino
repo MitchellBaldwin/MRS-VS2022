@@ -126,6 +126,7 @@ void setup()
 		_PL("Local Display initialization FAIL");
 	}
 
+	cssmS3Display.ReportHeapStatus(0);
 	// Initialize WiFi and update display to confirm success:
 	CSSMS3Status.WiFiStatus = false;
 	CSSMS3Status.AddDebugTextLine("Initializing WiFi...");
@@ -144,6 +145,7 @@ void setup()
 	// Test code:
 	WiFi.printDiag(USBSerial);
 
+	cssmS3Display.ReportHeapStatus(0);
 	CSSMS3Status.AddDebugTextLine("Initializing ESP-NOW...");
 	CSSMS3Status.ESPNOWStatus = (esp_now_init() == ESP_OK);
 	if (!CSSMS3Status.ESPNOWStatus) {
@@ -173,6 +175,7 @@ void setup()
 	CSSMS3Status.AddDebugTextLine(buf);
 	_PL(buf)
 
+	cssmS3Display.ReportHeapStatus(0);
 	if (cssmS3Controls.Init(cssmS3Display.GetTFT()))
 	{
 		CSSMS3Status.SysDrvDisplayState = !cssmS3Controls.GetTS2State();
@@ -187,7 +190,14 @@ void setup()
 	ReadControlsTask.enable();
 	ReadButtonsTask.enable();
 
-	cssmS3Display.Control(CSSMS3Display::Commands::SYSPage);
+	if (CSSMS3Status.SysDrvDisplayState)
+	{
+		cssmS3Display.Control(CSSMS3Display::Commands::SYSPage);
+	}
+	else
+	{
+		cssmS3Display.Control(CSSMS3Display::Commands::DRVPage);
+	}
 	UpdateDisplayTask.enable();
 
 	//cssmS3Controls.MainMenu->Draw();

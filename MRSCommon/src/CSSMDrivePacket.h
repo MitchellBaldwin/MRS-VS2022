@@ -32,6 +32,7 @@ public:
 		SEQ,		// Navigate and move along a sequence of waypoints
 		DRVTw,		// CSS throttle (±100%) and turn rate (±100%)
 		DRVLR,		// CSS left & right throttle (±100%)
+		ESTOP,		// Emergency stop
 
 		NoDriveMode
 	};
@@ -41,6 +42,8 @@ protected:
 
 public:
 	DriveModes DriveMode = DriveModes::DRVLR;	// CSSM Drive Mode
+	
+	bool EStop = false;							// Emergency STOP
 
 	int HeadingSetting = 0;						// Commanded HDG (0 - 359)
 	int CourseSetting = 0;						// Commanded CRS (0 - 359)

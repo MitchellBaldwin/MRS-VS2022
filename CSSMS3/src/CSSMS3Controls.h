@@ -70,10 +70,12 @@ constexpr byte OSBLevelCount = OSBCount + 1;
 
 class CSSMS3Controls
 {
+public:
+	typedef void (*OSBHandler)(int);	// Function pointer for OnPress event handler
+
 protected:
 	AceButton* TS2;
 	static void HandleDefaultButtonEvents(AceButton* button, uint8_t eventType, uint8_t buttonState);
-	//static void OSBHandler(AceButton* button, uint8_t eventType, uint8_t buttonState);
 
 	byte KPSensePin = defaultKPSensePin;
 	byte LThrottlePin = defaultLThrottlePin;
@@ -102,16 +104,14 @@ protected:
 	AceButton* FuncButton;
 	static void HandleFuncButtonEvents(AceButton* b, uint8_t eventType, uint8_t buttonState);
 
+	static void DriveOSBHandler(int value);
+	static void HeadingOSBHandler(int value);
+	static void WaypointOSBHandler(int value);
+	static void StopOSBHandler(int value);
+	
 	OSBArrayClass* OSBs;
 	uint16_t OSBLevels[OSBLevelCount] = { 0, 763, 1572, 2389, 3248 };
-
-	//AceButton* GreenOSB;
-	//AceButton* BlueOSB;
-	//AceButton* YellowOSB;
-	//AceButton* RedOSB;
-
-	//AceButton* const OSBs[OSBCount] = { GreenOSB, BlueOSB, YellowOSB, RedOSB };
-	//LadderButtonConfig* OSBConfig;
+	OSBHandler OSBHandlers[OSBCount] = { DriveOSBHandler, HeadingOSBHandler, WaypointOSBHandler, StopOSBHandler };
 
 	TFT_eSPI* tft;
 

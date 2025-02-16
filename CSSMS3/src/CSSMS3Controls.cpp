@@ -36,14 +36,6 @@ void CSSMS3Controls::HandleDefaultButtonEvents(ace_button::AceButton* button, ui
 	}
 }
 
-//void CSSMS3Controls::OSBHandler(AceButton* button, uint8_t eventType, uint8_t buttonState)
-//{
-//	if (button == cssmS3Controls.GreenOSB)
-//	{
-//		_PL("Drive (green) button")
-//	}
-//}
-//
 void CSSMS3Controls::HandleNavButtonEvents(ace_button::AceButton* b, uint8_t eventType, uint8_t buttonState)
 {
 	if (eventType == ace_button::AceButton::kEventPressed)
@@ -60,6 +52,95 @@ void CSSMS3Controls::HandleFuncButtonEvents(ace_button::AceButton* b, uint8_t ev
 		FuncSelected = true;
 		//_PL("Function encoder button clicked");
 	}
+}
+
+void CSSMS3Controls::DriveOSBHandler(int value)
+{
+	if (CSSMS3Status.cssmDrivePacket.EStop)
+	{
+		// Take steps to ensure a safe restrat after an emergency stop:
+
+
+		CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::DRV;
+		CSSMS3Status.cssmDrivePacket.EStop = false;
+	}
+	funcEncoderMode = FuncEncoderModes::MenuFuncEncMode;
+	switch (CSSMS3Status.cssmDrivePacket.DriveMode)
+	{
+	case CSSMDrivePacket::DriveModes::DRV:
+		CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::DRVLR;
+		break;
+	case CSSMDrivePacket::DriveModes::DRVLR:
+		CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::DRVTw;
+		funcEncoderMode = FuncEncoderModes::SteerMode;
+		break;
+	case CSSMDrivePacket::DriveModes::DRVTw:
+		CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::DRV;
+		break;
+	default:
+		CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::DRV;
+		break;
+	}
+	cssmS3Display.ShowCurrentDriveModePage();
+	//_PL("Drive mode handler")
+}
+
+void CSSMS3Controls::HeadingOSBHandler(int value)
+{
+	if (CSSMS3Status.cssmDrivePacket.EStop)
+	{
+		// Take steps to ensure a safe restrat after an emergency stop:
+
+
+		CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::HDG;
+		CSSMS3Status.cssmDrivePacket.EStop = false;
+	}
+	switch (CSSMS3Status.cssmDrivePacket.DriveMode)
+	{
+	case CSSMDrivePacket::DriveModes::HDG:
+		CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::HDG;
+		break;
+	default:
+		CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::HDG;
+		break;
+	}
+	cssmS3Display.ShowCurrentDriveModePage();
+	//_PL("Heading mode handler")
+}
+
+void CSSMS3Controls::WaypointOSBHandler(int value)
+{
+	if (CSSMS3Status.cssmDrivePacket.EStop)
+	{
+		// Take steps to ensure a safe restrat after an emergency stop:
+
+		CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::WPT;
+		CSSMS3Status.cssmDrivePacket.EStop = false;
+	}
+	switch (CSSMS3Status.cssmDrivePacket.DriveMode)
+	{
+	case CSSMDrivePacket::DriveModes::WPT:
+		CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::SEQ;
+		break;
+	default:
+		CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::WPT;
+		break;
+	}
+	cssmS3Display.ShowCurrentDriveModePage();
+	//_PL("Waypoint mode handler")
+}
+
+void CSSMS3Controls::StopOSBHandler(int value)
+{
+	CSSMS3Status.cssmDrivePacket.EStop = true;
+	CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::ESTOP;
+
+	CSSMS3Status.cssmDrivePacket.LThrottle = 0.0f;
+	CSSMS3Status.cssmDrivePacket.RThrottle = 0.0f;
+	CSSMS3Status.cssmDrivePacket.SpeedSetting = 0.0f;
+	CSSMS3Status.cssmDrivePacket.OmegaXYSetting = 0.0f;
+
+	_PL("Stop mode handler")
 }
 
 uint32_t CSSMS3Controls::ReadCalibratedADC1(int rawADC1)
@@ -232,12 +313,14 @@ bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 	OSBs = new OSBArrayClass(defaultKPSensePin);
 	OSBs->Init(OSBLevelCount, OSBLevels);
 
+
 	//GreenOSB = new AceButton(nullptr, 1, 0);
 	//BlueOSB = new AceButton(nullptr, 1, 1);
 	//YellowOSB = new AceButton(nullptr, 1, 2);
 	//RedOSB = new AceButton(nullptr, 1, 3);
 
 	//OSBConfig = new LadderButtonConfig(defaultKPSensePin, OSBLevelCount, OSBLevels, OSBCount, OSBs);
+	//OSBConfig->setEventHandler(OSBHandler);
 
 	MainMenu = new TFTMenuClass();
 	MainMenu->Init(tft);
@@ -492,16 +575,16 @@ void CSSMS3Controls::Update()
 			}
 			break;
 		case FuncEncoderModes::SteerMode:
-			CSSMS3Status.cssmDrivePacket.SpeedSetting = (CSSMS3Status.cssmDrivePacket.LThrottle + CSSMS3Status.cssmDrivePacket.RThrottle) / 2.0f;
-			if (delta > 0)
+			if (!CSSMS3Status.cssmDrivePacket.EStop)
 			{
-				CSSMS3Status.cssmDrivePacket.OmegaXYSetting += 5.0f;
-				//NavSelected = false;
-			}
-			else if (delta < 0)
-			{
-				CSSMS3Status.cssmDrivePacket.OmegaXYSetting -= 5.0f;
-				//NavSelected = false;
+				if (delta > 0)
+				{
+					CSSMS3Status.cssmDrivePacket.OmegaXYSetting += 5.0f;
+				}
+				else if (delta < 0)
+				{
+					CSSMS3Status.cssmDrivePacket.OmegaXYSetting -= 5.0f;
+				}
 			}
 			break;
 		default:
@@ -538,10 +621,25 @@ void CSSMS3Controls::Update()
 	}
 	
 	byte OSBPressed = OSBs->GetOSBPress();
-	_PL(OSBPressed)
-
+	//_PL(OSBPressed)
+	switch (OSBPressed)
+	{
+	case OSBArrayClass::OSBs::OSB1:
+		DriveOSBHandler(0);
+		break;
+	case OSBArrayClass::OSBs::OSB2:
+		HeadingOSBHandler(0);
+		break;
+	case OSBArrayClass::OSBs::OSB3:
+		WaypointOSBHandler(0);
+		break;
+	case OSBArrayClass::OSBs::OSB4:
+		StopOSBHandler(0);
+		break;
+	default:
+		break;
+	}
 	uint16_t newReading = analogRead(KPSensePin);
-	//KPVoltage.AddReading(newReading * (float)(ADC1Chars.vref / 1000.0f));
 	KPVoltage.AddReading(newReading);
 	
 	newReading = analogRead(LThrottlePin);
@@ -551,6 +649,9 @@ void CSSMS3Controls::Update()
 	newReading = analogRead(RThrottlePin);
 	RThrottleSetting.AddReading(newReading);
 	CSSMS3Status.cssmDrivePacket.RThrottle = GetRThrottle();
+
+	// Update speed setting based on throttle settings:
+	CSSMS3Status.cssmDrivePacket.SpeedSetting = (CSSMS3Status.cssmDrivePacket.LThrottle + CSSMS3Status.cssmDrivePacket.RThrottle) / 2.0f;
 
 	newReading = analogRead(VMCUPin);
 	VMCU.AddReading(newReading);
