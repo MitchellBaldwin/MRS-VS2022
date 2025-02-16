@@ -29,7 +29,7 @@ void PCMControlsClass::HandleFuncButtonEvents(ace_button::AceButton* b, uint8_t 
 	}
 }
 
-void PCMControlsClass::ControlCSSMPower(byte value)
+void PCMControlsClass::ControlCSSMPower(int value)
 {
 	char buffer[32];
 
@@ -38,7 +38,7 @@ void PCMControlsClass::ControlCSSMPower(byte value)
 	LocalDisplay.AddDebugTextLine(buffer);
 }
 
-void PCMControlsClass::ToggleWSUPS3SINA219(byte value)
+void PCMControlsClass::ToggleWSUPS3SINA219(int value)
 {
 	char buffer[32];
 
@@ -61,7 +61,7 @@ void PCMControlsClass::ToggleWSUPS3SINA219(byte value)
 	LocalDisplay.AddDebugTextLine(buffer);
 }
 
-void PCMControlsClass::ControlNMPower(byte value)
+void PCMControlsClass::ControlNMPower(int value)
 {
 	char buffer[32];
 	digitalWrite(NMPowerEnablePin, value);
@@ -306,6 +306,7 @@ void PCMControlsClass::Update()
 				currentItem->InvokeOnExecuteHandler();
 				// Reset selection of this item for input:
 				currentItem->Activate(false);
+				currentItem->Draw(tft, true);
 				FuncSelected = false;
 				NavSelected = false;
 				break;

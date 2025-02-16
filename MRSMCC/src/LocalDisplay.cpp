@@ -105,8 +105,8 @@ void LocalDisplayClass::DrawSYSPage()
 			DriveModeHeadings[MCCStatus.cssmDrivePacket.DriveMode], 
 			MCCStatus.cssmDrivePacket.HeadingSetting, 
 			MCCStatus.cssmDrivePacket.CourseSetting, 
-			MCCStatus.cssmDrivePacket.OmegaXY, 
-			MCCStatus.cssmDrivePacket.Speed);
+			MCCStatus.cssmDrivePacket.OmegaXYSetting, 
+			MCCStatus.cssmDrivePacket.SpeedSetting);
 		break;
 	case CSSMDrivePacket::DriveModes::HDG:
 		sprintf(buf, "%s",
@@ -128,8 +128,8 @@ void LocalDisplayClass::DrawSYSPage()
 			DriveModeHeadings[MCCStatus.cssmDrivePacket.DriveMode], 
 			MCCStatus.cssmDrivePacket.HeadingSetting, 
 			MCCStatus.cssmDrivePacket.CourseSetting, 
-			MCCStatus.cssmDrivePacket.OmegaXY, 
-			MCCStatus.cssmDrivePacket.Speed);
+			MCCStatus.cssmDrivePacket.OmegaXYSetting, 
+			MCCStatus.cssmDrivePacket.SpeedSetting);
 		break;
 	case CSSMDrivePacket::DriveModes::DRVLR:
 		sprintf(buf, "%s HDG %+04d CRS %+04d LThr %+06.1f%% RThr %+06.1f%% ", 
@@ -553,7 +553,7 @@ LocalDisplayClass::Pages LocalDisplayClass::GetCurrentPage()
 	return currentPage;
 }
 
-void LocalDisplayClass::PrevPage(byte /*value*/)
+void LocalDisplayClass::PrevPage(int /*value*/)
 {
 	//TODO: Untested
 	if (currentPage <= LocalDisplayClass::Pages::SYS)
@@ -568,7 +568,7 @@ void LocalDisplayClass::PrevPage(byte /*value*/)
 	}
 }
 
-void LocalDisplayClass::NextPage(byte /*value*/)
+void LocalDisplayClass::NextPage(int /*value*/)
 {
 	if (currentPage >= LocalDisplayClass::Pages::NONE)
 	{
@@ -615,7 +615,7 @@ TFT_eSPI* LocalDisplayClass::GetTFT()
 	return &tft;
 }
 
-void LocalDisplayClass::SetDisplayBrightness(byte brightness)
+void LocalDisplayClass::SetDisplayBrightness(int brightness)
 {
 	Brightness = brightness;
 	analogWrite(LCD_BL, Brightness);

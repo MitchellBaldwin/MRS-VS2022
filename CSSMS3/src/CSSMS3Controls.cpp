@@ -12,15 +12,38 @@ void CSSMS3Controls::HandleDefaultButtonEvents(ace_button::AceButton* button, ui
 {
 	if (button == cssmS3Controls.TS2)
 	{
-		if (eventType == ace_button::AceButton::kEventPressed)
+		if (eventType == AceButton::kEventPressed)
 		{
 			CSSMS3Status.TS2State = buttonState;
-			_PL("TS2 changed state");
+			//TODO: Switch display to current drive mode page:
+			cssmS3Display.ShowCurrentDriveModePage();
+
+			_PP("TS2 on; ");
+			_PP("logical state:");
+			_PL(CSSMS3Status.TS2State);
+		}
+		if (eventType == AceButton::kEventReleased)
+		{
+			CSSMS3Status.TS2State = buttonState;
+			// Switch display to last systems page:
+			cssmS3Display.SetCurrentPage(cssmS3Display.GetLastSystemsPage());
+
+			_PP("TS2 off; ");
+			_PP("logical state:");
+			_PL(CSSMS3Status.TS2State);
 		}
 
 	}
 }
 
+//void CSSMS3Controls::OSBHandler(AceButton* button, uint8_t eventType, uint8_t buttonState)
+//{
+//	if (button == cssmS3Controls.GreenOSB)
+//	{
+//		_PL("Drive (green) button")
+//	}
+//}
+//
 void CSSMS3Controls::HandleNavButtonEvents(ace_button::AceButton* b, uint8_t eventType, uint8_t buttonState)
 {
 	if (eventType == ace_button::AceButton::kEventPressed)
@@ -206,6 +229,16 @@ bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 
 	}
 
+	OSBs = new OSBArrayClass(defaultKPSensePin);
+	OSBs->Init(OSBLevelCount, OSBLevels);
+
+	//GreenOSB = new AceButton(nullptr, 1, 0);
+	//BlueOSB = new AceButton(nullptr, 1, 1);
+	//YellowOSB = new AceButton(nullptr, 1, 2);
+	//RedOSB = new AceButton(nullptr, 1, 3);
+
+	//OSBConfig = new LadderButtonConfig(defaultKPSensePin, OSBLevelCount, OSBLevels, OSBCount, OSBs);
+
 	MainMenu = new TFTMenuClass();
 	MainMenu->Init(tft);
 
@@ -280,7 +313,7 @@ bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 	HDGSetMenuItem->SetOnExecuteHandler(SetHDG);
 	HDGSetMenuItem->SetMinValue(0);
 	HDGSetMenuItem->SetMaxValue(359);
-	//TODO: HDG & CRS settings should be in the range 0 - 359, but the MenuItem numeric value is of type byte; change to int32_t or something more generally useful!
+	//DONE: HDG & CRS settings should be in the range 0 - 359, but the MenuItem numeric value is of type byte; change to int32_t or something more generally useful!
 	HDGSetMenuItem->SetNumericStepSize(1);
 	HDGSetMenuItem->SetValue(CSSMS3Status.cssmDrivePacket.HeadingSetting);
 
@@ -493,6 +526,7 @@ void CSSMS3Controls::Update()
 				currentItem->InvokeOnExecuteHandler();
 				// Reset selection of this item for input:
 				currentItem->Activate(false);
+				currentItem->Draw(tft, true);
 				FuncSelected = false;
 				NavSelected = false;
 				break;
@@ -503,6 +537,9 @@ void CSSMS3Controls::Update()
 		}
 	}
 	
+	byte OSBPressed = OSBs->GetOSBPress();
+	_PL(OSBPressed)
+
 	uint16_t newReading = analogRead(KPSensePin);
 	//KPVoltage.AddReading(newReading * (float)(ADC1Chars.vref / 1000.0f));
 	KPVoltage.AddReading(newReading);
@@ -598,6 +635,7 @@ void CSSMS3Controls::CheckButtons()
 	{
 		FuncButton->check();
 	}
+
 }
 
 void CSSMS3Controls::ToggleNavSelected()
@@ -608,6 +646,12 @@ void CSSMS3Controls::ToggleNavSelected()
 void CSSMS3Controls::ToggleFuncSelected()
 {
 	FuncSelected = !FuncSelected;
+}
+
+bool CSSMS3Controls::GetTS2State()
+{
+	bool ts2State = digitalRead(defaultTS2Pin);
+	return ts2State;
 }
 
 void CSSMS3Controls::SetESPNOW(int value)

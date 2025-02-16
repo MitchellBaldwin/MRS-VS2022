@@ -189,8 +189,8 @@ bool RC2x15AMCClass::ResetUARTLink()
 /// </returns>
 bool RC2x15AMCClass::DriveSettingsChanged()
 {
-	return (abs(MCCStatus.cssmDrivePacket.Speed - MCCStatus.lastCSSMDrivePacket.Speed) >= GAMMA 
-			|| abs(MCCStatus.cssmDrivePacket.OmegaXY - MCCStatus.lastCSSMDrivePacket.OmegaXY) >= GAMMA
+	return (abs(MCCStatus.cssmDrivePacket.SpeedSetting - MCCStatus.lastCSSMDrivePacket.SpeedSetting) >= GAMMA 
+			|| abs(MCCStatus.cssmDrivePacket.OmegaXYSetting - MCCStatus.lastCSSMDrivePacket.OmegaXYSetting) >= GAMMA
 			|| abs(MCCStatus.cssmDrivePacket.LThrottle - MCCStatus.lastCSSMDrivePacket.LThrottle) >= GAMMA
 			|| abs(MCCStatus.cssmDrivePacket.RThrottle - MCCStatus.lastCSSMDrivePacket.RThrottle) >= GAMMA);
 }
@@ -227,7 +227,7 @@ void RC2x15AMCClass::Update()
 	case CSSMDrivePacket::DriveModes::DRVTw:
 		if (DriveSettingsChanged())
 		{
-			success = DriveThrottleTurnRate(MCCStatus.cssmDrivePacket.Speed, MCCStatus.cssmDrivePacket.OmegaXY);
+			success = DriveThrottleTurnRate(MCCStatus.cssmDrivePacket.SpeedSetting, MCCStatus.cssmDrivePacket.OmegaXYSetting);
 		}
 		else
 		{

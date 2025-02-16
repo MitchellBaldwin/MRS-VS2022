@@ -175,6 +175,9 @@ void setup()
 
 	if (cssmS3Controls.Init(cssmS3Display.GetTFT()))
 	{
+		CSSMS3Status.SysDrvDisplayState = !cssmS3Controls.GetTS2State();
+		_PP("TS2 state: ")
+		_PL(!CSSMS3Status.SysDrvDisplayState)
 		_PL("CSSMControls initialized successfully");
 	}
 	else

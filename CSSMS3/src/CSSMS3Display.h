@@ -51,7 +51,8 @@ protected:
 	static byte Brightness;
 
 	static Pages currentPage;
-	Pages lastPage = NONE;				// Aid to determine when a complete page redraw is needed
+	Pages lastPage = Pages::NONE;				// Aid to determine when a complete page redraw is needed
+	Pages lastSystemPage = Pages::SYS;
 
 	const char* PageTitles[NONE] =
 	{
@@ -131,6 +132,8 @@ public:
 
 	void SetCurrentPage(Pages page);
 	Pages GetCurrentPage();
+	Pages GetLastSystemsPage();
+	void ShowCurrentDriveModePage();
 	void RefreshCurrentPage();
 	void RefreshPage(Pages page);
 	static void PrevPage(int value);

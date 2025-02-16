@@ -23,7 +23,6 @@
 
 #include "Measurement.h"
 #include "BME280Data.h"
-//#include <ezButton.h>		// No longer using the ezButton library?
 #include "esp_adc_cal.h"
 constexpr uint32_t defaultVRef = 1100;
 
@@ -39,8 +38,13 @@ constexpr byte defaultVMCUPin = GPIO_NUM_4;
 constexpr byte SS_BUTTON = 0x18;
 constexpr byte SS_NEOPIX = 0x06;
 
+constexpr byte defaultNavEncoderI2CAddress = 0x37;	// Left rotary encoder, used primarily for navigating controls on the display
+constexpr byte defaultFuncEncoderI2CAddress = 0x36;	// Right rotary encoder, used primarily for manipulating control settings
+
 #include <AceButton.h>
-class SSButtonConfig : public ace_button::ButtonConfig
+using namespace ace_button;
+
+class SSButtonConfig : public ButtonConfig
 {
 public:
 	SSButtonConfig(Adafruit_seesaw& enc) : encoder(enc)
@@ -57,18 +61,20 @@ private:
 	Adafruit_seesaw& encoder;
 };
 
-constexpr byte defaultNavEncoderI2CAddress = 0x37;	// Left rotary encoder, used primarily for navigating controls on the display
-constexpr byte defaultFuncEncoderI2CAddress = 0x36;	// Right rotary encoder, used primarily for manipulating control settings
+#include "OSBArray.h"
+constexpr byte OSBCount = 4;
+constexpr byte OSBLevelCount = OSBCount + 1;
 
-//#include <TFT_eSPI.h>		// Included in TFTMenu.h
+
 #include <TFTMenu.h>
 
 class CSSMS3Controls
 {
 protected:
-	ace_button::AceButton* TS2;
-	static void HandleDefaultButtonEvents(ace_button::AceButton* button, uint8_t eventType, uint8_t buttonState);
-	
+	AceButton* TS2;
+	static void HandleDefaultButtonEvents(AceButton* button, uint8_t eventType, uint8_t buttonState);
+	//static void OSBHandler(AceButton* button, uint8_t eventType, uint8_t buttonState);
+
 	byte KPSensePin = defaultKPSensePin;
 	byte LThrottlePin = defaultLThrottlePin;
 	byte RThrottlePin = defaultRThrottlePin;
@@ -87,14 +93,25 @@ protected:
 	Adafruit_seesaw NavEncoder;
 	seesaw_NeoPixel NavNeoPix = seesaw_NeoPixel(1, SS_NEOPIX, NEO_GRB + NEO_KHZ800);
 	SSButtonConfig* NavButtonConfig;
-	ace_button::AceButton* NavButton;
-	static void HandleNavButtonEvents(ace_button::AceButton* b, uint8_t eventType, uint8_t buttonState);
+	AceButton* NavButton;
+	static void HandleNavButtonEvents(AceButton* b, uint8_t eventType, uint8_t buttonState);
 
 	Adafruit_seesaw FuncEncoder;
 	seesaw_NeoPixel FuncNeoPix = seesaw_NeoPixel(1, SS_NEOPIX, NEO_GRB + NEO_KHZ800);
 	SSButtonConfig* FuncButtonConfig;
-	ace_button::AceButton* FuncButton;
-	static void HandleFuncButtonEvents(ace_button::AceButton* b, uint8_t eventType, uint8_t buttonState);
+	AceButton* FuncButton;
+	static void HandleFuncButtonEvents(AceButton* b, uint8_t eventType, uint8_t buttonState);
+
+	OSBArrayClass* OSBs;
+	uint16_t OSBLevels[OSBLevelCount] = { 0, 763, 1572, 2389, 3248 };
+
+	//AceButton* GreenOSB;
+	//AceButton* BlueOSB;
+	//AceButton* YellowOSB;
+	//AceButton* RedOSB;
+
+	//AceButton* const OSBs[OSBCount] = { GreenOSB, BlueOSB, YellowOSB, RedOSB };
+	//LadderButtonConfig* OSBConfig;
 
 	TFT_eSPI* tft;
 
@@ -171,6 +188,7 @@ public:
 	String GetMCUVoltageString(String format);
 
 	void CheckButtons();
+	bool GetTS2State();
 
 	static void ToggleNavSelected();
 	static void ToggleFuncSelected();

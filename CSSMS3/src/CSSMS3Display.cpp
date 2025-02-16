@@ -92,15 +92,6 @@ void CSSMS3Display::DrawSYSPage()
 
 		tft.setTextSize(1);
 
-		//tft.setTextColor(TFT_LIGHTGREY);
-		//tft.setTextDatum(CL_DATUM);
-		//sprintf(buf, "UART0 %s", CSSMS3Status.UART0Status ? "OK" : "NO");
-		//tft.drawString(buf, 2, 30);
-
-		//tft.setTextDatum(CR_DATUM);
-		//sprintf(buf, "UART1 %s", CSSMS3Status.UART1Status ? "OK" : "NO");
-		//tft.drawString(buf, tft.width() / 2 - 2, 30);
-
 		tft.setTextColor(TFT_ORANGE);
 		tft.setTextDatum(CL_DATUM);
 		sprintf(buf, "WiFi %s  IP: %s", CSSMS3Status.WiFiStatus ? "OK" : "NO", WiFi.localIP().toString());
@@ -124,6 +115,7 @@ void CSSMS3Display::DrawSYSPage()
 		}
 
 		lastPage = currentPage;
+		lastSystemPage = currentPage;
 	}
 
 	// Update dynamic displays:
@@ -208,6 +200,7 @@ void CSSMS3Display::DrawCOMPage()
 		}
 
 		lastPage = currentPage;
+		lastSystemPage = currentPage;
 	}
 }
 
@@ -301,6 +294,7 @@ void CSSMS3Display::DrawDBGPage()
 		}
 
 		lastPage = currentPage;
+		lastSystemPage = currentPage;
 	}
 }
 
@@ -323,6 +317,7 @@ void CSSMS3Display::DrawSENPage()
 		}
 
 		lastPage = currentPage;
+		lastSystemPage = currentPage;
 	}
 
 	// Update dynamic displays:
@@ -351,6 +346,7 @@ void CSSMS3Display::DrawMRSPage()
 		}
 
 		lastPage = currentPage;
+		lastSystemPage = currentPage;
 	}
 
 	// Update dynamic displays:
@@ -594,6 +590,53 @@ CSSMS3Display::Pages CSSMS3Display::GetCurrentPage()
 	return currentPage;
 }
 
+CSSMS3Display::Pages CSSMS3Display::GetLastSystemsPage()
+{
+	return lastSystemPage;
+}
+
+void CSSMS3Display::ShowCurrentDriveModePage()
+{
+	switch (CSSMS3Status.cssmDrivePacket.DriveMode)
+	{
+	case CSSMDrivePacket::DriveModes::DRV:
+	{
+		cssmS3Display.SetCurrentPage(Pages::DRV);
+		break;
+	}
+	case CSSMDrivePacket::DriveModes::HDG:
+	{
+		cssmS3Display.SetCurrentPage(Pages::HDG);
+		break;
+	}
+	case CSSMDrivePacket::DriveModes::WPT:
+	{
+		cssmS3Display.SetCurrentPage(Pages::WPT);
+		break;
+	}
+	case CSSMDrivePacket::DriveModes::SEQ:
+	{
+		cssmS3Display.SetCurrentPage(Pages::SEQ);
+		break;
+	}
+	case CSSMDrivePacket::DriveModes::DRVLR:
+	{
+		cssmS3Display.SetCurrentPage(Pages::DRV);
+		break;
+	}
+	case CSSMDrivePacket::DriveModes::DRVTw:
+	{
+		cssmS3Display.SetCurrentPage(Pages::DRV);
+		break;
+	}
+	default:
+	{
+		cssmS3Display.SetCurrentPage(Pages::DRV);
+		break;
+	}
+	}
+}
+
 void CSSMS3Display::RefreshCurrentPage()
 {
 	lastPage = NONE;
@@ -612,29 +655,61 @@ void CSSMS3Display::RefreshPage(Pages page)
 void CSSMS3Display::PrevPage(int /*value*/)
 {
 	//TODO: Untested
-	if (currentPage <= CSSMS3Display::Pages::SYS)
+	if (CSSMS3Status.SysDrvDisplayState)
 	{
-		currentPage = CSSMS3Display::Pages::NONE;
+		if (currentPage <= CSSMS3Display::Pages::NONE)
+		{
+			currentPage = CSSMS3Display::Pages::DRV;
+		}
+		else
+		{
+			int page = currentPage;
+			page--;
+			currentPage = (CSSMS3Display::Pages)page;
+		}
 	}
 	else
 	{
-		int page = currentPage;
-		page--;
-		currentPage = (CSSMS3Display::Pages)page;
+		if (currentPage <= CSSMS3Display::Pages::SYS)
+		{
+			currentPage = CSSMS3Display::Pages::MRS;
+		}
+		else
+		{
+			int page = currentPage;
+			page--;
+			currentPage = (CSSMS3Display::Pages)page;
+		}
 	}
 }
 
 void CSSMS3Display::NextPage(int /*value*/)
 {
-	if (currentPage >= CSSMS3Display::Pages::NONE)
+	if (CSSMS3Status.SysDrvDisplayState)
 	{
-		currentPage = CSSMS3Display::Pages::SYS;
+		if (currentPage >= CSSMS3Display::Pages::NONE)
+		{
+			currentPage = CSSMS3Display::Pages::DRV;
+		}
+		else
+		{
+			int page = currentPage;
+			page++;
+			currentPage = (CSSMS3Display::Pages)page;
+		}
 	}
 	else
 	{
-		int page = currentPage;
-		page++;
-		currentPage = (CSSMS3Display::Pages)page;
+		if (currentPage >= CSSMS3Display::Pages::MRS)
+		{
+			currentPage = CSSMS3Display::Pages::SYS;
+		}
+		else
+		{
+			int page = currentPage;
+			page++;
+			currentPage = (CSSMS3Display::Pages)page;
+		}
 	}
 }
 

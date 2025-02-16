@@ -68,7 +68,7 @@ public:
 	bool WiFiStatus = false;
 	 
 	bool LocalDisplayStatus = false;
-	bool DebugDisplayStatus = false;
+	bool SysDrvDisplayState = false;			// 0/false: display systems pages; 1/true: display drive mode pages
 	 
 	bool NavEncoderStatus = false;
 	bool FuncEncoderStatus = false;

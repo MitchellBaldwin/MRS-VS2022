@@ -267,6 +267,7 @@ void MCCControls::Update()
 				currentItem->InvokeOnExecuteHandler();
 				// Reset selection of this item for input:
 				currentItem->Activate(false);
+				currentItem->Draw(tft, true);
 				FuncSelected = false;
 				NavSelected = false;
 				break;

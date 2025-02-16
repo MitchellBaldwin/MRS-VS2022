@@ -73,9 +73,9 @@ protected:
 
 	TFT_eSPI* tft;
 
-	static void ControlCSSMPower(byte value);
-	static void ControlNMPower(byte value);
-	static void ToggleWSUPS3SINA219(byte value);
+	static void ControlCSSMPower(int value);
+	static void ControlNMPower(int value);
+	static void ToggleWSUPS3SINA219(int value);
 
 public:
 	uint32_t NavSetting = 0;
