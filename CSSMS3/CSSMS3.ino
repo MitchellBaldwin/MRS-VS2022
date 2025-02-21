@@ -206,8 +206,10 @@ void setup()
 	{
 		SendCSSMPacketTask.enable();
 	}
-	// Set ESPNOWStatus FALSE to start; user initiates telemetry to the MRS through the on-screen menu system when ready:
-	CSSMS3Status.ESPNOWStatus = false;
+	// Set ESPNOWStatus to match initial setting of the ESP-NOW menu item used to enable / disable the command stream from 
+	//the CSSM to the MRS MCC, which should be FALSE to start
+	// User initiates telemetry to the MRS through the on-screen menu system when ready:
+	CSSMS3Status.ESPNOWStatus = cssmS3Controls.GetESPNowStatus();
 
 	ToggleHeartbeatLEDTask.setInterval(HeartbeatLEDTogglePeriod * TASK_MILLISECOND);
 	ToggleHeartbeatLEDTask.enable();
@@ -262,7 +264,8 @@ void OnMRSMCCDataSent(const uint8_t* mac_addr, esp_now_send_status_t status)
 {
 	char buf[64];
 
-	CSSMS3Status.ESPNOWStatus = (status == ESP_NOW_SEND_SUCCESS);
+	//CSSMS3Status.ESPNOWStatus = (status == ESP_NOW_SEND_SUCCESS);
+	cssmS3Controls.SetESPNOWStatus(status == ESP_NOW_SEND_SUCCESS);
 	if (CSSMS3Status.ESPNOWStatus)
 	{
 		CSSMS3Status.ESPNOWPacketSentCount++;

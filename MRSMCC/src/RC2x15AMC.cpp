@@ -140,10 +140,10 @@ bool RC2x15AMCClass::ReadStatus()
 
 bool RC2x15AMCClass::ResetUARTLink()
 {
-	//TODO: Re-establich / re-synch UART communication with the motor controller; simply ending and re-beginning
+	//DONE: Re-establich / re-synch UART communication with the motor controller; simply ending and re-beginning
 	//the UART does not see to work.  
 	// Clearing the incomming buffer by reading all available data and then attempting to read the RC2x15A version info causes a guru meditation error (MCU reset),
-	//but folowing teh MCU reset everything seems to work OK...
+	//but folowing the MCU reset everything seems to work OK...
 
 	char buf[64];
 	bool success = false;
@@ -154,12 +154,12 @@ bool RC2x15AMCClass::ResetUARTLink()
 		RC2x15AUART->read();
 	}
 
-	_PL("RC2x15AUART re-initializing")
+	//_PL("RC2x15AUART re-initializing")
 
 	// Test UART link to motor controller:
 	RC2x15AUART->flush(true);
 	success = RC2x15A->ReadVersion(PSAddress, buf);
-	_PL(buf)
+	//_PL(buf)
 
 	//RC2x15AUART->end();
 	//delay(100);
@@ -203,7 +203,15 @@ void RC2x15AMCClass::Update()
 	switch (MCCStatus.cssmDrivePacket.DriveMode)
 	{
 	case CSSMDrivePacket::DriveModes::DRV:
+		if (DriveSettingsChanged())
+		{
+			success = Drive(MCCStatus.cssmDrivePacket.SpeedSetting, MCCStatus.cssmDrivePacket.OmegaXYSetting);
 
+		}
+		else
+		{
+			success = ReadStatus();
+		}
 		break;
 	case CSSMDrivePacket::DriveModes::HDG:
 

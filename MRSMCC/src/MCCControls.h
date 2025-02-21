@@ -50,8 +50,13 @@ private:
 	Adafruit_seesaw& encoder;
 };
 
-constexpr byte defaultNavEncoderI2CAddress = 0x37;	// Left rotary encoder, used primarily for navigating controls on the display
-constexpr byte defaultFuncEncoderI2CAddress = 0x36;	// Right rotary encoder, used primarily for manipulating control settings
+// Addresses for MRS MCC:
+constexpr byte defaultNavEncoderI2CAddress = 0x37;	// Bottom rotary encoder, used primarily for navigating controls on the display
+constexpr byte defaultFuncEncoderI2CAddress = 0x36;	// Top rotary encoder, used primarily for manipulating control settings
+
+//Addresses for experimental MCC box:
+//constexpr byte defaultNavEncoderI2CAddress = 0x38;	// Bottom rotary encoder, used primarily for navigating controls on the display
+//constexpr byte defaultFuncEncoderI2CAddress = 0x3A;	// Top rotary encoder, used primarily for manipulating control settings
 
 #include <TFTMenu.h>
 
@@ -94,6 +99,7 @@ public:
 	TFTMenuClass* MainMenu;
 	MenuItemClass* ESPNMenuItem;
 	MenuItemClass* DriveModeMenuItem;
+	MenuItemClass* TBDMenuItem;
 	MenuItemClass* BRTMenuItem;
 	MenuItemClass* NextPageMenuItem;
 
@@ -115,6 +121,8 @@ public:
 
 	static void ToggleNavSelected();
 	static void ToggleFuncSelected();
+
+	bool GetESPNowStatus();
 
 };
 

@@ -214,6 +214,16 @@ void LocalDisplayClass::DrawSYSPage()
 	sprintf(buf, "VMCU %s", mccControls.GetMCUVoltageString());
 	tft.drawString(buf, tft.width() / 2, cursorY);
 
+	// Display rotary encoder settings:
+	tft.setTextDatum(TL_DATUM);
+	tft.setTextSize(1);
+	tft.setTextColor(TFT_CYAN, TFT_BLACK, true);
+	sprintf(buf, "%04D", mccControls.NavSetting);
+	tft.drawString(buf, 2, 147);
+	tft.setTextDatum(TR_DATUM);
+	sprintf(buf, "%04D", mccControls.FuncSetting);
+	tft.drawString(buf, tft.width() - 2, 147);
+
 }
 
 void LocalDisplayClass::DrawPOWPage()
@@ -302,16 +312,6 @@ void LocalDisplayClass::DrawPOWPage()
 	tft.setTextDatum(BR_DATUM);
 	sprintf(buf, "%5.2F  V", mccControls.INA219VBus);
 	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
-
-	// Display rotary encoder settings:
-	tft.setTextDatum(BL_DATUM);
-	tft.setTextSize(1);
-	tft.setTextColor(TFT_CYAN, TFT_BLACK, true);
-	sprintf(buf, "%04D", mccControls.NavSetting);
-	tft.drawString(buf, 2, tft.height() - 2);
-	tft.setTextDatum(BR_DATUM);
-	sprintf(buf, "%04D", mccControls.FuncSetting);
-	tft.drawString(buf, tft.width() - 2, tft.height() - 2);
 
 }
 

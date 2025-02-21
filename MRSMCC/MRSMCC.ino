@@ -18,7 +18,8 @@
 
 #include <WiFi.h>
 #include <esp_now.h>
-uint8_t MRSRCCSSMMAC[] = { 0xA8, 0x42, 0xE3, 0x4A, 0x8B, 0x00 };
+//uint8_t MRSRCCSSMMAC[] = { 0xA8, 0x42, 0xE3, 0x4A, 0x8B, 0x00 };
+uint8_t MRSRCCSSMS3MAC[] = { 0xF0, 0xF5, 0xBD, 0x48, 0x0A, 0x4C };
 esp_now_peer_info_t MRSRCCSSMInfo;
 
 #include <TaskScheduler.h>
@@ -50,6 +51,10 @@ Task UpdateLocalDisplayTask((UpdateLocalDisplayInterval* TASK_MILLISECOND), TASK
 constexpr auto UpdateMotorControllerInterval = 100;
 void UpdateMotorControllerCallback();
 Task UpdateMotorControllerTask((UpdateMotorControllerInterval* TASK_MILLISECOND), TASK_FOREVER, &UpdateMotorControllerCallback, &MainScheduler, false);
+
+constexpr long SendRC2x15AMCStatusPacketInterval = 300;
+void SendRC2x15AMCStatusPacketCallback();
+Task SendRC2x15AMCStatusPacketTask((SendRC2x15AMCStatusPacketInterval* TASK_MILLISECOND), TASK_FOREVER, &SendRC2x15AMCStatusPacketCallback, &MainScheduler, false);
 
 #include "src/DEBUG Macros.h"
 #include "src/MCCStatus.h"
@@ -92,6 +97,11 @@ void setup()
 	pinMode(HeartbeatLEDPin, OUTPUT);
 	sprintf(buf, "Heartbeat LED on GPIO%02D", HeartbeatLEDPin);
 	_PL(buf);
+
+	//Test code:
+	Wire.begin(GPIO_NUM_43, GPIO_NUM_44, 100000);
+	//Wire.setClock(100000);
+	//End test code block
 
 	if (I2CBus.Init(GPIO_NUM_43, GPIO_NUM_44))
 	{
@@ -142,7 +152,7 @@ void setup()
 		esp_now_register_send_cb(OnMRSRCCSSMDataSent);
 
 		// Register peer
-		memcpy(MRSRCCSSMInfo.peer_addr, MRSRCCSSMMAC, 6);
+		memcpy(MRSRCCSSMInfo.peer_addr, MRSRCCSSMS3MAC, 6);
 		MRSRCCSSMInfo.channel = channel;
 		MRSRCCSSMInfo.encrypt = false;
 
@@ -186,9 +196,26 @@ void setup()
 		UpdateMotorControllerCallback();
 	}
 
+	sprintf(buf, "CSSMDrivePacket: %d b", sizeof(CSSMDrivePacket));
+	MCCStatus.AddDebugTextLine(buf);
+	_PL(buf)
+
+	sprintf(buf, "RC2x15AMCStatusPacket: %d b", sizeof(RC2x15AMCStatusPacket));
+	MCCStatus.AddDebugTextLine(buf);
+	_PL(buf)
+
 	// Components initialzed; switch LocalDisplay to normal operation:
 	LocalDisplay.Control(LocalDisplayClass::Commands::SYSPage);
 	UpdateLocalDisplayTask.enable();
+
+	if (MCCStatus.ESPNOWStatus)
+	{
+		SendRC2x15AMCStatusPacketTask.enable();
+	}
+	// Set ESPNOWStatus to match initial setting of the ESP-NOW menu item used to enable / disable the telemetry stream from 
+	//the MCC to the MRS RC CSSM, which should be TRUE to start
+	// User initiates telemetry to the MRS through the on-screen menu system when ready:
+	MCCStatus.ESPNOWStatus = mccControls.GetESPNowStatus();
 
 	ToggleBuiltinLEDTask.enable();
 }
@@ -226,6 +253,25 @@ void UpdateLocalDisplayCallback()
 void UpdateMotorControllerCallback()
 {
 	RC2x15AMC.Update();
+}
+
+void SendRC2x15AMCStatusPacketCallback()
+{
+	char buf2[64];
+
+	esp_err_t result = ESP_OK;
+
+	if (MCCStatus.ESPNOWStatus)
+	{
+		result = esp_now_send(MRSRCCSSMS3MAC, (uint8_t*)&MCCStatus.mcStatus, sizeof(MCCStatus.mcStatus));
+
+		if (result != ESP_NOW_SEND_SUCCESS)
+		{
+			sprintf(buf2, "ESP-NOW send error: %S", esp_err_to_name(result));
+			_PL(buf2)
+		}
+
+	}
 }
 
 void OnMRSRCCSSMDataSent(const uint8_t* mac_addr, esp_now_send_status_t status)

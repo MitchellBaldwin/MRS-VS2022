@@ -18,9 +18,9 @@ void CSSMS3Controls::HandleDefaultButtonEvents(ace_button::AceButton* button, ui
 			//TODO: Switch display to current drive mode page:
 			cssmS3Display.ShowCurrentDriveModePage();
 
-			_PP("TS2 on; ");
-			_PP("logical state:");
-			_PL(CSSMS3Status.TS2State);
+			//_PP("TS2 on; ");
+			//_PP("logical state:");
+			//_PL(CSSMS3Status.TS2State);
 		}
 		if (eventType == AceButton::kEventReleased)
 		{
@@ -28,9 +28,9 @@ void CSSMS3Controls::HandleDefaultButtonEvents(ace_button::AceButton* button, ui
 			// Switch display to last systems page:
 			cssmS3Display.SetCurrentPage(cssmS3Display.GetLastSystemsPage());
 
-			_PP("TS2 off; ");
-			_PP("logical state:");
-			_PL(CSSMS3Status.TS2State);
+			//_PP("TS2 off; ");
+			//_PP("logical state:");
+			//_PL(CSSMS3Status.TS2State);
 		}
 
 	}
@@ -95,6 +95,7 @@ void CSSMS3Controls::HeadingOSBHandler(int value)
 		CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::HDG;
 		CSSMS3Status.cssmDrivePacket.EStop = false;
 	}
+	funcEncoderMode = FuncEncoderModes::MenuFuncEncMode;
 	switch (CSSMS3Status.cssmDrivePacket.DriveMode)
 	{
 	case CSSMDrivePacket::DriveModes::HDG:
@@ -117,6 +118,7 @@ void CSSMS3Controls::WaypointOSBHandler(int value)
 		CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::WPT;
 		CSSMS3Status.cssmDrivePacket.EStop = false;
 	}
+	funcEncoderMode = FuncEncoderModes::MenuFuncEncMode;
 	switch (CSSMS3Status.cssmDrivePacket.DriveMode)
 	{
 	case CSSMDrivePacket::DriveModes::WPT:
@@ -139,6 +141,8 @@ void CSSMS3Controls::StopOSBHandler(int value)
 	CSSMS3Status.cssmDrivePacket.RThrottle = 0.0f;
 	CSSMS3Status.cssmDrivePacket.SpeedSetting = 0.0f;
 	CSSMS3Status.cssmDrivePacket.OmegaXYSetting = 0.0f;
+
+	funcEncoderMode = FuncEncoderModes::MenuFuncEncMode;
 
 	_PL("Stop mode handler")
 }
@@ -739,6 +743,12 @@ void CSSMS3Controls::CheckButtons()
 
 }
 
+bool CSSMS3Controls::GetTS2State()
+{
+	bool ts2State = digitalRead(defaultTS2Pin);
+	return ts2State;
+}
+
 void CSSMS3Controls::ToggleNavSelected()
 {
 	NavSelected = !NavSelected;
@@ -747,12 +757,6 @@ void CSSMS3Controls::ToggleNavSelected()
 void CSSMS3Controls::ToggleFuncSelected()
 {
 	FuncSelected = !FuncSelected;
-}
-
-bool CSSMS3Controls::GetTS2State()
-{
-	bool ts2State = digitalRead(defaultTS2Pin);
-	return ts2State;
 }
 
 void CSSMS3Controls::SetESPNOW(int value)
@@ -765,6 +769,17 @@ void CSSMS3Controls::SetESPNOW(int value)
 	{
 		CSSMS3Status.ESPNOWStatus = false;
 	}
+}
+
+bool CSSMS3Controls::GetESPNowStatus()
+{
+	return (bool)ESPNMenuItem->GetValue();
+}
+
+void CSSMS3Controls::SetESPNOWStatus(bool newStatus)
+{
+	ESPNMenuItem->SetValue((int)newStatus);
+	SetESPNOW(ESPNMenuItem->GetValue());
 }
 
 void CSSMS3Controls::SetWiFi(int value)

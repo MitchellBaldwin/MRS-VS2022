@@ -98,20 +98,26 @@ bool MCCControls::Init(TFT_eSPI* parentTFT)
 	
 	MainMenu = new TFTMenuClass(tft);
 
-	ESPNMenuItem = new MenuItemClass("ESPN", 36, 157, 56, 12, MenuItemClass::MenuItemTypes::OffOn);
+	ESPNMenuItem = new MenuItemClass("ESPN", 2, 157, 56, 12, MenuItemClass::MenuItemTypes::OffOn);
 	ESPNMenuItem->Init(tft);
 	MainMenu->AddItem(ESPNMenuItem);
 	ESPNMenuItem->SetOnExecuteHandler(nullptr);
+	ESPNMenuItem->SetValue(1);					// Enable telemetry by default
 
-	DriveModeMenuItem = new MenuItemClass("Mode", 98, 157, 56, 12, MenuItemClass::MenuItemTypes::Action);
+	DriveModeMenuItem = new MenuItemClass("TBD", 60, 157, 56, 12, MenuItemClass::MenuItemTypes::OffOn);
 	DriveModeMenuItem->Init(tft);
 	MainMenu->AddItem(DriveModeMenuItem);
 	DriveModeMenuItem->SetOnExecuteHandler(nullptr);
-	DriveModeMenuItem->SetMinValue(CSSMDrivePacket::DriveModes::DRV);
-	DriveModeMenuItem->SetMaxValue(CSSMDrivePacket::DriveModes::DRVTw);
-	DriveModeMenuItem->SetValue(CSSMDrivePacket::DriveModes::DRV);
+	//DriveModeMenuItem->SetMinValue(CSSMDrivePacket::DriveModes::DRV);
+	//DriveModeMenuItem->SetMaxValue(CSSMDrivePacket::DriveModes::DRVTw);
+	//DriveModeMenuItem->SetValue(CSSMDrivePacket::DriveModes::DRV);
 
-	BRTMenuItem = new MenuItemClass("BRT", 162, 157, 56, 12, MenuItemClass::MenuItemTypes::Numeric);
+	TBDMenuItem = new MenuItemClass("TBD", 118, 157, 56, 12, MenuItemClass::MenuItemTypes::OffOn);
+	TBDMenuItem->Init(tft);
+	MainMenu->AddItem(TBDMenuItem);
+	TBDMenuItem->SetOnExecuteHandler(nullptr);
+
+	BRTMenuItem = new MenuItemClass("BRT", 203, 157, 56, 12, MenuItemClass::MenuItemTypes::Numeric);
 	BRTMenuItem->Init(tft);
 	MainMenu->AddItem(BRTMenuItem);
 	BRTMenuItem->SetOnExecuteHandler(LocalDisplay.SetDisplayBrightness);
@@ -120,7 +126,7 @@ bool MCCControls::Init(TFT_eSPI* parentTFT)
 	BRTMenuItem->SetNumericStepSize(16);
 	BRTMenuItem->SetValue(LocalDisplay.GetDisplayBrightness());
 
-	NextPageMenuItem = new MenuItemClass("Next", 226, 157, 56, 12, MenuItemClass::MenuItemTypes::Action);
+	NextPageMenuItem = new MenuItemClass("Next", 261, 157, 56, 12, MenuItemClass::MenuItemTypes::Action);
 	NextPageMenuItem->Init(tft);
 	MainMenu->AddItem(NextPageMenuItem);
 	NextPageMenuItem->SetOnExecuteHandler(LocalDisplay.NextPage);
@@ -331,6 +337,11 @@ void MCCControls::ToggleNavSelected()
 void MCCControls::ToggleFuncSelected()
 {
 	FuncSelected = !FuncSelected;
+}
+
+bool MCCControls::GetESPNowStatus()
+{
+	return (bool)ESPNMenuItem->GetValue();
 }
 
 MCCControls mccControls;

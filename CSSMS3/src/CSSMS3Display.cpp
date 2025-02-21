@@ -45,7 +45,7 @@ void CSSMS3Display::DrawDashboard(int32_t xTL, int32_t yTL)
 		CSSMS3Status.cssmDrivePacket.OmegaXYSetting);
 	tft.drawString(buf, xTL + 2, cursorY);
 
-	// Basic motion data line (from MRS telemetry);
+	// Basic motion data line (from MRS telemetry):
 	cursorY += 10;
 	tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);
 	sprintf(buf, "%s Hdg %03d GSpd %+6.1fmm/s wXY %+6.3frad/s",
