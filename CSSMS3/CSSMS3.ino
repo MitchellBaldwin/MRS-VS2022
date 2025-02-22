@@ -170,6 +170,10 @@ void setup()
 		{
 			_PL("Failed to add peer")
 		}
+
+		// Register OnDataReceived callback
+		esp_now_register_recv_cb(esp_now_recv_cb_t(OnMRSMCCDataReceived));
+
 	}
 	sprintf(buf, "CSSMDrivePacket: %d b", sizeof(CSSMDrivePacket));
 	CSSMS3Status.AddDebugTextLine(buf);
@@ -192,11 +196,11 @@ void setup()
 
 	if (CSSMS3Status.SysDrvDisplayState)
 	{
-		cssmS3Display.Control(CSSMS3Display::Commands::SYSPage);
+		cssmS3Display.Control(CSSMS3Display::Commands::DRVPage);
 	}
 	else
 	{
-		cssmS3Display.Control(CSSMS3Display::Commands::DRVPage);
+		cssmS3Display.Control(CSSMS3Display::Commands::SYSPage);
 	}
 	UpdateDisplayTask.enable();
 
@@ -237,6 +241,7 @@ void ReadButtonsCallback()
 
 void UpdateDisplayCallback()
 {
+	CSSMS3Status.Update();		// To check health of ESP-NOW telemetry
 	cssmS3Display.Update();
 }
 
@@ -264,7 +269,6 @@ void OnMRSMCCDataSent(const uint8_t* mac_addr, esp_now_send_status_t status)
 {
 	char buf[64];
 
-	//CSSMS3Status.ESPNOWStatus = (status == ESP_NOW_SEND_SUCCESS);
 	cssmS3Controls.SetESPNOWStatus(status == ESP_NOW_SEND_SUCCESS);
 	if (CSSMS3Status.ESPNOWStatus)
 	{
@@ -289,5 +293,22 @@ void OnMRSMCCDataSent(const uint8_t* mac_addr, esp_now_send_status_t status)
 		//		_PL("ESP-NOW data send FAIL")
 		//	}
 	}
+
 }
 
+void OnMRSMCCDataReceived(const uint8_t* mac, const uint8_t* data, int lenght)
+{
+	char buf[32];
+
+	if (data[0] == 0x21)	// Packet type identifier for a RC2x15AMCStatusPacket
+	{
+		memcpy(&(CSSMS3Status.mcStatus), data, sizeof(CSSMS3Status.mcStatus));
+		//sprintf(buf, MACSTR, MAC2STR(mac));
+		//MCCStatus.IncomingCSSMPacketMACString = String(buf);
+		CSSMS3Status.MRSMCCPacketReceivedCount++;
+		uint64_t receiptTime = millis();
+		CSSMS3Status.MCCPacketReceiptInterval = receiptTime - CSSMS3Status.LastMCCPacketReceivedTime;
+		CSSMS3Status.LastMCCPacketReceivedTime = receiptTime;
+
+	}
+}

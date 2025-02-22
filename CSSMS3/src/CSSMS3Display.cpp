@@ -122,14 +122,9 @@ void CSSMS3Display::DrawSYSPage()
 
 	DrawDashboard(tft.width() / 2, tft.height() - 50);
 	
-	//tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK, true);
-	//tft.setTextDatum(CC_DATUM);
-	//sprintf(buf, "%5d ms", CSSMS3Status.CSSMPacketReceiptInterval);
-	//tft.drawString(buf, tft.width() / 2, 40);
-
 	tft.setTextColor(TFT_PINK, TFT_BLACK, true);
 	tft.setTextDatum(CR_DATUM);
-	sprintf(buf, "%s %s", "CSSM Uplink ", CSSMS3Status.MRSMCCESPNOWLinkStatus ? "OK" : "NO");
+	sprintf(buf, "%s %s", "MCC Downlink ", CSSMS3Status.ESPNOWStatus ? "OK" : "NO");
 	tft.drawString(buf, tft.width() - 2, 40);
 
 
@@ -202,6 +197,23 @@ void CSSMS3Display::DrawCOMPage()
 		lastPage = currentPage;
 		lastSystemPage = currentPage;
 	}
+
+	// Update dynamic displays:
+	tft.setTextColor(TFT_PINK, TFT_BLACK, true);
+	tft.setTextDatum(CL_DATUM);
+	sprintf(buf, "%s %s", "MCC Downlink ", CSSMS3Status.ESPNOWStatus ? "OK" : "NO");
+	tft.drawString(buf, tft.width() / 2, 40);
+
+	//tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK, true);
+	//tft.setTextDatum(CC_DATUM);
+	//tft.drawString(buf, tft.width() / 2, 40);
+
+	tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK, true);
+	tft.setTextDatum(CR_DATUM);
+	sprintf(buf, "%5d ms", CSSMS3Status.MCCPacketReceiptInterval);
+	tft.drawString(buf, tft.width() - 2, 40);
+
+
 }
 
 void CSSMS3Display::DrawDBGPage()

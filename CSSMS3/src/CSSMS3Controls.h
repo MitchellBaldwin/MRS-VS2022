@@ -125,6 +125,7 @@ protected:
 	static void NextDriveMode(int value);		// Cycle to next drive mode
 	static void SetHDG(int value);				// Set the HDG from the value field of the HDGSetMenuItem object
 	static void CaptureHDG(int value);			// Capture current heading and enter HDG drive mode
+	static void SetSPD(int value);				// Set the Speed from the value field of the SPDSetMenuItem object
 
 public:
 	enum NavEncoderModes
@@ -164,14 +165,24 @@ public:
 	MenuItemClass* ReportMemoryMenuItem;
 	MenuItemClass* ShowFontMenuItem;
 
-	TFTMenuClass* HDGPageMenu;
+	TFTMenuClass* HDGPageMenu;			// HDG page menu
 	MenuItemClass* HDGHoldMenuItem;
 	MenuItemClass* HDGSetMenuItem;
-	MenuItemClass* SpeedSetMenuItem;
+	MenuItemClass* SPDSetMenuItem;
 
-	TFTMenuClass* DRVPageMenu;
+	TFTMenuClass* DRVPageMenu;			// DRV page menu
 	MenuItemClass* CaptureHDGMenuItem;
 
+	TFTMenuClass* WPTPageMenu;			// WPT page menu
+	MenuItemClass* DirectToMenuItem;
+
+	TFTMenuClass* SEQPageMenu;			// SEQ page menu
+	MenuItemClass* ActivateMenuItem;
+	MenuItemClass* PreviousWPTMenuItem;
+	MenuItemClass* NextWPTMenuItem;
+	MenuItemClass* CRSSetMenuItem;
+
+	
 	bool Init(TFT_eSPI* parentTFT);
 	bool SetupADC();
 

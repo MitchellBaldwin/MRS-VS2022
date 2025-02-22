@@ -24,6 +24,7 @@ constexpr uint8_t MAX_DEBUG_TEXT_LINES = 14;
 
 //#include "C:\Repos\MRS-VS2022\MRSCommon\src\CSSMDrivePacket.h"
 #include "..\..\MRSCommon\src\CSSMDrivePacket.h"
+#include "C:\Repos\MRS-VS2022\MRSCommon\src\RC2x15AMCStatusPacket.h"
 
 class CSSMS3StatusClass
 {
@@ -42,7 +43,8 @@ public:
 	CSSMDrivePacket::DriveModes SavedDriveMode = CSSMDrivePacket::DriveModes::DRV;	// Remember Drive Mode when temporarily overridden
 
 	CSSMDrivePacket cssmDrivePacket;
-	
+	RC2x15AMCStatusPacket mcStatus;
+
 	enum ComModes
 	{
 		IDCPktSerial,	// COBS encoded packet exchange with MRS RC MCC through UART1 (Default mode)
@@ -57,12 +59,14 @@ public:
 	bool UART1Status = false;
 	bool UART2Status = false;
 
-	bool ESPNOWStatus = false;
+	bool ESPNOWStatus = false;					// Controls CSSM telemetry broadcast over ESP-NOW
 	int ESPNOWPacketSentCount = 0;
 	uint16_t SendRetries = 0;
 
 	uint32_t MRSMCCPacketReceivedCount = 0;
 	uint32_t SaveMRSMCCPacketReceivedCount = 0;
+	uint64_t MCCPacketReceiptInterval = 0;
+	uint64_t LastMCCPacketReceivedTime = 0;
 	bool MRSMCCESPNOWLinkStatus = false;
 	
 	bool WiFiStatus = false;

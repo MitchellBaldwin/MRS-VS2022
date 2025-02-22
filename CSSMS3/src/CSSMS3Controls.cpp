@@ -242,6 +242,11 @@ void CSSMS3Controls::CaptureHDG(int value)
 	CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::HDG;
 }
 
+void CSSMS3Controls::SetSPD(int value)
+{
+	CSSMS3Status.cssmDrivePacket.SpeedSetting = value;
+}
+
 bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 {
 	char buf[64];
@@ -362,6 +367,8 @@ bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 	CommsMenu = new TFTMenuClass();
 	CommsMenu->Init(tft);
 
+	CommsMenu->AddItem(NextPageMenuItem);
+
 	CommsMenu->AddItem(ESPNMenuItem);
 
 	WiFiMenuItem = new MenuItemClass("WiFi", 98, 157, 56, 12, MenuItemClass::MenuItemTypes::OffOn);
@@ -369,10 +376,10 @@ bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 	CommsMenu->AddItem(WiFiMenuItem);
 	WiFiMenuItem->SetOnExecuteHandler(SetWiFi);
 
-	CommsMenu->AddItem(NextPageMenuItem);
-
 	DebugMenu = new TFTMenuClass();
 	DebugMenu->Init(tft);
+
+	DebugMenu->AddItem(NextPageMenuItem);
 
 	ReportMemoryMenuItem = new MenuItemClass("Mem", 36, 157, 56, 12, MenuItemClass::MenuItemTypes::Action);
 	ReportMemoryMenuItem->Init(tft);
@@ -384,11 +391,11 @@ bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 	DebugMenu->AddItem(ShowFontMenuItem);
 	ShowFontMenuItem->SetOnExecuteHandler(cssmS3Display.ShowFontTableFixed);
 
-	DebugMenu->AddItem(NextPageMenuItem);
-
 	HDGPageMenu = new TFTMenuClass();
 	HDGPageMenu->Init(tft);
 
+	//HDGPageMenu->AddItem(NextPageMenuItem);
+	
 	HDGHoldMenuItem = new MenuItemClass("HOLD", 36, 157, 56, 12, MenuItemClass::MenuItemTypes::Action);
 	HDGHoldMenuItem->Init(tft);
 	HDGPageMenu->AddItem(HDGHoldMenuItem);
@@ -404,8 +411,16 @@ bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 	HDGSetMenuItem->SetNumericStepSize(1);
 	HDGSetMenuItem->SetValue(CSSMS3Status.cssmDrivePacket.HeadingSetting);
 
-	HDGPageMenu->AddItem(NextPageMenuItem);
-	
+	SPDSetMenuItem = new MenuItemClass("SPD", 162, 157, 56, 12, MenuItemClass::MenuItemTypes::Numeric);
+	SPDSetMenuItem->Init(tft);
+	HDGPageMenu->AddItem(SPDSetMenuItem);
+	SPDSetMenuItem->SetOnExecuteHandler(SetSPD);
+	SPDSetMenuItem->SetMinValue(0);
+	SPDSetMenuItem->SetMaxValue(100);
+	//DONE: SPD & CRS settings should be in the range 0 - 359, but the MenuItem numeric value is of type byte; change to int32_t or something more generally useful!
+	SPDSetMenuItem->SetNumericStepSize(1);
+	SPDSetMenuItem->SetValue(CSSMS3Status.cssmDrivePacket.SpeedSetting);
+
 	DRVPageMenu = new TFTMenuClass();
 	DRVPageMenu->Init(tft);
 
@@ -415,7 +430,7 @@ bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 	CaptureHDGMenuItem->SetOnExecuteHandler(CaptureHDG);
 
 	DRVPageMenu->AddItem(HDGSetMenuItem);
-	DRVPageMenu->AddItem(NextPageMenuItem);
+	//DRVPageMenu->AddItem(NextPageMenuItem);
 
 	// Set up ADC:
 	SetupADC();

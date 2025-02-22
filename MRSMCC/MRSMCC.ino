@@ -18,7 +18,7 @@
 
 #include <WiFi.h>
 #include <esp_now.h>
-//uint8_t MRSRCCSSMMAC[] = { 0xA8, 0x42, 0xE3, 0x4A, 0x8B, 0x00 };
+
 uint8_t MRSRCCSSMS3MAC[] = { 0xF0, 0xF5, 0xBD, 0x48, 0x0A, 0x4C };
 esp_now_peer_info_t MRSRCCSSMInfo;
 
@@ -208,14 +208,14 @@ void setup()
 	LocalDisplay.Control(LocalDisplayClass::Commands::SYSPage);
 	UpdateLocalDisplayTask.enable();
 
-	if (MCCStatus.ESPNOWStatus)
-	{
-		SendRC2x15AMCStatusPacketTask.enable();
-	}
 	// Set ESPNOWStatus to match initial setting of the ESP-NOW menu item used to enable / disable the telemetry stream from 
 	//the MCC to the MRS RC CSSM, which should be TRUE to start
 	// User initiates telemetry to the MRS through the on-screen menu system when ready:
 	MCCStatus.ESPNOWStatus = mccControls.GetESPNowStatus();
+	if (MCCStatus.ESPNOWStatus)
+	{
+		SendRC2x15AMCStatusPacketTask.enable();
+	}
 
 	ToggleBuiltinLEDTask.enable();
 }
