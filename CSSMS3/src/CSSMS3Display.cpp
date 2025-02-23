@@ -612,40 +612,26 @@ void CSSMS3Display::ShowCurrentDriveModePage()
 	switch (CSSMS3Status.cssmDrivePacket.DriveMode)
 	{
 	case CSSMDrivePacket::DriveModes::DRV:
-	{
 		cssmS3Display.SetCurrentPage(Pages::DRV);
 		break;
-	}
 	case CSSMDrivePacket::DriveModes::HDG:
-	{
 		cssmS3Display.SetCurrentPage(Pages::HDG);
 		break;
-	}
 	case CSSMDrivePacket::DriveModes::WPT:
-	{
 		cssmS3Display.SetCurrentPage(Pages::WPT);
 		break;
-	}
 	case CSSMDrivePacket::DriveModes::SEQ:
-	{
 		cssmS3Display.SetCurrentPage(Pages::SEQ);
 		break;
-	}
 	case CSSMDrivePacket::DriveModes::DRVLR:
-	{
 		cssmS3Display.SetCurrentPage(Pages::DRV);
 		break;
-	}
 	case CSSMDrivePacket::DriveModes::DRVTw:
-	{
 		cssmS3Display.SetCurrentPage(Pages::DRV);
 		break;
-	}
 	default:
-	{
 		cssmS3Display.SetCurrentPage(Pages::DRV);
 		break;
-	}
 	}
 }
 

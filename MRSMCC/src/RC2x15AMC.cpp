@@ -10,6 +10,50 @@
 #include "MCCStatus.h"
 #include <math.h>
 
+bool RC2x15AMCClass::TestInProgress()
+{
+	return calibratingDrive;
+}
+
+bool RC2x15AMCClass::CalibrateDriveSystem(uint64_t testPeriod)
+{
+	if (!calibratingDrive)	// Start of a new test sequence?
+	{
+		calibratingDrive = true;
+		CalibrateDriveStartTime = millis();
+		RC2x15A->ResetEncoders(RC2x15AAddress);
+
+		return DriveThrottleTurnRate(25.0f, 0.0f);
+	}
+	else
+	{
+		uint64_t elapsedTime = millis() - CalibrateDriveStartTime;
+		if (elapsedTime >= testPeriod)	// End of test?
+		{
+			char buf[64]{};
+			uint32_t data3, data4;
+			bool success = RC2x15A->ReadEncoders(PSAddress, data3, data4);
+			if (success)
+			{
+				MCCStatus.mcStatus.M1Encoder = data3;
+				MCCStatus.mcStatus.M2Encoder = data4;
+			}
+			MCCStatus.mcStatus.ENCPOSValid = success;
+			sprintf(buf, "L %d qp  R %d qp  in %d ms", data3, data4, elapsedTime);
+			MCCStatus.AddDebugTextLine(buf);
+			_PP("Drive system calibration results: ")
+			_PL(buf)
+			calibratingDrive = false;
+
+			return RC2x15A->DutyM1M2(PSAddress, 0, 0);
+		}
+		else
+		{
+			return true;
+		}
+	}
+}
+
 bool RC2x15AMCClass::Init()
 {
 	char buf[64];
@@ -189,7 +233,8 @@ bool RC2x15AMCClass::ResetUARTLink()
 /// </returns>
 bool RC2x15AMCClass::DriveSettingsChanged()
 {
-	return (abs(MCCStatus.cssmDrivePacket.SpeedSetting - MCCStatus.lastCSSMDrivePacket.SpeedSetting) >= GAMMA 
+	return (MCCStatus.cssmDrivePacket.DriveMode != MCCStatus.lastCSSMDrivePacket.DriveMode
+			|| abs(MCCStatus.cssmDrivePacket.SpeedSetting - MCCStatus.lastCSSMDrivePacket.SpeedSetting) >= GAMMA 
 			|| abs(MCCStatus.cssmDrivePacket.OmegaXYSetting - MCCStatus.lastCSSMDrivePacket.OmegaXYSetting) >= GAMMA
 			|| abs(MCCStatus.cssmDrivePacket.LThrottle - MCCStatus.lastCSSMDrivePacket.LThrottle) >= GAMMA
 			|| abs(MCCStatus.cssmDrivePacket.RThrottle - MCCStatus.lastCSSMDrivePacket.RThrottle) >= GAMMA);
@@ -199,53 +244,43 @@ void RC2x15AMCClass::Update()
 {
 	bool success = false;
 
-	// Determine the Drive method to use based on the current 
-	switch (MCCStatus.cssmDrivePacket.DriveMode)
+	if (calibratingDrive)
 	{
-	case CSSMDrivePacket::DriveModes::DRV:
-		if (DriveSettingsChanged())
-		{
-			success = Drive(MCCStatus.cssmDrivePacket.SpeedSetting, MCCStatus.cssmDrivePacket.OmegaXYSetting);
-
-		}
-		else
-		{
-			success = ReadStatus();
-		}
-		break;
-	case CSSMDrivePacket::DriveModes::HDG:
-
-		break;
-	case CSSMDrivePacket::DriveModes::WPT:
-
-		break;
-	case CSSMDrivePacket::DriveModes::SEQ:
-
-		break;
-	case CSSMDrivePacket::DriveModes::DRVLR:
-		if (DriveSettingsChanged())
-		{
-			success = DriveLRThrottle(MCCStatus.cssmDrivePacket.LThrottle, MCCStatus.cssmDrivePacket.RThrottle);
-		}
-		else
-		{
-			success = ReadStatus();
-		}
-		break;
-	case CSSMDrivePacket::DriveModes::DRVTw:
-		if (DriveSettingsChanged())
-		{
-			success = DriveThrottleTurnRate(MCCStatus.cssmDrivePacket.SpeedSetting, MCCStatus.cssmDrivePacket.OmegaXYSetting);
-		}
-		else
-		{
-			success = ReadStatus();
-		}
-		break;
-	default:
-		break;
+		success = CalibrateDriveSystem(testDrivePeriod);
 	}
 
+	if (DriveSettingsChanged())
+	{
+		// Determine the Drive method to use based on the current 
+		switch (MCCStatus.cssmDrivePacket.DriveMode)
+		{
+		case CSSMDrivePacket::DriveModes::DRV:
+			success = Drive(MCCStatus.cssmDrivePacket.SpeedSetting, MCCStatus.cssmDrivePacket.OmegaXYSetting);
+			break;
+		case CSSMDrivePacket::DriveModes::HDG:
+			success = CalibrateDriveSystem(testDrivePeriod);
+			break;
+		case CSSMDrivePacket::DriveModes::WPT:
+
+			break;
+		case CSSMDrivePacket::DriveModes::SEQ:
+
+			break;
+		case CSSMDrivePacket::DriveModes::DRVLR:
+			success = DriveLRThrottle(MCCStatus.cssmDrivePacket.LThrottle, MCCStatus.cssmDrivePacket.RThrottle);
+			break;
+		case CSSMDrivePacket::DriveModes::DRVTw:
+			success = DriveThrottleTurnRate(MCCStatus.cssmDrivePacket.SpeedSetting, MCCStatus.cssmDrivePacket.OmegaXYSetting);
+			break;
+		default:
+			success = ReadStatus();
+		}
+	}
+	else
+	{
+		success = ReadStatus();
+	}
+	
 	MCCStatus.lastCSSMDrivePacket = MCCStatus.cssmDrivePacket;	// Using default C++ copy mechanism
 
 	if (!success)

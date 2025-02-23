@@ -122,7 +122,9 @@ public:
 	static void ToggleNavSelected();
 	static void ToggleFuncSelected();
 
+	static void SetESPNOW(int value);
 	bool GetESPNowStatus();
+	void SetESPNOWStatus(bool newStatus);
 
 };
 

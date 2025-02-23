@@ -28,6 +28,8 @@ constexpr float GAMMA = 0.10f;
 constexpr uint32_t lMotorFullSpeedQPPS = 7500;
 constexpr uint32_t rMotorFullSpeedQPPS = 7500;
 
+constexpr uint64_t testDrivePeriod = 15000;		// ms
+
 class RC2x15AMCClass
 {
 public:
@@ -44,12 +46,17 @@ public:
 	};
 	MCParamTypes CurrentMCParam = MCParamTypes::VBAT;
 
+	bool TestInProgress();
+
 protected:
-	HardwareSerial* RC2x15AUART;			// Packet serial link to RoboClaw 2x15A Motor Controller
+	HardwareSerial* RC2x15AUART;					// Packet serial link to RoboClaw 2x15A Motor Controller
 	RoboClaw* RC2x15A;
-	uint8_t PSAddress = RC2x15AAddress;		// RoboClaw MC address for Packet Serial communications
-	//float LastSpeedSetting = 0.0f;		// For use determining whether drive commands have changed
-	//float LastTurnRateSetting = 0.0f;
+	uint8_t PSAddress = RC2x15AAddress;				// RoboClaw MC address for Packet Serial communications
+
+	bool calibratingDrive = false;					// Development testing, such as calibrating odometry parameters
+	uint64_t CalibrateDriveStartTime = 0;
+
+	bool CalibrateDriveSystem(uint64_t testPeriod);
 
 public:
 	bool Init();

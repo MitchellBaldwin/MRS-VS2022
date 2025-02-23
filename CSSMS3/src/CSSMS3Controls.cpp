@@ -15,7 +15,7 @@ void CSSMS3Controls::HandleDefaultButtonEvents(ace_button::AceButton* button, ui
 		if (eventType == AceButton::kEventPressed)
 		{
 			CSSMS3Status.TS2State = buttonState;
-			//TODO: Switch display to current drive mode page:
+			//DONE: Switch display to current drive mode page:
 			cssmS3Display.ShowCurrentDriveModePage();
 
 			//_PP("TS2 on; ");
@@ -411,13 +411,13 @@ bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 	HDGSetMenuItem->SetNumericStepSize(1);
 	HDGSetMenuItem->SetValue(CSSMS3Status.cssmDrivePacket.HeadingSetting);
 
+	//TODO: Change Speed setting from % of full speed to mm/s units
 	SPDSetMenuItem = new MenuItemClass("SPD", 162, 157, 56, 12, MenuItemClass::MenuItemTypes::Numeric);
 	SPDSetMenuItem->Init(tft);
 	HDGPageMenu->AddItem(SPDSetMenuItem);
 	SPDSetMenuItem->SetOnExecuteHandler(SetSPD);
 	SPDSetMenuItem->SetMinValue(0);
 	SPDSetMenuItem->SetMaxValue(100);
-	//DONE: SPD & CRS settings should be in the range 0 - 359, but the MenuItem numeric value is of type byte; change to int32_t or something more generally useful!
 	SPDSetMenuItem->SetNumericStepSize(1);
 	SPDSetMenuItem->SetValue(CSSMS3Status.cssmDrivePacket.SpeedSetting);
 

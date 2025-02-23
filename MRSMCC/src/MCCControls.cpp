@@ -101,7 +101,7 @@ bool MCCControls::Init(TFT_eSPI* parentTFT)
 	ESPNMenuItem = new MenuItemClass("ESPN", 2, 157, 56, 12, MenuItemClass::MenuItemTypes::OffOn);
 	ESPNMenuItem->Init(tft);
 	MainMenu->AddItem(ESPNMenuItem);
-	ESPNMenuItem->SetOnExecuteHandler(nullptr);
+	ESPNMenuItem->SetOnExecuteHandler(SetESPNOW);
 	ESPNMenuItem->SetValue(1);					// Enable telemetry by default
 
 	DriveModeMenuItem = new MenuItemClass("TBD", 60, 157, 56, 12, MenuItemClass::MenuItemTypes::OffOn);
@@ -339,9 +339,27 @@ void MCCControls::ToggleFuncSelected()
 	FuncSelected = !FuncSelected;
 }
 
+void MCCControls::SetESPNOW(int value)
+{
+	if (mccControls.ESPNMenuItem->GetValue())
+	{
+		MCCStatus.ESPNOWStatus = true;
+	}
+	else
+	{
+		MCCStatus.ESPNOWStatus = false;
+	}
+}
+
 bool MCCControls::GetESPNowStatus()
 {
 	return (bool)ESPNMenuItem->GetValue();
+}
+
+void MCCControls::SetESPNOWStatus(bool newStatus)
+{
+	ESPNMenuItem->SetValue((int)newStatus);
+	SetESPNOW(ESPNMenuItem->GetValue());
 }
 
 MCCControls mccControls;
