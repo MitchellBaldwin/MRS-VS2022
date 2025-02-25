@@ -204,8 +204,6 @@ void setup()
 	}
 	UpdateDisplayTask.enable();
 
-	//cssmS3Controls.MainMenu->Draw();
-
 	if (CSSMS3Status.ESPNOWStatus)
 	{
 		SendCSSMPacketTask.enable();

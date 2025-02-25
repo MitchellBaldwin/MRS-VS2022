@@ -83,6 +83,10 @@ bool RC2x15AMCClass::Init()
 		//RC2x15A->
 	}
 
+	KLTrack = defaultKLTrack;
+	KRTrack = defaultKRTrack;
+	TrackSpan = defaulTrackSpan;
+
 	return success;
 }
 
@@ -236,6 +240,8 @@ bool RC2x15AMCClass::DriveSettingsChanged()
 	return (MCCStatus.cssmDrivePacket.DriveMode != MCCStatus.lastCSSMDrivePacket.DriveMode
 			|| abs(MCCStatus.cssmDrivePacket.SpeedSetting - MCCStatus.lastCSSMDrivePacket.SpeedSetting) >= GAMMA 
 			|| abs(MCCStatus.cssmDrivePacket.OmegaXYSetting - MCCStatus.lastCSSMDrivePacket.OmegaXYSetting) >= GAMMA
+			|| abs(MCCStatus.cssmDrivePacket.SpeedSettingPct - MCCStatus.lastCSSMDrivePacket.SpeedSettingPct) >= GAMMA 
+			|| abs(MCCStatus.cssmDrivePacket.OmegaXYSettingPct - MCCStatus.lastCSSMDrivePacket.OmegaXYSettingPct) >= GAMMA
 			|| abs(MCCStatus.cssmDrivePacket.LThrottle - MCCStatus.lastCSSMDrivePacket.LThrottle) >= GAMMA
 			|| abs(MCCStatus.cssmDrivePacket.RThrottle - MCCStatus.lastCSSMDrivePacket.RThrottle) >= GAMMA);
 }
@@ -246,19 +252,20 @@ void RC2x15AMCClass::Update()
 
 	if (calibratingDrive)
 	{
-		success = CalibrateDriveSystem(testDrivePeriod);
+		success = CalibrateDriveSystem(defaultTestDrivePeriod);
 	}
 
 	if (DriveSettingsChanged())
 	{
-		// Determine the Drive method to use based on the current 
+		// Determine the Drive method to use based on the current DriveMode:
 		switch (MCCStatus.cssmDrivePacket.DriveMode)
 		{
 		case CSSMDrivePacket::DriveModes::DRV:
+			// SpeedSetting in ±mm/s and OmegaXYSetting in ±mrad/s:
 			success = Drive(MCCStatus.cssmDrivePacket.SpeedSetting, MCCStatus.cssmDrivePacket.OmegaXYSetting);
 			break;
 		case CSSMDrivePacket::DriveModes::HDG:
-			success = CalibrateDriveSystem(testDrivePeriod);
+			success = CalibrateDriveSystem(defaultTestDrivePeriod);
 			break;
 		case CSSMDrivePacket::DriveModes::WPT:
 
@@ -270,7 +277,11 @@ void RC2x15AMCClass::Update()
 			success = DriveLRThrottle(MCCStatus.cssmDrivePacket.LThrottle, MCCStatus.cssmDrivePacket.RThrottle);
 			break;
 		case CSSMDrivePacket::DriveModes::DRVTw:
-			success = DriveThrottleTurnRate(MCCStatus.cssmDrivePacket.SpeedSetting, MCCStatus.cssmDrivePacket.OmegaXYSetting);
+			//// SpeedSetting in ±mm/s and OmegaXYSetting in ±mrad/s:
+			//success = Drive(MCCStatus.cssmDrivePacket.SpeedSetting, MCCStatus.cssmDrivePacket.OmegaXYSetting);
+			//DONE: Add fields to CSSMDrivePacket to maintain speed and turn rate settings in ±% of full
+			// SpeedSetting in ±% and OmegaXYSetting in ±%:
+			success = DriveThrottleTurnRate(MCCStatus.cssmDrivePacket.SpeedSettingPct, MCCStatus.cssmDrivePacket.OmegaXYSettingPct);
 			break;
 		default:
 			success = ReadStatus();
@@ -281,10 +292,34 @@ void RC2x15AMCClass::Update()
 		success = ReadStatus();
 	}
 	
+	//TODO: Check that M1 is the Left motor and M2 is the right motor
+	
+	// Calculate ground dynamics based on motor odometry:
+	MCCStatus.mcStatus.GroundSpeed = ((float)(MCCStatus.mcStatus.M1Speed) / KLTrack + (float)(MCCStatus.mcStatus.M2Speed) / KRTrack) / 2.0f;	// ±mm/s
+	MCCStatus.mcStatus.TurnRate = ((float)(MCCStatus.mcStatus.M2Speed) / KRTrack - (float)(MCCStatus.mcStatus.M1Speed) / KLTrack) / TrackSpan;	// ±rad/s
+
+	// Estimate heading by integrating turn rate:
+	uint64_t timeNow = millis();
+	float hdg = MCCStatus.mcStatus.Heading;
+	hdg += MCCStatus.mcStatus.TurnRate * (float)(timeNow - MCCStatus.mcStatus.LastOdometryUpdateTime) * 180.0f / (1000.0 * PI);
+	if (hdg > 360.0f)
+	{
+		hdg -= 360.0f;
+	}
+	else if (hdg < 0.0f)
+	{
+		hdg += 360.0f;
+	}
+	MCCStatus.mcStatus.Heading = hdg;
+
+	MCCStatus.mcStatus.LastOdometryUpdateTime = timeNow;
+
+	// Save drive settings to test for changes next cycle:
 	MCCStatus.lastCSSMDrivePacket = MCCStatus.cssmDrivePacket;	// Using default C++ copy mechanism
 
-	if (!success)
+	if (!success)	// Failure communicating with motor controller?
 	{
+		// If so try reconnecting the serial link:
 		success = ResetUARTLink();
 	}
 
@@ -306,9 +341,31 @@ void RC2x15AMCClass::Update()
 /// <returns>
 /// Returns success reported by serial communication with the RoboClaw 2x15A motor controller
 ///	</returns>
-bool RC2x15AMCClass::Drive(float speed, float turnRate)
+bool RC2x15AMCClass::Drive(float vf, float wxy)
 {
 	bool success = false;
+
+	// Left and right motor speed settings in qp/s:
+	float wLSet = vf * KLTrack;
+	float wRSet = vf * KRTrack;
+
+	wLSet -= wxy * TrackSpan * KLTrack / 2.0f;
+	wRSet += wxy * TrackSpan * KRTrack / 2.0f;
+
+	int32_t lMotorSpeed = wLSet;
+	int32_t rMotorSpeed = wRSet;
+
+	if (abs(lMotorSpeed) < 1 && abs(rMotorSpeed) < 1)
+	{
+		success = RC2x15A->DutyM1M2(PSAddress, 0, 0);
+	}
+	else
+	{
+		success = RC2x15A->SpeedM1M2(PSAddress, lMotorSpeed, rMotorSpeed);
+	}
+
+	MCCStatus.mcStatus.M1SpeedSetting = lMotorSpeed;
+	MCCStatus.mcStatus.M2SpeedSetting = rMotorSpeed;
 
 	return success;
 }

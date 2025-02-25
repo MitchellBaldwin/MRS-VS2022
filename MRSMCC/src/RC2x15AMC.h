@@ -28,7 +28,11 @@ constexpr float GAMMA = 0.10f;
 constexpr uint32_t lMotorFullSpeedQPPS = 7500;
 constexpr uint32_t rMotorFullSpeedQPPS = 7500;
 
-constexpr uint64_t testDrivePeriod = 15000;		// ms
+constexpr float defaultKLTrack = 13.0103;				// qp/mm; encoder quadrature pulse count per mm of track movement
+constexpr float defaultKRTrack = 13.0103;				// qp/mm
+constexpr float defaulTrackSpan = 185.5;				// mm;  horizontal distance between left and right track center lines
+
+constexpr uint64_t defaultTestDrivePeriod = 15000;		// ms
 
 class RC2x15AMCClass
 {
@@ -58,6 +62,10 @@ protected:
 
 	bool CalibrateDriveSystem(uint64_t testPeriod);
 
+	float KLTrack = defaultKLTrack;
+	float KRTrack = defaultKRTrack;
+	float TrackSpan = defaulTrackSpan;
+
 public:
 	bool Init();
 	bool ReadStatus();
@@ -65,7 +73,7 @@ public:
 
 	bool DriveSettingsChanged();
 	void Update();
-	bool Drive(float speed, float turnRate);
+	bool Drive(float vf, float wxy);
 	bool DriveThrottleTurnRate(float throttle, float turnRate);
 	bool DriveLRThrottle(float lThrottle, float rThrottle);
 	bool DriveLRTrackSpeed(float leftTrackSpeed, float rightTrackSpeed);

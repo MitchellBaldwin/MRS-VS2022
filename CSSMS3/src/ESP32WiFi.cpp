@@ -6,7 +6,7 @@
 
 #include "ESP32WiFi.h"
 #include "DEBUG Macros.h"
-#include "CSSMStatus.h"
+#include "CSSMS3Status.h"
 #include <AsyncElegantOTA.h>
 #include <elegantWebpage.h>
 #include <Hash.h>

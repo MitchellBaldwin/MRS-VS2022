@@ -41,18 +41,18 @@ void CSSMS3Display::DrawDashboard(int32_t xTL, int32_t yTL)
 	sprintf(buf, "LTh %+06.1f%% RTh %+06.1f%% Speed %+6.1f%% wXY %+6.1f%%",
 		CSSMS3Status.cssmDrivePacket.LThrottle,
 		CSSMS3Status.cssmDrivePacket.RThrottle,
-		CSSMS3Status.cssmDrivePacket.SpeedSetting,
-		CSSMS3Status.cssmDrivePacket.OmegaXYSetting);
+		CSSMS3Status.cssmDrivePacket.SpeedSettingPct,
+		CSSMS3Status.cssmDrivePacket.OmegaXYSettingPct);
 	tft.drawString(buf, xTL + 2, cursorY);
 
 	// Basic motion data line (from MRS telemetry):
 	cursorY += 10;
-	tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);
-	sprintf(buf, "%s Hdg %03d GSpd %+6.1fmm/s wXY %+6.3frad/s",
+	tft.setTextColor(TFT_GREENYELLOW, TFT_BLACK, true);
+	sprintf(buf, "%s Hdg %03D GSpd %+6.1fmm/s wXY %+6.3frad/s",
 		DriveModeHeadings[CSSMS3Status.cssmDrivePacket.DriveMode],
-		CSSMS3Status.cssmDrivePacket.Heading,
-		CSSMS3Status.cssmDrivePacket.GroundSpeed,
-		CSSMS3Status.cssmDrivePacket.TurnRate);
+		(int)CSSMS3Status.mcStatus.Heading,
+		CSSMS3Status.mcStatus.GroundSpeed,
+		CSSMS3Status.mcStatus.TurnRate);
 	tft.drawString(buf, xTL + 2, cursorY);
 
 	// Proximity sensor line (from MRS telemetry):
@@ -67,7 +67,7 @@ void CSSMS3Display::DrawDashboard(int32_t xTL, int32_t yTL)
 	sprintf(buf, "%03D", CSSMS3Status.cssmDrivePacket.HeadingSetting);
 	tft.drawString(buf, 16, tft.height() - 27);
 	tft.setTextColor(0xf5e8, TFT_BLACK, true);
-	sprintf(buf, "%03D", CSSMS3Status.cssmDrivePacket.Heading);
+	sprintf(buf, "%03D", (int)CSSMS3Status.mcStatus.Heading);
 	tft.drawString(buf, 16, tft.height() - 12);
 
 	// Course (CRS) box (lower right corner):

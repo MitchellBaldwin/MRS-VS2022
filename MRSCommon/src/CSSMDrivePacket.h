@@ -47,14 +47,12 @@ public:
 
 	int HeadingSetting = 0;						// Commanded HDG (0 - 359)
 	int CourseSetting = 0;						// Commanded CRS (0 - 359)
-	float OmegaXYSetting = 0.0f;				// Commanded turn rate (±rad/s)
+	float OmegaXYSettingPct = 0.0f;				// Commanded turn rate (±% full)
+	float SpeedSettingPct = 0.0f;				// Commanded throttle setting (±% full)
+	float OmegaXYSetting = 0.0f;				// Commanded turn rate (±mrad/s)
 	float SpeedSetting = 0.0f;					// Commanded throttle setting (±mm/s)
 	float LThrottle = 0.0f;						// Commanded left throttle setting (±100.0%)
 	float RThrottle = 0.0f;						// Commanded right throttle setting (±100.0%)
-
-	float GroundSpeed = 0.0f;					// Measured ground speed (±mm/s)
-	float TurnRate = 0.0f;						// Measured turn rate (±rad/s)
-	int Heading = 0;							// Indicated heading (degrees)
 
 	void NextDriveMode()
 	{

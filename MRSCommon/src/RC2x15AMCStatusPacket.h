@@ -50,6 +50,13 @@ public:
 	bool ENCPOSValid = false;
 	bool SPEEDSValid = false;
 
+	//TODO: Move the following measured motion parameters to a packet structure designed specifically 
+	//for pose and dynamics telemetry:
+	uint64_t LastOdometryUpdateTime = 0;		// ms; used to integrate dynamic measurements to obtain position and pose estimates
+	float GroundSpeed = 0.0f;					// Measured ground speed (±mm/s)
+	float TurnRate = 0.0f;						// Measured turn rate (±rad/s)
+	float Heading = 0.0f;						// Indicated heading (degrees)
+
 };
 
 #endif

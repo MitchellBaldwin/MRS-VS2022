@@ -76,9 +76,11 @@ void CSSMS3Controls::DriveOSBHandler(int value)
 		break;
 	case CSSMDrivePacket::DriveModes::DRVTw:
 		CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::DRV;
+		funcEncoderMode = FuncEncoderModes::SteerMode;
 		break;
 	default:
 		CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::DRV;
+		funcEncoderMode = FuncEncoderModes::SteerMode;
 		break;
 	}
 	cssmS3Display.ShowCurrentDriveModePage();
@@ -238,7 +240,7 @@ void CSSMS3Controls::SetHDG(int value)
 
 void CSSMS3Controls::CaptureHDG(int value)
 {
-	CSSMS3Status.cssmDrivePacket.HeadingSetting = CSSMS3Status.cssmDrivePacket.Heading;
+	CSSMS3Status.cssmDrivePacket.HeadingSetting = CSSMS3Status.mcStatus.Heading;
 	CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::HDG;
 }
 
@@ -322,15 +324,6 @@ bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 	OSBs = new OSBArrayClass(defaultKPSensePin);
 	OSBs->Init(OSBLevelCount, OSBLevels);
 
-
-	//GreenOSB = new AceButton(nullptr, 1, 0);
-	//BlueOSB = new AceButton(nullptr, 1, 1);
-	//YellowOSB = new AceButton(nullptr, 1, 2);
-	//RedOSB = new AceButton(nullptr, 1, 3);
-
-	//OSBConfig = new LadderButtonConfig(defaultKPSensePin, OSBLevelCount, OSBLevels, OSBCount, OSBs);
-	//OSBConfig->setEventHandler(OSBHandler);
-
 	MainMenu = new TFTMenuClass();
 	MainMenu->Init(tft);
 
@@ -411,15 +404,15 @@ bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 	HDGSetMenuItem->SetNumericStepSize(1);
 	HDGSetMenuItem->SetValue(CSSMS3Status.cssmDrivePacket.HeadingSetting);
 
-	//TODO: Change Speed setting from % of full speed to mm/s units
+	//DONE: Change Speed setting from % of full speed to mm/s units
 	SPDSetMenuItem = new MenuItemClass("SPD", 162, 157, 56, 12, MenuItemClass::MenuItemTypes::Numeric);
 	SPDSetMenuItem->Init(tft);
 	HDGPageMenu->AddItem(SPDSetMenuItem);
 	SPDSetMenuItem->SetOnExecuteHandler(SetSPD);
-	SPDSetMenuItem->SetMinValue(0);
-	SPDSetMenuItem->SetMaxValue(100);
+	SPDSetMenuItem->SetMinValue(-1000);
+	SPDSetMenuItem->SetMaxValue(1000);
 	SPDSetMenuItem->SetNumericStepSize(1);
-	SPDSetMenuItem->SetValue(CSSMS3Status.cssmDrivePacket.SpeedSetting);
+	SPDSetMenuItem->SetValue((int)CSSMS3Status.cssmDrivePacket.SpeedSetting);
 
 	DRVPageMenu = new TFTMenuClass();
 	DRVPageMenu->Init(tft);
@@ -598,11 +591,11 @@ void CSSMS3Controls::Update()
 			{
 				if (delta > 0)
 				{
-					CSSMS3Status.cssmDrivePacket.OmegaXYSetting += 5.0f;
+					CSSMS3Status.cssmDrivePacket.OmegaXYSettingPct += 5.0f;
 				}
 				else if (delta < 0)
 				{
-					CSSMS3Status.cssmDrivePacket.OmegaXYSetting -= 5.0f;
+					CSSMS3Status.cssmDrivePacket.OmegaXYSettingPct -= 5.0f;
 				}
 			}
 			break;
@@ -640,7 +633,6 @@ void CSSMS3Controls::Update()
 	}
 	
 	byte OSBPressed = OSBs->GetOSBPress();
-	//_PL(OSBPressed)
 	switch (OSBPressed)
 	{
 	case OSBArrayClass::OSBs::OSB1:
@@ -658,6 +650,7 @@ void CSSMS3Controls::Update()
 	default:
 		break;
 	}
+	
 	uint16_t newReading = analogRead(KPSensePin);
 	KPVoltage.AddReading(newReading);
 	
@@ -669,9 +662,12 @@ void CSSMS3Controls::Update()
 	RThrottleSetting.AddReading(newReading);
 	CSSMS3Status.cssmDrivePacket.RThrottle = GetRThrottle();
 
-	// Update speed setting based on throttle settings:
-	CSSMS3Status.cssmDrivePacket.SpeedSetting = (CSSMS3Status.cssmDrivePacket.LThrottle + CSSMS3Status.cssmDrivePacket.RThrottle) / 2.0f;
+	// Update speed setting based on throttle settings (when in DRVTw dirve mode):
+	if (CSSMS3Status.cssmDrivePacket.DriveMode == CSSMDrivePacket::DriveModes::DRVTw)
+	{
+		CSSMS3Status.cssmDrivePacket.SpeedSettingPct = (CSSMS3Status.cssmDrivePacket.LThrottle + CSSMS3Status.cssmDrivePacket.RThrottle) / 2.0f;
 
+	}
 	newReading = analogRead(VMCUPin);
 	VMCU.AddReading(newReading);
 
