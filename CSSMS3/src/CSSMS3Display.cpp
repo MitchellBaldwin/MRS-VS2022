@@ -38,20 +38,21 @@ void CSSMS3Display::DrawDashboard(int32_t xTL, int32_t yTL)
 	int32_t cursorY = yTL;
 	tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);
 	tft.setTextDatum(TC_DATUM);
-	sprintf(buf, "LTh %+06.1f%% RTh %+06.1f%% Speed %+6.1f%% wXY %+6.1f%%",
+	sprintf(buf, "%s L%+06.1f%% R%+06.1f%% Vbat %4.1fV Imot %4.2fA",
+		DriveModeHeadings[CSSMS3Status.cssmDrivePacket.DriveMode],
 		CSSMS3Status.cssmDrivePacket.LThrottle,
 		CSSMS3Status.cssmDrivePacket.RThrottle,
-		CSSMS3Status.cssmDrivePacket.SpeedSettingPct,
-		CSSMS3Status.cssmDrivePacket.OmegaXYSettingPct);
+		CSSMS3Status.mcStatus.SupBatV,
+		(CSSMS3Status.mcStatus.M1Current > CSSMS3Status.mcStatus.M2Current) ? CSSMS3Status.mcStatus.M1Current : CSSMS3Status.mcStatus.M2Current);
 	tft.drawString(buf, xTL + 2, cursorY);
 
 	// Basic motion data line (from MRS telemetry):
 	cursorY += 10;
 	tft.setTextColor(TFT_GREENYELLOW, TFT_BLACK, true);
-	sprintf(buf, "%s Hdg %03D GSpd %+6.1fmm/s wXY %+6.3frad/s",
-		DriveModeHeadings[CSSMS3Status.cssmDrivePacket.DriveMode],
-		(int)CSSMS3Status.mcStatus.Heading,
+	sprintf(buf, "GSpd (%+6.1f%%)%+6.1fmm/s wXY (%+6.1f%%)%+6.3frad/s",
+		CSSMS3Status.cssmDrivePacket.SpeedSettingPct,
 		CSSMS3Status.mcStatus.GroundSpeed,
+		CSSMS3Status.cssmDrivePacket.OmegaXYSettingPct,
 		CSSMS3Status.mcStatus.TurnRate);
 	tft.drawString(buf, xTL + 2, cursorY);
 
@@ -123,9 +124,11 @@ void CSSMS3Display::DrawSYSPage()
 	DrawDashboard(tft.width() / 2, tft.height() - 50);
 	
 	tft.setTextColor(TFT_PINK, TFT_BLACK, true);
-	tft.setTextDatum(CR_DATUM);
-	sprintf(buf, "%s %s", "MCC Downlink ", CSSMS3Status.ESPNOWStatus ? "OK" : "NO");
-	tft.drawString(buf, tft.width() - 2, 40);
+	tft.setTextDatum(CL_DATUM);
+	sprintf(buf, "MCC Downlink  %s", CSSMS3Status.ESPNOWStatus ? "OK" : "NO");
+	tft.drawString(buf, tft.width() / 2, 50);
+	sprintf(buf, "Downlink retries %5d", CSSMS3Status.SendRetries);
+	tft.drawString(buf, tft.width() / 2, 60);
 
 
 	int16_t cursorY = tft.height() / 2 + 10;
@@ -134,9 +137,17 @@ void CSSMS3Display::DrawSYSPage()
 	sprintf(buf, "KP %4d %s", cssmS3Controls.GetKPRawADC(), cssmS3Controls.GetKPVoltageString());
 	tft.drawString(buf, 2, cursorY);
 
+	cursorY += 10;
 	tft.setTextColor(TFT_SILVER, TFT_BLACK, true);
-	sprintf(buf, "VMCU %s", cssmS3Controls.GetMCUVoltageString());
+	sprintf(buf, "VMCU    %s", cssmS3Controls.GetMCUVoltageString());
+	tft.drawString(buf, 2, cursorY);
+
+	// Display odometer time from MRS MCC telemetry:
+	tft.setTextColor(TFT_GREENYELLOW, TFT_BLACK, true);
+	sprintf(buf, "MC ODO dt:%8.1f s", (float)CSSMS3Status.mcStatus.OdometerTime / 1000.0f);
 	tft.drawString(buf, tft.width() / 2, cursorY);
+
+
 
 }
 
@@ -199,19 +210,17 @@ void CSSMS3Display::DrawCOMPage()
 	}
 
 	// Update dynamic displays:
-	tft.setTextColor(TFT_PINK, TFT_BLACK, true);
+	tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK, true);
 	tft.setTextDatum(CL_DATUM);
-	sprintf(buf, "%s %s", "MCC Downlink ", CSSMS3Status.ESPNOWStatus ? "OK" : "NO");
+	sprintf(buf, "%s %s %5d ms", "MCC Uplink   ", CSSMS3Status.ESPNOWStatus ? "OK" : "NO", CSSMS3Status.MCCPacketReceiptInterval);
 	tft.drawString(buf, tft.width() / 2, 40);
 
-	//tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK, true);
-	//tft.setTextDatum(CC_DATUM);
-	//tft.drawString(buf, tft.width() / 2, 40);
+	tft.setTextColor(TFT_PINK, TFT_BLACK, true);
+	sprintf(buf, "%s %s", "MCC Downlink ", CSSMS3Status.ESPNOWStatus ? "OK" : "NO");
+	tft.drawString(buf, tft.width() / 2, 50);
 
-	tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK, true);
-	tft.setTextDatum(CR_DATUM);
-	sprintf(buf, "%5d ms", CSSMS3Status.MCCPacketReceiptInterval);
-	tft.drawString(buf, tft.width() - 2, 40);
+	sprintf(buf, "%s %5d", "Downlink retries", CSSMS3Status.SendRetries);
+	tft.drawString(buf, tft.width() / 2, 60);
 
 
 }
@@ -379,7 +388,6 @@ void CSSMS3Display::DrawDRVPage()
 
 		tft.setTextSize(1);
 
-
 		// Draw footer menu:
 		if (cssmS3Controls.DRVPageMenu != nullptr)
 		{
@@ -393,6 +401,11 @@ void CSSMS3Display::DrawDRVPage()
 
 	DrawDashboard(tft.width() / 2, tft.height() - 50);
 
+	int16_t cursorY = 30;
+	// Display odometer time from MRS MCC telemetry:
+	tft.setTextColor(TFT_GREENYELLOW, TFT_BLACK, true);
+	sprintf(buf, "MC ODO dt:%8.1f s    dd:%8.3f m", (float)CSSMS3Status.mcStatus.OdometerTime / 1000.0f, CSSMS3Status.mcStatus.OdometerDist);
+	tft.drawString(buf, tft.width() / 2, cursorY);
 
 }
 

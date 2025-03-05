@@ -7,4 +7,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)src\CSSMDrivePacket.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)src\RC2x15AMCStatusPacket.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\RC2x15AMCStatusPacket.cpp" />
+  </ItemGroup>
 </Project>

@@ -86,6 +86,10 @@ bool RC2x15AMCClass::Init()
 	KLTrack = defaultKLTrack;
 	KRTrack = defaultKRTrack;
 	TrackSpan = defaulTrackSpan;
+	
+	OdometerStartTime = millis();
+	LastOdometryUpdateTime = OdometerStartTime;
+	MCCStatus.mcStatus.OdometerTime = LastOdometryUpdateTime;
 
 	return success;
 }
@@ -227,6 +231,12 @@ bool RC2x15AMCClass::ResetUARTLink()
 	return success;
 }
 
+void RC2x15AMCClass::ResetOdometer()
+{
+	RC2x15A->ResetEncoders(RC2x15AAddress);
+	MCCStatus.mcStatus.ResetOdometer();
+}
+
 /// <summary>
 ///	Determine whether drive commands have changed since the last cycle and, if so, update and send
 ///	the new speed and turn rate settings to the motor controller.  Otherwise, request the next 
@@ -293,15 +303,16 @@ void RC2x15AMCClass::Update()
 	}
 	
 	//TODO: Check that M1 is the Left motor and M2 is the right motor
+	MCCStatus.mcStatus.OdometerDist = ((float)(MCCStatus.mcStatus.M1Encoder) / KLTrack + (float)(MCCStatus.mcStatus.M2Encoder) / KRTrack) / 2000.0f;	// ±m
 	
 	// Calculate ground dynamics based on motor odometry:
-	MCCStatus.mcStatus.GroundSpeed = ((float)(MCCStatus.mcStatus.M1Speed) / KLTrack + (float)(MCCStatus.mcStatus.M2Speed) / KRTrack) / 2.0f;	// ±mm/s
-	MCCStatus.mcStatus.TurnRate = ((float)(MCCStatus.mcStatus.M2Speed) / KRTrack - (float)(MCCStatus.mcStatus.M1Speed) / KLTrack) / TrackSpan;	// ±rad/s
+	MCCStatus.mcStatus.GroundSpeed = ((float)(MCCStatus.mcStatus.M1Speed) / KLTrack + (float)(MCCStatus.mcStatus.M2Speed) / KRTrack) / 2.0f;		// ±mm/s
+	MCCStatus.mcStatus.TurnRate = ((float)(MCCStatus.mcStatus.M2Speed) / KRTrack - (float)(MCCStatus.mcStatus.M1Speed) / KLTrack) / TrackSpan;		// ±rad/s
 
 	// Estimate heading by integrating turn rate:
 	uint64_t timeNow = millis();
 	float hdg = MCCStatus.mcStatus.Heading;
-	hdg += MCCStatus.mcStatus.TurnRate * (float)(timeNow - MCCStatus.mcStatus.LastOdometryUpdateTime) * 180.0f / (1000.0 * PI);
+	hdg += MCCStatus.mcStatus.TurnRate * (float)(timeNow - LastOdometryUpdateTime) * 180.0f / (1000.0 * PI);
 	if (hdg > 360.0f)
 	{
 		hdg -= 360.0f;
@@ -312,7 +323,8 @@ void RC2x15AMCClass::Update()
 	}
 	MCCStatus.mcStatus.Heading = hdg;
 
-	MCCStatus.mcStatus.LastOdometryUpdateTime = timeNow;
+	MCCStatus.mcStatus.OdometerTime = timeNow - OdometerStartTime;
+	LastOdometryUpdateTime = timeNow;
 
 	// Save drive settings to test for changes next cycle:
 	MCCStatus.lastCSSMDrivePacket = MCCStatus.cssmDrivePacket;	// Using default C++ copy mechanism

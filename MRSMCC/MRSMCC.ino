@@ -52,7 +52,7 @@ constexpr auto UpdateMotorControllerInterval = 100;
 void UpdateMotorControllerCallback();
 Task UpdateMotorControllerTask((UpdateMotorControllerInterval* TASK_MILLISECOND), TASK_FOREVER, &UpdateMotorControllerCallback, &MainScheduler, false);
 
-constexpr long SendRC2x15AMCStatusPacketInterval = 300;
+constexpr long SendRC2x15AMCStatusPacketInterval = 200;
 void SendRC2x15AMCStatusPacketCallback();
 Task SendRC2x15AMCStatusPacketTask((SendRC2x15AMCStatusPacketInterval* TASK_MILLISECOND), TASK_FOREVER, &SendRC2x15AMCStatusPacketCallback, &MainScheduler, false);
 
@@ -135,6 +135,9 @@ void setup()
 
 	WiFi.printDiag(Serial);
 
+	////Test code:
+	//WiFi.disconnect();
+
 	// Initialize ESP-NOW
 	// Set device as a Wi-Fi Station; turns WiFi radio ON:
 	//WiFi.mode(WIFI_STA);	// WiFi radio is already on by virtue of the call to ESP32WiFi.Init(), above
@@ -153,6 +156,7 @@ void setup()
 
 		// Register peer
 		memcpy(MRSRCCSSMInfo.peer_addr, MRSRCCSSMS3MAC, 6);
+		//MRSRCCSSMInfo.channel = 0;
 		MRSRCCSSMInfo.channel = channel;
 		MRSRCCSSMInfo.encrypt = false;
 
@@ -208,13 +212,13 @@ void setup()
 	LocalDisplay.Control(LocalDisplayClass::Commands::SYSPage);
 	UpdateLocalDisplayTask.enable();
 
-	// Set ESPNOWStatus to match initial setting of the ESP-NOW menu item used to enable / disable the telemetry stream from 
-	//the MCC to the MRS RC CSSM, which should be TRUE to start
-	// User initiates telemetry to the MRS through the on-screen menu system when ready:
-	MCCStatus.ESPNOWStatus = mccControls.GetESPNowStatus();
 	if (MCCStatus.ESPNOWStatus)
 	{
 		SendRC2x15AMCStatusPacketTask.enable();
+		// Set ESPNOWStatus to match initial setting of the ESP-NOW menu item used to enable / disable the telemetry stream from 
+		//the MCC to the MRS RC CSSM, which should be TRUE to start
+		// User initiates telemetry to the MRS through the on-screen menu system when ready:
+		MCCStatus.ESPNOWStatus = mccControls.GetESPNowStatus();
 	}
 
 	ToggleBuiltinLEDTask.enable();
@@ -276,10 +280,17 @@ void SendRC2x15AMCStatusPacketCallback()
 
 void OnMRSRCCSSMDataSent(const uint8_t* mac_addr, esp_now_send_status_t status)
 {
-	MCCStatus.ESPNOWStatus = (status == ESP_NOW_SEND_SUCCESS);
-	if (MCCStatus.ESPNOWStatus)
+	bool result = (status == ESP_NOW_SEND_SUCCESS);
+	//MCCStatus.ESPNOWStatus = (status == ESP_NOW_SEND_SUCCESS);
+	if (result)
 	{
 		MCCStatus.CSSMPacketSentCount++;
+		MCCStatus.SendRetries = 0;
+	}
+	else
+	{
+		MCCStatus.SendRetries++;
+		//_PL("ESP-NOW data send FAIL")
 	}
 }
 

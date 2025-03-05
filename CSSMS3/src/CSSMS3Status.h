@@ -59,15 +59,16 @@ public:
 	bool UART1Status = false;
 	bool UART2Status = false;
 
-	bool ESPNOWStatus = false;					// Controls CSSM telemetry broadcast over ESP-NOW
-	int ESPNOWPacketSentCount = 0;
-	uint16_t SendRetries = 0;
+	bool ESPNOWStatus = false;					// Controls CSSM telemetry (downlink) broadcast over ESP-NOW; during start-up this flag
+												//is used to indicate success initializing ESP-NOW
+	int ESPNOWPacketSentCount = 0;				// Running count of command packets successfully sent to the MRS MCC
+	uint16_t SendRetries = 0;					// Count of contiguous retries sending command packets to the MRS MCC
 
-	uint32_t MRSMCCPacketReceivedCount = 0;
-	uint32_t SaveMRSMCCPacketReceivedCount = 0;
-	uint64_t MCCPacketReceiptInterval = 0;
-	uint64_t LastMCCPacketReceivedTime = 0;
-	bool MRSMCCESPNOWLinkStatus = false;
+	uint32_t MRSMCCPacketReceivedCount = 0;		// Running count of telemetry packets received from the MRS MCC (not used?)
+	uint32_t SaveMRSMCCPacketReceivedCount = 0;	// (not used?)
+	uint64_t MCCPacketReceiptInterval = 0;		// Time in ms between receipt of the last two telemetry packets from the MRS MCC 
+	uint64_t LastMCCPacketReceivedTime = 0;		// Used to calculate interval between receipt of telemetry packets from he MRS MCC
+	bool MRSMCCESPNOWLinkStatus = false;		// Flag indicating the state of health of the telemetry uplink from the MRS to the CSSM
 	
 	bool WiFiStatus = false;
 	 

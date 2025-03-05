@@ -366,6 +366,29 @@ void LocalDisplayClass::DrawCOMPage()
 		lastPage = currentPage;
 	}
 
+	// Update dynamic displays:
+	tft.setTextColor(TFT_PINK, TFT_BLACK, true);
+	tft.setTextDatum(CL_DATUM);
+	sprintf(buf, "%s %s %5u ms", "CSSM Downlink", MCCStatus.ESPNOWStatus ? "OK" : "NO", MCCStatus.CSSMPacketReceiptInterval);
+	tft.drawString(buf, tft.width() / 2, 40);
+
+	tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK, true);
+	tft.setTextDatum(CL_DATUM);
+	sprintf(buf, "%s %s", "CSSM Uplink ", MCCStatus.CSSMESPNOWLinkStatus ? "OK" : "NO");
+	tft.drawString(buf, tft.width() / 2, 50);
+
+	tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK, true);
+	tft.setTextDatum(CL_DATUM);
+	sprintf(buf, "%s %5d", "Uplink retries  ", MCCStatus.SendRetries);
+	tft.drawString(buf, tft.width() / 2, 60);
+
+	//sprintf(buf, "%s %s %5u ms", "CSSM D/L time", MCCStatus.ESPNOWStatus ? "OK" : "NO", MCCStatus.CSSMPacketReceiptInterval);
+	//tft.drawString(buf, tft.width() / 2, 70);
+
+	sprintf(buf, "CSSM D/L time    %5u ms", MCCStatus.CSSMPacketReceiptInterval);
+	tft.drawString(buf, tft.width() / 2, 80);
+
+	//_PL(MCCStatus.CSSMPacketReceiptInterval)
 }
 
 void LocalDisplayClass::DrawDBGPage()

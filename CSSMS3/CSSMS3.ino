@@ -56,7 +56,7 @@ constexpr long UpdateDisplayInterval = 100;
 void UpdateDisplayCallback();
 Task UpdateDisplayTask((UpdateDisplayInterval * TASK_MILLISECOND), TASK_FOREVER, &UpdateDisplayCallback, &MainScheduler, false);
 
-constexpr long SendCSSMPacketInterval = 300;
+constexpr long SendCSSMPacketInterval = 100;
 void SendCSSMPacketCallback();
 Task SendCSSMPacketTask((SendCSSMPacketInterval* TASK_MILLISECOND), TASK_FOREVER, &SendCSSMPacketCallback, &MainScheduler, false);
 
@@ -70,7 +70,8 @@ esp_now_peer_info_t MRSMCCInfo;
 
 constexpr uint16_t MaxCSSMSendRetries = 16;
 
-#include "src/ESP32WiFi.h"
+//#include "src/ESP32WiFi.h"
+#include <WiFi.h>
 
 void setup()
 {
@@ -130,7 +131,31 @@ void setup()
 	// Initialize WiFi and update display to confirm success:
 	CSSMS3Status.WiFiStatus = false;
 	CSSMS3Status.AddDebugTextLine("Initializing WiFi...");
-	CSSMS3Status.WiFiStatus = ESP32WiFi.Init(false);
+
+	// Determine the channel used by local WiFi router so we can ensure compatibility 
+	//when initializing ESP-NOW:
+	int32_t channel = 0;
+	if (int32_t n = WiFi.scanNetworks())
+	{
+		for (uint8_t i = 0; i < n; i++)
+		{
+			if (!strcmp("320", WiFi.SSID(i).c_str()))
+			{
+				channel = WiFi.channel(i);
+			}
+		}
+	}
+	sprintf(buf, "Using WiFi channel %d", channel);
+	_PL(buf);
+
+	WiFi.mode(WIFI_MODE_APSTA);
+	WiFi.begin("320", "103187OS", channel);
+
+	WiFi.printDiag(Serial);
+
+	////Test code:
+	//WiFi.disconnect();
+
 	CSSMS3Status.ComMode = CSSMS3StatusClass::ComModes::WiFiTCP;
 
 	uint8_t mac[6];
@@ -139,11 +164,10 @@ void setup()
 	_PL(buf)
 
 	// Initialize ESP-NOW
-	// Set device as a Wi-Fi Station; turns WiFi radio ON:
-	WiFi.mode(WIFI_MODE_APSTA);
-
-	// Test code:
-	WiFi.printDiag(USBSerial);
+	//// Set device as a Wi-Fi Station; turns WiFi radio ON:
+	//WiFi.mode(WIFI_MODE_APSTA);
+	//// Test code:
+	//WiFi.printDiag(Serial);
 
 	cssmS3Display.ReportHeapStatus(0);
 	CSSMS3Status.AddDebugTextLine("Initializing ESP-NOW...");
@@ -162,7 +186,8 @@ void setup()
 
 		// Register peer
 		memcpy(MRSMCCInfo.peer_addr, MRSMCCMAC, 6);
-		MRSMCCInfo.channel = 0;
+		//MRSMCCInfo.channel = 0;
+		MRSMCCInfo.channel = channel;
 		MRSMCCInfo.encrypt = false;
 
 		// Add peer        
@@ -207,11 +232,11 @@ void setup()
 	if (CSSMS3Status.ESPNOWStatus)
 	{
 		SendCSSMPacketTask.enable();
+		// Set ESPNOWStatus to match initial setting of the ESP-NOW menu item used to enable / disable the command stream from 
+		//the CSSM to the MRS MCC, which should be FALSE to start
+		// User initiates telemetry to the MRS through the on-screen menu system when ready:
+		CSSMS3Status.ESPNOWStatus = cssmS3Controls.GetESPNowStatus();
 	}
-	// Set ESPNOWStatus to match initial setting of the ESP-NOW menu item used to enable / disable the command stream from 
-	//the CSSM to the MRS MCC, which should be FALSE to start
-	// User initiates telemetry to the MRS through the on-screen menu system when ready:
-	CSSMS3Status.ESPNOWStatus = cssmS3Controls.GetESPNowStatus();
 
 	ToggleHeartbeatLEDTask.setInterval(HeartbeatLEDTogglePeriod * TASK_MILLISECOND);
 	ToggleHeartbeatLEDTask.enable();
@@ -267,15 +292,23 @@ void OnMRSMCCDataSent(const uint8_t* mac_addr, esp_now_send_status_t status)
 {
 	char buf[64];
 
-	cssmS3Controls.SetESPNOWStatus(status == ESP_NOW_SEND_SUCCESS);
-	if (CSSMS3Status.ESPNOWStatus)
+	bool result = (status == ESP_NOW_SEND_SUCCESS);
+
+	//cssmS3Controls.SetESPNOWStatus(status == ESP_NOW_SEND_SUCCESS);
+	if (result)
 	{
 		CSSMS3Status.ESPNOWPacketSentCount++;
 		CSSMS3Status.SendRetries = 0;
 	}
 	else
 	{
-		_PL("ESP-NOW data send FAIL")
+		CSSMS3Status.SendRetries++;
+
+		//_PL("ESP-NOW data send FAIL")
+		
+		//sprintf(buf, "ESP-NOW send error: %d", result);
+		//_PL(buf)
+		
 		////TODO: Need to change this to base test on whether sufficient time is left in the current task cycle to retry
 		////Consider defining a MAX_RETRIES parameter to limit the number of potential retries and so limit the time use on retries.  
 		//if (millis() < NextPacketSendTime + SendCSSMPacketInterval)

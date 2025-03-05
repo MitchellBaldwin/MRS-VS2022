@@ -65,11 +65,15 @@ protected:
 	float KLTrack = defaultKLTrack;
 	float KRTrack = defaultKRTrack;
 	float TrackSpan = defaulTrackSpan;
+	uint64_t OdometerStartTime = 0;					// ms; used to calculate odometer time
+	uint64_t LastOdometryUpdateTime = 0;			// ms; used to integrate dynamic measurements to obtain position and pose estimates
 
 public:
 	bool Init();
 	bool ReadStatus();
 	bool ResetUARTLink();
+
+	void ResetOdometer();
 
 	bool DriveSettingsChanged();
 	void Update();

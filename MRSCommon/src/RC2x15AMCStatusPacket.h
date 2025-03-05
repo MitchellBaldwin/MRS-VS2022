@@ -24,6 +24,7 @@
 class RC2x15AMCStatusPacket
 {
 public:
+	void ResetOdometer();
 
 protected:
 	uint8_t PacketType = 0x21;		// Identifies packet type; fixed for all RC2x15AMCStatusPackets
@@ -52,7 +53,8 @@ public:
 
 	//TODO: Move the following measured motion parameters to a packet structure designed specifically 
 	//for pose and dynamics telemetry:
-	uint64_t LastOdometryUpdateTime = 0;		// ms; used to integrate dynamic measurements to obtain position and pose estimates
+	uint64_t OdometerTime = 0;					// ms; time in ms since start of odometry session (or since last reset)
+	float OdometerDist = 0.0f;					// m; net distance traveled since start of odometry session (or since last reset)
 	float GroundSpeed = 0.0f;					// Measured ground speed (±mm/s)
 	float TurnRate = 0.0f;						// Measured turn rate (±rad/s)
 	float Heading = 0.0f;						// Indicated heading (degrees)

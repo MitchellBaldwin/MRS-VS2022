@@ -51,8 +51,9 @@ class MCCStatusClass
 	 bool UART2Status = false;
 
 	 bool ESPNOWStatus = false;
-
 	 uint32_t CSSMPacketSentCount = 0;
+	 uint16_t SendRetries = 0;
+
 	 uint32_t CSSMPacketReceivedCount = 0;
 	 uint32_t SaveCSSMPacketReceivedCount = 0;
 	 uint64_t LastCSSMPacketReceivedTime = 0;		// ms
