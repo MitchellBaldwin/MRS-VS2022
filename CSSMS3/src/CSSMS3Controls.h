@@ -163,6 +163,7 @@ public:
 	
 	TFTMenuClass* DebugMenu;			// DBG page menu
 	MenuItemClass* ReportMemoryMenuItem;
+	MenuItemClass* MCCalibMenuItem;
 	MenuItemClass* ShowFontMenuItem;
 
 	TFTMenuClass* HDGPageMenu;			// HDG page menu
@@ -209,6 +210,7 @@ public:
 	void SetESPNOWStatus(bool newStatus);
 
 	static void SetWiFi(int value);
+	static void StartMCCalib(int value);
 
 };
 

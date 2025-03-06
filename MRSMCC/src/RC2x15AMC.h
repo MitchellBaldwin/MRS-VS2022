@@ -81,6 +81,7 @@ public:
 	bool DriveThrottleTurnRate(float throttle, float turnRate);
 	bool DriveLRThrottle(float lThrottle, float rThrottle);
 	bool DriveLRTrackSpeed(float leftTrackSpeed, float rightTrackSpeed);
+	bool Stop(bool breaking = true);
 
 };
 

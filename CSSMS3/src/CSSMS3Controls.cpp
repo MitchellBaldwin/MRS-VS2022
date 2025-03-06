@@ -61,7 +61,7 @@ void CSSMS3Controls::DriveOSBHandler(int value)
 		// Take steps to ensure a safe restrat after an emergency stop:
 
 
-		CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::DRV;
+		CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::STOP;
 		CSSMS3Status.cssmDrivePacket.EStop = false;
 	}
 	funcEncoderMode = FuncEncoderModes::MenuFuncEncMode;
@@ -94,7 +94,7 @@ void CSSMS3Controls::HeadingOSBHandler(int value)
 		// Take steps to ensure a safe restrat after an emergency stop:
 
 
-		CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::HDG;
+		CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::STOP;
 		CSSMS3Status.cssmDrivePacket.EStop = false;
 	}
 	funcEncoderMode = FuncEncoderModes::MenuFuncEncMode;
@@ -117,7 +117,7 @@ void CSSMS3Controls::WaypointOSBHandler(int value)
 	{
 		// Take steps to ensure a safe restrat after an emergency stop:
 
-		CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::WPT;
+		CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::STOP;
 		CSSMS3Status.cssmDrivePacket.EStop = false;
 	}
 	funcEncoderMode = FuncEncoderModes::MenuFuncEncMode;
@@ -136,13 +136,25 @@ void CSSMS3Controls::WaypointOSBHandler(int value)
 
 void CSSMS3Controls::StopOSBHandler(int value)
 {
-	CSSMS3Status.cssmDrivePacket.EStop = true;
-	CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::ESTOP;
+	if (CSSMS3Status.cssmDrivePacket.EStop)
+	{
+		// If already in ESTOP (breaking) mode then relax state to non-breaking stop
+		CSSMS3Status.cssmDrivePacket.EStop = false;
+		CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::STOP;
+	}
+	else
+	{
+		// If in STOP (non-breaking) or any active drive mode then set the EStop flag and enter ESTOP mode:
+		CSSMS3Status.cssmDrivePacket.EStop = true;
+		CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::ESTOP;
+	}
 
-	CSSMS3Status.cssmDrivePacket.LThrottle = 0.0f;
-	CSSMS3Status.cssmDrivePacket.RThrottle = 0.0f;
-	CSSMS3Status.cssmDrivePacket.SpeedSetting = 0.0f;
-	CSSMS3Status.cssmDrivePacket.OmegaXYSetting = 0.0f;
+	// The following commented lines are ineffectual since the CSSMS3Controls Update method will set these again
+	//the next time it executes:
+	//CSSMS3Status.cssmDrivePacket.LThrottle = 0.0f;
+	//CSSMS3Status.cssmDrivePacket.RThrottle = 0.0f;
+	//CSSMS3Status.cssmDrivePacket.SpeedSetting = 0.0f;
+	//CSSMS3Status.cssmDrivePacket.OmegaXYSetting = 0.0f;
 
 	funcEncoderMode = FuncEncoderModes::MenuFuncEncMode;
 
@@ -374,12 +386,17 @@ bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 
 	DebugMenu->AddItem(NextPageMenuItem);
 
-	ReportMemoryMenuItem = new MenuItemClass("Mem", 36, 157, 56, 12, MenuItemClass::MenuItemTypes::Action);
+	ReportMemoryMenuItem = new MenuItemClass("Mem", 2, 157, 48, 12, MenuItemClass::MenuItemTypes::Action);
 	ReportMemoryMenuItem->Init(tft);
 	DebugMenu->AddItem(ReportMemoryMenuItem);
 	ReportMemoryMenuItem->SetOnExecuteHandler(cssmS3Display.ReportHeapStatus);
 
-	ShowFontMenuItem = new MenuItemClass("Font", 98, 157, 56, 12, MenuItemClass::MenuItemTypes::Action);
+	MCCalibMenuItem = new MenuItemClass("Calib", 56, 157, 48, 12, MenuItemClass::MenuItemTypes::Action);
+	MCCalibMenuItem->Init(tft);
+	DebugMenu->AddItem(MCCalibMenuItem);
+	MCCalibMenuItem->SetOnExecuteHandler(StartMCCalib);
+
+	ShowFontMenuItem = new MenuItemClass("Font", 110, 157, 40, 12, MenuItemClass::MenuItemTypes::Action);
 	ShowFontMenuItem->Init(tft);
 	DebugMenu->AddItem(ShowFontMenuItem);
 	ShowFontMenuItem->SetOnExecuteHandler(cssmS3Display.ShowFontTableFixed);
@@ -805,6 +822,10 @@ void CSSMS3Controls::SetWiFi(int value)
 	}
 }
 
+void CSSMS3Controls::StartMCCalib(int /* value */)
+{
+	CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::CALIB;
+}
 
 // Global and static variable declarations:
 CSSMS3Controls cssmS3Controls;

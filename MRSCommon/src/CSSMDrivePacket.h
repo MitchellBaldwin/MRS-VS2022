@@ -32,7 +32,10 @@ public:
 		SEQ,		// Navigate and move along a sequence of waypoints
 		DRVTw,		// CSS throttle (±100%) and turn rate (±100%)
 		DRVLR,		// CSS left & right throttle (±100%)
-		ESTOP,		// Emergency stop
+		ESTOP,		// Emergency stop (breaking)
+		STOP,		// Stop (non-breaking)
+		CALIB,		// Run / running motor controller calibration
+		TEST,		// Run / running test
 
 		NoDriveMode
 	};

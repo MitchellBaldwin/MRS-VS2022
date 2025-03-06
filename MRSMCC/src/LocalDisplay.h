@@ -72,6 +72,11 @@ protected:
 		"SEQ    ",
 		"DRV T/w",
 		"DRV L/R",
+		"E-STOP ",
+		"STOP   ",
+		"CALIB  ",
+		"TEST   ",
+	
 	};
 
 	void DrawPageHeaderAndFooter();

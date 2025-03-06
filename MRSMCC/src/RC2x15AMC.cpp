@@ -39,12 +39,16 @@ bool RC2x15AMCClass::CalibrateDriveSystem(uint64_t testPeriod)
 				MCCStatus.mcStatus.M2Encoder = data4;
 			}
 			MCCStatus.mcStatus.ENCPOSValid = success;
-			sprintf(buf, "L %d qp  R %d qp  in %d ms", data3, data4, elapsedTime);
-			MCCStatus.AddDebugTextLine(buf);
+			sprintf(buf, "L %6d qp  R %6d qp  in %d ms", data3, data4, elapsedTime);
 			_PP("Drive system calibration results: ")
 			_PL(buf)
+			sprintf(buf, "L %6d qp  R %6d qp", data3, data4);
+			MCCStatus.AddDebugTextLine(buf);
+			sprintf(buf, "  in %d ms", elapsedTime);
+			MCCStatus.AddDebugTextLine(buf);
 			calibratingDrive = false;
 
+			MCCStatus.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::STOP;
 			return RC2x15A->DutyM1M2(PSAddress, 0, 0);
 		}
 		else
@@ -260,6 +264,13 @@ void RC2x15AMCClass::Update()
 {
 	bool success = false;
 
+	if (!MCCStatus.RC2x15AMCStatus)	// Is the motor controller connected and responding over the serial connection?
+	{
+		// If not try once reconnecting the serial link:
+		MCCStatus.RC2x15AMCStatus = ResetUARTLink();
+		return;
+	}
+	
 	if (calibratingDrive)
 	{
 		success = CalibrateDriveSystem(defaultTestDrivePeriod);
@@ -275,7 +286,7 @@ void RC2x15AMCClass::Update()
 			success = Drive(MCCStatus.cssmDrivePacket.SpeedSetting, MCCStatus.cssmDrivePacket.OmegaXYSetting);
 			break;
 		case CSSMDrivePacket::DriveModes::HDG:
-			success = CalibrateDriveSystem(defaultTestDrivePeriod);
+
 			break;
 		case CSSMDrivePacket::DriveModes::WPT:
 
@@ -292,6 +303,18 @@ void RC2x15AMCClass::Update()
 			//DONE: Add fields to CSSMDrivePacket to maintain speed and turn rate settings in ±% of full
 			// SpeedSetting in ±% and OmegaXYSetting in ±%:
 			success = DriveThrottleTurnRate(MCCStatus.cssmDrivePacket.SpeedSettingPct, MCCStatus.cssmDrivePacket.OmegaXYSettingPct);
+			break;
+		case CSSMDrivePacket::DriveModes::ESTOP:
+			success = Stop(true);	// Stop with breaking
+			break;
+		case CSSMDrivePacket::DriveModes::STOP:
+			success = Stop(false);	// Stop without breaking
+			break;
+		case CSSMDrivePacket::DriveModes::CALIB:
+			success = CalibrateDriveSystem(defaultTestDrivePeriod);	// Run motor controller / odometry calibration
+			break;
+		case CSSMDrivePacket::DriveModes::TEST:
+
 			break;
 		default:
 			success = ReadStatus();
@@ -331,7 +354,7 @@ void RC2x15AMCClass::Update()
 
 	if (!success)	// Failure communicating with motor controller?
 	{
-		// If so try reconnecting the serial link:
+		// If so try once reconnecting the serial link:
 		success = ResetUARTLink();
 	}
 
@@ -478,6 +501,22 @@ bool RC2x15AMCClass::DriveLRThrottle(float lThrottle, float rThrottle)
 bool RC2x15AMCClass::DriveLRTrackSpeed(float leftTrackSpeed, float rightTrackSpeed)
 {
 	bool success = false;
+
+	return success;
+}
+
+bool RC2x15AMCClass::Stop(bool breaking)
+{
+	bool success = false;
+
+	if (breaking)
+	{
+		success = RC2x15A->SpeedM1M2(PSAddress, 0, 0);
+	}
+	else
+	{
+		success = RC2x15A->DutyM1M2(PSAddress, 0, 0);
+	}
 
 	return success;
 }
