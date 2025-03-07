@@ -1,4 +1,4 @@
-/*	BME280Data.h
+/*	BME280Data.cpp
 *	BME280DataClass - Base class to hold measurements from a BME280 sensor module
 *
 */
@@ -72,7 +72,6 @@ bool BME280DataClass::Init()
 #ifdef _DEBUG_
 	if (!success)
 	{
-		char buf[32];
 		_PP(F("\BME280 initialization failed; "));
 		snprintf(buf, 31, "Firmware version: %02d.%02d", CSSMS3Status.MajorVersion, CSSMS3Status.MinorVersion);
 		_PL(buf);
@@ -111,31 +110,27 @@ void BME280DataClass::ReadENVData()
 
 }
 
-String BME280DataClass::GetTchipString()
+void BME280DataClass::GetTchipString(String* tempString)
 {
 	BME280::TempUnit tempUnit(BME280::TempUnit_Celsius);
-	char degreeSymbol[1] = { 0xF8 };
-	char buf[32];
-	snprintf(buf, 22, "%7.2f%s", Tchip, degreeSymbol, String(tempUnit == BME280::TempUnit_Celsius ? "C" : "F"));
-	return String(buf);
-
-	//return String(Tchip) + String(degreeSymbol) + String(tempUnit == BME280::TempUnit_Celsius ? "C" : "F");
-	//return String(Tchip) + String("°" + String(tempUnit == BME280::TempUnit_Celsius ? "C" : "F"));
+	snprintf(buf, 22, "%7.2f%c%s", Tchip, 0xF7, tempUnit == BME280::TempUnit_Celsius ? "C" : "F");
+	*tempString = buf;
+	return;
 }
 
-String BME280DataClass::GetPbaroString()
+void BME280DataClass::GetPbaroString(String* pbaroString)
 {
 	BME280::PresUnit presUnit(BME280::PresUnit_hPa);
-	char buf[32];
 	snprintf(buf, 22, "%7.2f %s", Pbaro, String(presUnit == BME280::PresUnit_hPa ? "hPa" : "Pa"));
-	return String(buf);
+	*pbaroString = buf;
+	return;
 }
 
-String BME280DataClass::GetRHString()
+void BME280DataClass::GetRHString(String* rhString)
 {
-	char buf[32];
-	snprintf(buf, 22, "%7.2f%%", RH);
-	return String(buf);
+	snprintf(buf, 22, "%7.2f%%RH", RH);
+	*rhString = buf;
+	return;
 }
 
 //BME280DataClass BME280Data;

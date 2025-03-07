@@ -27,7 +27,7 @@ public:
 	void ResetOdometer();
 
 protected:
-	uint8_t PacketType = 0x21;		// Identifies packet type; fixed for all RC2x15AMCStatusPackets
+	uint8_t PacketType = 0x30;		// Identifies packet type; fixed for all RC2x15AMCStatusPackets
 
 
 public:

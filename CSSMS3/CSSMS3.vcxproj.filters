@@ -42,6 +42,9 @@
     <ClCompile Include="src\CSSMS3Display.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\CSSMS3EnvSensors.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="__vm\.CSSMS3.vsarduino.h">
@@ -66,6 +69,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\CSSMS3Display.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CSSMS3EnvSensors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

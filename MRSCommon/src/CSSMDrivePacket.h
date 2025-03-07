@@ -41,7 +41,7 @@ public:
 	};
 
 protected:
-	uint8_t PacketType = 0x20;		// Identifies packet type; fixed for all CSSMDrivePackets
+	uint8_t PacketType = 0x20;					// Identifies packet type; fixed for all CSSMDrivePackets
 
 public:
 	DriveModes DriveMode = DriveModes::DRVLR;	// CSSM Drive Mode

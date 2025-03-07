@@ -17,6 +17,9 @@
     <Text Include="$(MSBuildThisFileDirectory)readme.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)CSSMCommandPacket.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MRSSensorPacket.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MRSStatusPacket.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)src\CSSMDrivePacket.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</ExcludedFromBuild>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">true</DeploymentContent>
@@ -38,6 +41,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)src\RC2x15AMCStatusPacket.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)CSSMCommandPacket.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MRSSensorPacket.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MRSStatusPacket.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)src\RC2x15AMCStatusPacket.cpp" />
   </ItemGroup>
 </Project>

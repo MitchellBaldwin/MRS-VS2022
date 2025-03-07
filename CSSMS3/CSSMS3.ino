@@ -58,7 +58,11 @@ Task UpdateDisplayTask((UpdateDisplayInterval * TASK_MILLISECOND), TASK_FOREVER,
 
 constexpr long SendCSSMPacketInterval = 100;
 void SendCSSMPacketCallback();
-Task SendCSSMPacketTask((SendCSSMPacketInterval* TASK_MILLISECOND), TASK_FOREVER, &SendCSSMPacketCallback, &MainScheduler, false);
+Task SendCSSMPacketTask((SendCSSMPacketInterval * TASK_MILLISECOND), TASK_FOREVER, &SendCSSMPacketCallback, &MainScheduler, false);
+
+constexpr long ReadEnvSensorsInterval = 2000;
+void ReadEnvSensorsCallback();
+Task ReadEnvSensorsTask((ReadEnvSensorsInterval * TASK_MILLISECOND), TASK_FOREVER, &ReadEnvSensorsCallback, &MainScheduler, false);
 
 #include "src/CSSMS3Status.h"
 #include <I2CBus.h>
@@ -72,6 +76,8 @@ constexpr uint16_t MaxCSSMSendRetries = 16;
 
 //#include "src/ESP32WiFi.h"
 #include <WiFi.h>
+
+#include "src/CSSMS3EnvSensors.h"
 
 void setup()
 {
@@ -229,6 +235,8 @@ void setup()
 	}
 	UpdateDisplayTask.enable();
 
+	EnvSensors.Init();
+	
 	if (CSSMS3Status.ESPNOWStatus)
 	{
 		SendCSSMPacketTask.enable();
@@ -288,6 +296,10 @@ void SendCSSMPacketCallback()
 	}
 }
 
+void ReadEnvSensorsCallback()
+{
+}
+
 void OnMRSMCCDataSent(const uint8_t* mac_addr, esp_now_send_status_t status)
 {
 	char buf[64];
@@ -331,15 +343,32 @@ void OnMRSMCCDataReceived(const uint8_t* mac, const uint8_t* data, int lenght)
 {
 	char buf[32];
 
-	if (data[0] == 0x21)	// Packet type identifier for a RC2x15AMCStatusPacket
+	switch (data[0])
 	{
+	case 0x30:
 		memcpy(&(CSSMS3Status.mcStatus), data, sizeof(CSSMS3Status.mcStatus));
-		//sprintf(buf, MACSTR, MAC2STR(mac));
-		//MCCStatus.IncomingCSSMPacketMACString = String(buf);
-		CSSMS3Status.MRSMCCPacketReceivedCount++;
-		uint64_t receiptTime = millis();
-		CSSMS3Status.MCCPacketReceiptInterval = receiptTime - CSSMS3Status.LastMCCPacketReceivedTime;
-		CSSMS3Status.LastMCCPacketReceivedTime = receiptTime;
-
+		break;
+	case 0x31:
+		memcpy(&(CSSMS3Status.mcStatus), data, sizeof(CSSMS3Status.mcStatus));
+		break;
+	default:
+		break;
 	}
+
+	CSSMS3Status.MRSMCCPacketReceivedCount++;
+	uint64_t receiptTime = millis();
+	CSSMS3Status.MCCPacketReceiptInterval = receiptTime - CSSMS3Status.LastMCCPacketReceivedTime;
+	CSSMS3Status.LastMCCPacketReceivedTime = receiptTime;
+
+	//if (data[0] == 0x30)	// Packet type identifier for a RC2x15AMCStatusPacket
+	//{
+	//	memcpy(&(CSSMS3Status.mcStatus), data, sizeof(CSSMS3Status.mcStatus));
+	//	//sprintf(buf, MACSTR, MAC2STR(mac));
+	//	//MCCStatus.IncomingCSSMPacketMACString = String(buf);
+	//	CSSMS3Status.MRSMCCPacketReceivedCount++;
+	//	uint64_t receiptTime = millis();
+	//	CSSMS3Status.MCCPacketReceiptInterval = receiptTime - CSSMS3Status.LastMCCPacketReceivedTime;
+	//	CSSMS3Status.LastMCCPacketReceivedTime = receiptTime;
+
+	//}
 }

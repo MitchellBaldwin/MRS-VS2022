@@ -6,6 +6,7 @@
 
 #include "CSSMS3Display.h"
 #include "CSSMS3Controls.h"
+#include "CSSMS3EnvSensors.h"
 #include <I2CBus.h>
 #include <WiFi.h>
 
@@ -210,6 +211,8 @@ void CSSMS3Display::DrawCOMPage()
 	}
 
 	// Update dynamic displays:
+	DrawDashboard(tft.width() / 2, tft.height() - 50);
+
 	tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK, true);
 	tft.setTextDatum(CL_DATUM);
 	sprintf(buf, "%s %s %5d ms", "MCC Uplink   ", CSSMS3Status.ESPNOWStatus ? "OK" : "NO", CSSMS3Status.MCCPacketReceiptInterval);
@@ -317,11 +320,19 @@ void CSSMS3Display::DrawDBGPage()
 		lastPage = currentPage;
 		lastSystemPage = currentPage;
 	}
+
+	// Update dynamic displays:
+	DrawDashboard(tft.width() / 2, tft.height() - 50);
+
+
 }
 
 void CSSMS3Display::DrawSENPage()
 {
 	currentPage = SEN;
+	String TempString;
+	String PbaroString;
+	String RHString;
 
 	if (lastPage != currentPage)
 	{
@@ -342,8 +353,21 @@ void CSSMS3Display::DrawSENPage()
 	}
 
 	// Update dynamic displays:
-
 	DrawDashboard(tft.width() / 2, tft.height() - 50);
+
+	int32_t halfScreenWidth = tft.width() / 2;
+	int32_t halfScreenHeight = tft.height() / 2;
+
+	tft.setTextSize(1);
+	int32_t CursorY = 30;
+
+	EnvSensors.BME280Data.GetTchipString(&TempString);
+	EnvSensors.BME280Data.GetPbaroString(&PbaroString);
+	EnvSensors.BME280Data.GetRHString(&RHString);
+	tft.setTextColor(TFT_GREEN);
+	tft.setTextDatum(CL_DATUM);
+	sprintf(buf, "CSSM BME280 %s %s %s", TempString, RHString, PbaroString);
+	tft.drawString(buf, 2, CursorY, 1);
 
 
 }

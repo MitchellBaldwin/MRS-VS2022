@@ -30,6 +30,7 @@
 class BME280DataClass
 {
 protected:
+	char buf[32];
 	BME280I2C* bme280;
 	float Tchip = NAN;
 	float Pbaro = NAN;
@@ -39,9 +40,9 @@ public:
 	BME280DataClass();	// Default constructor
 	bool Init();
 	void ReadENVData();
-	String GetTchipString();
-	String GetPbaroString();
-	String GetRHString();
+	void GetTchipString(String* tempString);
+	void GetPbaroString(String* pbaroString);
+	void GetRHString(String* rhString);
 
 };
 
