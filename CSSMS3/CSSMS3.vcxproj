@@ -89,6 +89,10 @@
       <FileType>CppCode</FileType>
       <DeploymentContent>true</DeploymentContent>
     </ClCompile>
+    <ClCompile Include="src\BarGauge.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="src\BME280Data.cpp" />
     <ClCompile Include="src\CSSMS3Controls.cpp">
       <SubType>
@@ -115,6 +119,10 @@
     <ProjectCapability Include="VisualMicro" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\BarGauge.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="src\BME280Data.h" />
     <ClInclude Include="src\CSSMS3Controls.h">
       <SubType>

@@ -6,14 +6,14 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)src\CSSMDrivePacket.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)src\RC2x15AMCStatusPacket.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)src\CSSMCommandPacket.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)src\MRSSensorPacket.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)src\MRSStatusPacket.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MRSStatusPacket.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MRSSensorPacket.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CSSMCommandPacket.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)src\RC2x15AMCStatusPacket.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)src\CSSMCommandPacket.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)src\MRSSensorPacket.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)src\MRSStatusPacket.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MRSStatusPacket.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MRSSensorPacket.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CSSMCommandPacket.cpp" />
   </ItemGroup>
 </Project>

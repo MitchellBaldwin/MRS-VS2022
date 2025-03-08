@@ -349,7 +349,10 @@ void OnMRSMCCDataReceived(const uint8_t* mac, const uint8_t* data, int lenght)
 		memcpy(&(CSSMS3Status.mcStatus), data, sizeof(CSSMS3Status.mcStatus));
 		break;
 	case 0x31:
-		memcpy(&(CSSMS3Status.mcStatus), data, sizeof(CSSMS3Status.mcStatus));
+		memcpy(&(CSSMS3Status.mrsStatusPacket), data, sizeof(CSSMS3Status.mrsStatusPacket));
+		break;
+	case 0x32:
+		memcpy(&(CSSMS3Status.mrsSensorPacket), data, sizeof(CSSMS3Status.mrsSensorPacket));
 		break;
 	default:
 		break;

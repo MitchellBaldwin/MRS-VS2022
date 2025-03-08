@@ -10,6 +10,28 @@
 #include <I2CBus.h>
 #include <WiFi.h>
 
+/// <summary>
+/// Builds a string representing time in hh:mm:ss format from a value supplied in ms
+/// </summary>
+/// <param name="msTime">
+/// The time in milliseconds to convert to a time string
+/// </param>
+/// <param name="timeString">
+/// Reference to the destination String
+/// </param>
+void CSSMS3Display::GetTimeString(uint64_t msTime, String* timeString)
+{
+	char buf[32];
+	uint64_t allSeconds = msTime / 1000;
+	int hours = allSeconds / 3600;
+	int secondsRemaining = allSeconds % 3600;
+	int minutes = secondsRemaining / 60;
+	int seconds = secondsRemaining % 60;
+	sprintf(buf, "%02d:%02d:%02d", hours, minutes, seconds);
+	*timeString = buf;
+	return;
+}
+
 void CSSMS3Display::DrawPageHeaderAndFooter()
 {
 	// Clear display:
@@ -145,7 +167,10 @@ void CSSMS3Display::DrawSYSPage()
 
 	// Display odometer time from MRS MCC telemetry:
 	tft.setTextColor(TFT_GREENYELLOW, TFT_BLACK, true);
-	sprintf(buf, "MC ODO dt:%8.1f s", (float)CSSMS3Status.mcStatus.OdometerTime / 1000.0f);
+	String str;
+	GetTimeString(CSSMS3Status.mcStatus.OdometerTime, &str);
+	sprintf(buf, "MC ODO dt %s", str);
+	//sprintf(buf, "MC ODO dt:%8.1f s", (float)CSSMS3Status.mcStatus.OdometerTime / 1000.0f);
 	tft.drawString(buf, tft.width() / 2, cursorY);
 
 
@@ -412,6 +437,10 @@ void CSSMS3Display::DrawDRVPage()
 
 		tft.setTextSize(1);
 
+		LTrackBarGauge.DrawFrame();
+		RTrackBarGauge.DrawFrame();
+		MRSTrackBarGauge.DrawFrame();
+
 		// Draw footer menu:
 		if (cssmS3Controls.DRVPageMenu != nullptr)
 		{
@@ -425,13 +454,17 @@ void CSSMS3Display::DrawDRVPage()
 
 	DrawDashboard(tft.width() / 2, tft.height() - 50);
 
-	int16_t cursorY = 30;
+	int16_t cursorY = 15;
 	// Display odometer time from MRS MCC telemetry:
 	tft.setTextColor(TFT_GREENYELLOW, TFT_BLACK, true);
 	sprintf(buf, "MC ODO dt:%8.1f s    dd:%8.3f m", (float)CSSMS3Status.mcStatus.OdometerTime / 1000.0f, CSSMS3Status.mcStatus.OdometerDist);
 	tft.drawString(buf, tft.width() / 2, cursorY);
 
+	LTrackBarGauge.Update(CSSMS3Status.cssmDrivePacket.LThrottle);
+	RTrackBarGauge.Update(CSSMS3Status.cssmDrivePacket.RThrottle);
+	MRSTrackBarGauge.Update(CSSMS3Status.mcStatus.GroundSpeed);
 }
+
 
 void CSSMS3Display::DrawHDGPage()
 {
@@ -537,6 +570,13 @@ bool CSSMS3Display::Init()
 	//Control(CSSMS3Display::Commands::SYSPage);
 	cssmS3Display.Control(CSSMS3Display::Commands::DBGPage);
 	SetDisplayBrightness(DefaultDisplayBrightness);
+
+	LTrackBarGauge.Init(&tft, 50, 70);
+	LTrackBarGauge.SetLimits(-100.0f, 100.0f);
+	MRSTrackBarGauge.Init(&tft, 150, 70);
+	MRSTrackBarGauge.SetLimits(-600.0f, 600.0f);				// Indicates MRS ground speed (mm/s)
+	RTrackBarGauge.Init(&tft, 250, 70);
+	RTrackBarGauge.SetLimits(-100.0f, 100.0f);
 
 	return true;
 }

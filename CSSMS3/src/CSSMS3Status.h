@@ -22,9 +22,10 @@
 
 constexpr uint8_t MAX_DEBUG_TEXT_LINES = 14;
 
-//#include "C:\Repos\MRS-VS2022\MRSCommon\src\CSSMDrivePacket.h"
 #include "C:\Repos\MRS-VS2022\MRSCommon\src\CSSMDrivePacket.h"
 #include "C:\Repos\MRS-VS2022\MRSCommon\src\RC2x15AMCStatusPacket.h"
+#include "C:\Repos\MRS-VS2022\MRSCommon\src\MRSStatusPacket.h"
+#include "C:\Repos\MRS-VS2022\MRSCommon\src\MRSSensorPacket.h"
 
 class CSSMS3StatusClass
 {
@@ -44,6 +45,8 @@ public:
 
 	CSSMDrivePacket cssmDrivePacket;
 	RC2x15AMCStatusPacket mcStatus;
+	MRSStatusPacket mrsStatusPacket;
+	MRSSensorPacket mrsSensorPacket;
 
 	enum ComModes
 	{

@@ -22,6 +22,7 @@
 
 #include "CSSMS3Status.h"
 #include <TFT_eSPI.h>
+#include "BarGauge.h"
 
 constexpr byte DefaultDisplayBrightness = 128;
 
@@ -48,6 +49,11 @@ protected:
 	char buf[64];
 
 	TFT_eSPI tft = TFT_eSPI();
+
+	BarGauge LTrackBarGauge;
+	BarGauge MRSTrackBarGauge;
+	BarGauge RTrackBarGauge;
+
 	static byte Brightness;
 
 	static Pages currentPage;
@@ -92,6 +98,8 @@ protected:
 	};
 
 	bool ShowingFontTable = false;
+
+	void GetTimeString(uint64_t msTime, String* timeString);
 
 	void DrawPageHeaderAndFooter();
 	void DrawDashboard(int32_t xTL, int32_t yTL);
