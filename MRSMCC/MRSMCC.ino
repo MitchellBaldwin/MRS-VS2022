@@ -48,11 +48,11 @@ constexpr auto UpdateLocalDisplayInterval = 100;
 void UpdateLocalDisplayCallback();
 Task UpdateLocalDisplayTask((UpdateLocalDisplayInterval* TASK_MILLISECOND), TASK_FOREVER, &UpdateLocalDisplayCallback, &MainScheduler, false);
 
-constexpr auto UpdateMotorControllerInterval = 100;
+constexpr auto UpdateMotorControllerInterval = 50;
 void UpdateMotorControllerCallback();
 Task UpdateMotorControllerTask((UpdateMotorControllerInterval* TASK_MILLISECOND), TASK_FOREVER, &UpdateMotorControllerCallback, &MainScheduler, false);
 
-constexpr long SendRC2x15AMCStatusPacketInterval = 200;
+constexpr long SendRC2x15AMCStatusPacketInterval = 150;
 void SendRC2x15AMCStatusPacketCallback();
 Task SendRC2x15AMCStatusPacketTask((SendRC2x15AMCStatusPacketInterval* TASK_MILLISECOND), TASK_FOREVER, &SendRC2x15AMCStatusPacketCallback, &MainScheduler, false);
 

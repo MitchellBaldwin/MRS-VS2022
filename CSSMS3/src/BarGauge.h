@@ -20,7 +20,7 @@
 	#include "WProgram.h"
 #endif
 
-constexpr int defaultFrameWidth = 20;
+constexpr int defaultFrameWidth = 15;
 constexpr int defaultFrameHeight = 85;
 //constexpr int 
 
@@ -28,33 +28,55 @@ constexpr int defaultFrameHeight = 85;
 
 class BarGauge
 {
+public:
+	enum BarGaugeLayoutTypes
+	{
+		NoPowerBar,
+		PowerBarLeft,
+		PowerBarRight
+	};
+
 protected:
 	TFT_eSPI* tft;
 	
+	BarGaugeLayoutTypes LayoutType = BarGaugeLayoutTypes::NoPowerBar;
+
+	int X0 = 0;
 	int Xtl = 0;
 	int Y0 = 0;
+	int Ytl = 0;
 	int WFrame = defaultFrameWidth;
 	int HFrame = defaultFrameHeight;
 	int WBar = defaultFrameWidth - 4;
 	int HBar = 0;
 
 	uint16_t FrameColor = TFT_WHITE;
+	uint16_t LabelColor = TFT_YELLOW;
 	uint16_t PosBarColor = TFT_GREEN;
 	uint16_t NegBarColor = TFT_CYAN;
+	uint16_t PowBarColor = TFT_ORANGE;
 
+	String Label;
 	float reading = 0.0f;				// The current value this instrument displays
 	float minReading = 0.0f;
 	float maxReading = 0.0f;
 
+	float powerReading = 0.0f;
+	float maxPowerReading = 0.0f;
+
+
 public:
-	bool Init(TFT_eSPI* _tft, int xtl, int y0, int frameWidth = defaultFrameWidth, int frameHeight = defaultFrameHeight);
+	bool Init(TFT_eSPI* _tft, int x0, int y0, BarGaugeLayoutTypes layoutType = BarGaugeLayoutTypes::NoPowerBar, int frameWidth = defaultFrameWidth, int frameHeight = defaultFrameHeight);
+	void SetLabel(char* label);
 	void SetLimits(float min, float max);
+	void SetPowerLimit(float max);
 	void SetFrameColor(uint16_t newFrameColor);
 	void SetPosBarColor(uint16_t newPosBarColor);
 	void SetNegBarColor(uint16_t newNegBarColor);
+	void SetPowBarColor(uint16_t newPowBarColor);
 
 	void DrawFrame();
-	void Update(float newReading);
+	void Update(float newReading, float newPowerReading = 0.0f);
 
 };
 

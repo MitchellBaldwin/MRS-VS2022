@@ -55,54 +55,64 @@ void CSSMS3Display::DrawPageHeaderAndFooter()
 
 }
 
-void CSSMS3Display::DrawDashboard(int32_t xTL, int32_t yTL)
+void CSSMS3Display::DrawDashboard(int32_t xTL, int32_t yTL, bool showDriveData, bool showHDGBox, bool showCRSBox)
 {
 	// Control inputs line:
 	int32_t cursorY = yTL;
-	tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);
-	tft.setTextDatum(TC_DATUM);
-	sprintf(buf, "%s L%+06.1f%% R%+06.1f%% Vbat %4.1fV Imot %4.2fA",
-		DriveModeHeadings[CSSMS3Status.cssmDrivePacket.DriveMode],
-		CSSMS3Status.cssmDrivePacket.LThrottle,
-		CSSMS3Status.cssmDrivePacket.RThrottle,
-		CSSMS3Status.mcStatus.SupBatV,
-		(CSSMS3Status.mcStatus.M1Current > CSSMS3Status.mcStatus.M2Current) ? CSSMS3Status.mcStatus.M1Current : CSSMS3Status.mcStatus.M2Current);
-	tft.drawString(buf, xTL + 2, cursorY);
+	if (showDriveData)
+	{
+		tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);
+		tft.setTextDatum(TC_DATUM);
+		sprintf(buf, "%s L%+06.1f%% R%+06.1f%% Vbat %4.1fV Imot %4.2fA",
+			DriveModeHeadings[CSSMS3Status.cssmDrivePacket.DriveMode],
+			CSSMS3Status.cssmDrivePacket.LThrottle,
+			CSSMS3Status.cssmDrivePacket.RThrottle,
+			CSSMS3Status.mcStatus.SupBatV,
+			(CSSMS3Status.mcStatus.M1Current > CSSMS3Status.mcStatus.M2Current) ? CSSMS3Status.mcStatus.M1Current : CSSMS3Status.mcStatus.M2Current);
+		tft.drawString(buf, xTL + 2, cursorY);
 
-	// Basic motion data line (from MRS telemetry):
-	cursorY += 10;
-	tft.setTextColor(TFT_GREENYELLOW, TFT_BLACK, true);
-	sprintf(buf, "GSpd (%+6.1f%%)%+6.1fmm/s wXY (%+6.1f%%)%+6.3frad/s",
-		CSSMS3Status.cssmDrivePacket.SpeedSettingPct,
-		CSSMS3Status.mcStatus.GroundSpeed,
-		CSSMS3Status.cssmDrivePacket.OmegaXYSettingPct,
-		CSSMS3Status.mcStatus.TurnRate);
-	tft.drawString(buf, xTL + 2, cursorY);
+		// Basic motion data line (from MRS telemetry):
+		cursorY += 10;
+		tft.setTextColor(TFT_GREENYELLOW, TFT_BLACK, true);
+		sprintf(buf, "GSpd (%+6.1f%%)%+6.1fmm/s wXY (%+6.1f%%)%+6.3frad/s",
+			CSSMS3Status.cssmDrivePacket.SpeedSettingPct,
+			CSSMS3Status.mcStatus.GroundSpeed,
+			CSSMS3Status.cssmDrivePacket.OmegaXYSettingPct,
+			CSSMS3Status.mcStatus.TurnRate);
+		tft.drawString(buf, xTL + 2, cursorY);
 
-	// Proximity sensor line (from MRS telemetry):
-	cursorY += 10;
-	tft.setTextColor(TFT_GREEN, TFT_BLACK, true);
-	sprintf(buf, "%s", "CLEAR");
-	tft.drawString(buf, tft.width() / 2, cursorY, 2);
+		// Proximity sensor line (from MRS telemetry):
+		cursorY += 10;
+		tft.setTextColor(TFT_GREEN, TFT_BLACK, true);
+		sprintf(buf, "%s", "CLEAR");
+		tft.drawString(buf, tft.width() / 2, cursorY, 2);
+	}
 
-	// Heading (HDG) box (lower left corner):
-	tft.drawRect(1, tft.height() - 30, 33, 29, TFT_ORANGE);
-	tft.setTextColor(0xd4c5, TFT_BLACK, true);
-	sprintf(buf, "%03D", CSSMS3Status.cssmDrivePacket.HeadingSetting);
-	tft.drawString(buf, 16, tft.height() - 27);
-	tft.setTextColor(0xf5e8, TFT_BLACK, true);
-	sprintf(buf, "%03D", (int)CSSMS3Status.mcStatus.Heading);
-	tft.drawString(buf, 16, tft.height() - 12);
+	if (showHDGBox)
+	{
+		// Heading (HDG) box (lower left corner):
+		tft.setTextDatum(TC_DATUM);
+		tft.drawRect(1, tft.height() - 30, 33, 29, TFT_ORANGE);
+		tft.setTextColor(0xd4c5, TFT_BLACK, true);
+		sprintf(buf, "%03D", CSSMS3Status.cssmDrivePacket.HeadingSetting);
+		tft.drawString(buf, 16, tft.height() - 27);
+		tft.setTextColor(0xf5e8, TFT_BLACK, true);
+		sprintf(buf, "%03D", (int)CSSMS3Status.mcStatus.Heading);
+		tft.drawString(buf, 16, tft.height() - 12);
+	}
 
-	// Course (CRS) box (lower right corner):
-	tft.drawRect(tft.width() - 34, tft.height() - 30, 33, 29, TFT_SKYBLUE);
-	tft.setTextColor(TFT_CYAN, TFT_BLACK, true);
-	sprintf(buf, "%03D", CSSMS3Status.cssmDrivePacket.CourseSetting);
-	tft.drawString(buf, tft.width() - 16, tft.height() - 27);
-	tft.setTextColor(0x7fbe, TFT_BLACK, true);
-	sprintf(buf, "%s", "TO");
-	tft.drawString(buf, tft.width() - 16, tft.height() - 12);
-
+	if (showCRSBox)
+	{
+		// Course (CRS) box (lower right corner):
+		tft.setTextDatum(TC_DATUM);
+		tft.drawRect(tft.width() - 34, tft.height() - 30, 33, 29, TFT_SKYBLUE);
+		tft.setTextColor(TFT_CYAN, TFT_BLACK, true);
+		sprintf(buf, "%03D", CSSMS3Status.cssmDrivePacket.CourseSetting);
+		tft.drawString(buf, tft.width() - 16, tft.height() - 27);
+		tft.setTextColor(0x7fbe, TFT_BLACK, true);
+		sprintf(buf, "%s", "TO");
+		tft.drawString(buf, tft.width() - 16, tft.height() - 12);
+	}
 }
 
 void CSSMS3Display::DrawSYSPage()
@@ -347,7 +357,7 @@ void CSSMS3Display::DrawDBGPage()
 	}
 
 	// Update dynamic displays:
-	DrawDashboard(tft.width() / 2, tft.height() - 50);
+	//DrawDashboard(tft.width() / 2, tft.height() - 50, false);
 
 
 }
@@ -452,16 +462,36 @@ void CSSMS3Display::DrawDRVPage()
 
 	// Update dynamic displays:
 
-	DrawDashboard(tft.width() / 2, tft.height() - 50);
+	DrawDashboard(tft.width() / 2, tft.height() - 50, false);
 
 	int16_t cursorY = 15;
-	// Display odometer time from MRS MCC telemetry:
+	tft.setTextDatum(TL_DATUM);
+	tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);
+	sprintf(buf, "Mode %s", DriveModeHeadings[CSSMS3Status.cssmDrivePacket.DriveMode]);
+	tft.drawString(buf, 2, cursorY);
+	
+	// Display odometry from MRS MCC telemetry:
+	cursorY += 10;
 	tft.setTextColor(TFT_GREENYELLOW, TFT_BLACK, true);
-	sprintf(buf, "MC ODO dt:%8.1f s    dd:%8.3f m", (float)CSSMS3Status.mcStatus.OdometerTime / 1000.0f, CSSMS3Status.mcStatus.OdometerDist);
-	tft.drawString(buf, tft.width() / 2, cursorY);
+	tft.drawString("MC ODO UpLnk:", 2, cursorY);
 
-	LTrackBarGauge.Update(CSSMS3Status.cssmDrivePacket.LThrottle);
-	RTrackBarGauge.Update(CSSMS3Status.cssmDrivePacket.RThrottle);
+	// Home plate symbol, resembling a delta, is character code 0x7F
+	cursorY += 10;
+	String str;
+	GetTimeString(CSSMS3Status.mcStatus.OdometerTime, &str);
+	sprintf(buf, "%ct: %s", 0x7F, str);
+	tft.drawString(buf, 12, cursorY);
+
+	cursorY += 10;
+	sprintf(buf, "%cd:%8.3f m", 0x7F, CSSMS3Status.mcStatus.OdometerDist);
+	tft.drawString(buf, 12, cursorY);
+
+	cursorY += 10;
+	sprintf(buf, "Vbat:%5.1f V", CSSMS3Status.mcStatus.SupBatV);
+	tft.drawString(buf, 12, cursorY);
+
+	LTrackBarGauge.Update(CSSMS3Status.cssmDrivePacket.LThrottle, CSSMS3Status.mcStatus.M2Current);
+	RTrackBarGauge.Update(CSSMS3Status.cssmDrivePacket.RThrottle, CSSMS3Status.mcStatus.M1Current);
 	MRSTrackBarGauge.Update(CSSMS3Status.mcStatus.GroundSpeed);
 }
 
@@ -571,12 +601,19 @@ bool CSSMS3Display::Init()
 	cssmS3Display.Control(CSSMS3Display::Commands::DBGPage);
 	SetDisplayBrightness(DefaultDisplayBrightness);
 
-	LTrackBarGauge.Init(&tft, 50, 70);
+	LTrackBarGauge.Init(&tft, 160, 70, BarGauge::BarGaugeLayoutTypes::PowerBarLeft);
+	LTrackBarGauge.SetLabel("LTrk");
 	LTrackBarGauge.SetLimits(-100.0f, 100.0f);
-	MRSTrackBarGauge.Init(&tft, 150, 70);
-	MRSTrackBarGauge.SetLimits(-600.0f, 600.0f);				// Indicates MRS ground speed (mm/s)
-	RTrackBarGauge.Init(&tft, 250, 70);
+	LTrackBarGauge.SetPowerLimit(5.0f);
+
+	MRSTrackBarGauge.Init(&tft, 200, 70);
+	MRSTrackBarGauge.SetLimits(-600.0f, 600.0f);	// Indicates MRS ground speed (mm/s)
+	MRSTrackBarGauge.SetLabel("MRS");
+
+	RTrackBarGauge.Init(&tft, 240, 70, BarGauge::BarGaugeLayoutTypes::PowerBarRight);
+	RTrackBarGauge.SetLabel("RTrk");
 	RTrackBarGauge.SetLimits(-100.0f, 100.0f);
+	RTrackBarGauge.SetPowerLimit(5.0f);
 
 	return true;
 }

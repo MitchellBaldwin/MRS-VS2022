@@ -25,8 +25,8 @@
 
 constexpr uint8_t RC2x15AAddress = 0x80;
 constexpr float GAMMA = 0.10f;
-constexpr uint32_t lMotorFullSpeedQPPS = 7500;
-constexpr uint32_t rMotorFullSpeedQPPS = 7500;
+constexpr uint32_t lMotorFullSpeedQPPS = 7500;			// Motor 2
+constexpr uint32_t rMotorFullSpeedQPPS = 7500;			// Motor 1
 
 constexpr float defaultKLTrack = 13.0103;				// qp/mm; encoder quadrature pulse count per mm of track movement
 constexpr float defaultKRTrack = 13.0103;				// qp/mm

@@ -158,7 +158,7 @@ void CSSMS3Controls::StopOSBHandler(int value)
 
 	funcEncoderMode = FuncEncoderModes::MenuFuncEncMode;
 
-	_PL("Stop mode handler")
+	//_PL("Stop mode handler")
 }
 
 uint32_t CSSMS3Controls::ReadCalibratedADC1(int rawADC1)
@@ -254,6 +254,8 @@ void CSSMS3Controls::CaptureHDG(int value)
 {
 	CSSMS3Status.cssmDrivePacket.HeadingSetting = CSSMS3Status.mcStatus.Heading;
 	CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::HDG;
+	cssmS3Controls.HDGHoldMenuItem->SetValue(CSSMS3Status.cssmDrivePacket.HeadingSetting);
+	cssmS3Display.Control(CSSMS3Display::Commands::HDGPage);
 }
 
 void CSSMS3Controls::SetSPD(int value)
@@ -434,13 +436,13 @@ bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 	DRVPageMenu = new TFTMenuClass();
 	DRVPageMenu->Init(tft);
 
-	CaptureHDGMenuItem = new MenuItemClass("CAP HDG", 36, 157, 56, 12, MenuItemClass::MenuItemTypes::Action);
+	DRVPageMenu->AddItem(ESPNMenuItem);
+	DRVPageMenu->AddItem(HDGSetMenuItem);
+
+	CaptureHDGMenuItem = new MenuItemClass("CAP HDG", 162, 157, 56, 12, MenuItemClass::MenuItemTypes::Action);
 	CaptureHDGMenuItem->Init(tft);
 	DRVPageMenu->AddItem(CaptureHDGMenuItem);
 	CaptureHDGMenuItem->SetOnExecuteHandler(CaptureHDG);
-
-	DRVPageMenu->AddItem(HDGSetMenuItem);
-	//DRVPageMenu->AddItem(NextPageMenuItem);
 
 	// Set up ADC:
 	SetupADC();

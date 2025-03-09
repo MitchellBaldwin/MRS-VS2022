@@ -384,8 +384,8 @@ bool RC2x15AMCClass::Drive(float vf, float wxy)
 	float wLSet = vf * KLTrack;
 	float wRSet = vf * KRTrack;
 
-	wLSet -= wxy * TrackSpan * KLTrack / 2.0f;
-	wRSet += wxy * TrackSpan * KRTrack / 2.0f;
+	wLSet += wxy * TrackSpan * KLTrack / 2.0f;
+	wRSet -= wxy * TrackSpan * KRTrack / 2.0f;
 
 	int32_t lMotorSpeed = wLSet;
 	int32_t rMotorSpeed = wRSet;
@@ -396,11 +396,11 @@ bool RC2x15AMCClass::Drive(float vf, float wxy)
 	}
 	else
 	{
-		success = RC2x15A->SpeedM1M2(PSAddress, lMotorSpeed, rMotorSpeed);
+		success = RC2x15A->SpeedM1M2(PSAddress, rMotorSpeed, lMotorSpeed);
 	}
 
-	MCCStatus.mcStatus.M1SpeedSetting = lMotorSpeed;
-	MCCStatus.mcStatus.M2SpeedSetting = rMotorSpeed;
+	MCCStatus.mcStatus.M1SpeedSetting = rMotorSpeed;
+	MCCStatus.mcStatus.M2SpeedSetting = lMotorSpeed;
 
 	return success;
 }
@@ -443,8 +443,8 @@ bool RC2x15AMCClass::DriveThrottleTurnRate(float throttle, float turnRate)
 	}
 	
 	// Add turn rate values to each motor speed setting:
-	lMotorSpeed -= turnDifferentialQPPS;
-	rMotorSpeed += turnDifferentialQPPS;
+	lMotorSpeed += turnDifferentialQPPS;
+	rMotorSpeed -= turnDifferentialQPPS;
 
 	if (abs(lMotorSpeed) < 1 && abs(rMotorSpeed) < 1)
 	{
@@ -452,11 +452,11 @@ bool RC2x15AMCClass::DriveThrottleTurnRate(float throttle, float turnRate)
 	}
 	else
 	{
-		success = RC2x15A->SpeedM1M2(PSAddress, lMotorSpeed, rMotorSpeed);
+		success = RC2x15A->SpeedM1M2(PSAddress, rMotorSpeed, lMotorSpeed);
 	}
 
-	MCCStatus.mcStatus.M1SpeedSetting = lMotorSpeed;
-	MCCStatus.mcStatus.M2SpeedSetting = rMotorSpeed;
+	MCCStatus.mcStatus.M1SpeedSetting = rMotorSpeed;
+	MCCStatus.mcStatus.M2SpeedSetting = lMotorSpeed;
 
 	return success;
 }
@@ -505,6 +505,16 @@ bool RC2x15AMCClass::DriveLRTrackSpeed(float leftTrackSpeed, float rightTrackSpe
 	return success;
 }
 
+/// <summary>
+/// Stop both motors, with (default) or without breaking
+/// </summary>
+/// <param name="breaking">
+/// true (default) to stop botors and hold position (break)
+/// flase to stop motprs without breaking (free-wheel)
+/// </param>
+/// <returns>
+/// Returns success reported by serial communication with the RoboClaw 2x15A motor controller
+/// </returns>
 bool RC2x15AMCClass::Stop(bool breaking)
 {
 	bool success = false;
