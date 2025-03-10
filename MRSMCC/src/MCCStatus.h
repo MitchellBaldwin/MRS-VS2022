@@ -21,7 +21,10 @@
 #endif
 
 #include "C:\Repos\MRS-VS2022\MRSCommon\src\CSSMDrivePacket.h"
+#include "C:\Repos\MRS-VS2022\MRSCommon\src\CSSMCommandPacket.h"
 #include "C:\Repos\MRS-VS2022\MRSCommon\src\RC2x15AMCStatusPacket.h"
+#include "C:\Repos\MRS-VS2022\MRSCommon\src\MRSStatusPacket.h"
+#include "C:\Repos\MRS-VS2022\MRSCommon\src\MRSSensorPacket.h"
 
 constexpr uint8_t MAX_TEXT_LINES = 14;
 

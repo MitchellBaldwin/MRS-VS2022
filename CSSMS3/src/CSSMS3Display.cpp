@@ -213,6 +213,9 @@ void CSSMS3Display::DrawCOMPage()
 		tft.setTextDatum(CL_DATUM);
 		tft.drawString(ComModeHeadings[CSSMS3Status.ComMode], 2, 40);
 
+		tft.setTextColor(TFT_CYAN);
+		tft.drawString(I2CBus.Get1st6ActiveI2CAddressesString(), 2, halfScreenHeight - 10);
+
 		tft.setTextColor(TFT_GREENYELLOW);
 		tft.setTextDatum(CL_DATUM);	//DONE: setTextDatum has NO AFFECT on print() output; print() effectively uses default TL_DATUM
 		uint8_t mac[6];
@@ -231,9 +234,6 @@ void CSSMS3Display::DrawCOMPage()
 
 		sprintf(buf, "IP: %s %d dBm", WiFi.localIP().toString(), WiFi.RSSI());
 		tft.drawString(buf, 2, halfScreenHeight + 30);
-
-		tft.setTextColor(TFT_CYAN);
-		tft.drawString(I2CBus.Get1st6ActiveI2CAddressesString(), 2, halfScreenHeight + 50);
 
 		// Draw footer menu:
 		if (cssmS3Controls.CommsMenu != nullptr)
@@ -399,7 +399,7 @@ void CSSMS3Display::DrawSENPage()
 	EnvSensors.BME280Data.GetTchipString(&TempString);
 	EnvSensors.BME280Data.GetPbaroString(&PbaroString);
 	EnvSensors.BME280Data.GetRHString(&RHString);
-	tft.setTextColor(TFT_GREEN);
+	tft.setTextColor(TFT_GREEN, TFT_BLACK, true);
 	tft.setTextDatum(CL_DATUM);
 	sprintf(buf, "CSSM BME280 %s %s %s", TempString, RHString, PbaroString);
 	tft.drawString(buf, 2, CursorY, 1);
@@ -494,7 +494,6 @@ void CSSMS3Display::DrawDRVPage()
 	RTrackBarGauge.Update(CSSMS3Status.cssmDrivePacket.RThrottle, CSSMS3Status.mcStatus.M1Current);
 	MRSTrackBarGauge.Update(CSSMS3Status.mcStatus.GroundSpeed);
 }
-
 
 void CSSMS3Display::DrawHDGPage()
 {

@@ -208,6 +208,18 @@ void setup()
 	MCCStatus.AddDebugTextLine(buf);
 	_PL(buf)
 
+	sprintf(buf, "CSSMCommandPacket: %d b", sizeof(CSSMCommandPacket));
+	MCCStatus.AddDebugTextLine(buf);
+	_PL(buf)
+
+	sprintf(buf, "MRSStatusPacket: %d b", sizeof(MRSStatusPacket));
+	MCCStatus.AddDebugTextLine(buf);
+	_PL(buf)
+
+	sprintf(buf, "MRSSensorPacket: %d b", sizeof(MRSSensorPacket));
+	MCCStatus.AddDebugTextLine(buf);
+	_PL(buf)
+
 	// Components initialzed; switch LocalDisplay to normal operation:
 	LocalDisplay.Control(LocalDisplayClass::Commands::SYSPage);
 	UpdateLocalDisplayTask.enable();

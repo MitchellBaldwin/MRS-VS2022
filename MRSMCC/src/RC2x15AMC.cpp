@@ -92,6 +92,10 @@ bool RC2x15AMCClass::Init()
 	TrackSpan = defaulTrackSpan;
 	
 	OdometerStartTime = millis();
+	Trip1StartTime = OdometerStartTime;
+	Trip1StartDistance = 0.0f;
+	Trip2StartTime = OdometerStartTime;
+	Trip2StartDistance = 0.0f;
 	LastOdometryUpdateTime = OdometerStartTime;
 	MCCStatus.mcStatus.OdometerTime = LastOdometryUpdateTime;
 
@@ -237,8 +241,31 @@ bool RC2x15AMCClass::ResetUARTLink()
 
 void RC2x15AMCClass::ResetOdometer()
 {
-	RC2x15A->ResetEncoders(RC2x15AAddress);
+	RC2x15AMC.RC2x15A->ResetEncoders(RC2x15AAddress);
+
+	uint64_t timeNow = millis();
+	RC2x15AMC.OdometerStartTime = timeNow;
+	RC2x15AMC.Trip1StartTime = timeNow;
+	RC2x15AMC.Trip2StartTime = timeNow;
+	RC2x15AMC.Trip1StartDistance = 0.0f;
+	RC2x15AMC.Trip2StartDistance = 0.0f;
 	MCCStatus.mcStatus.ResetOdometer();
+}
+
+void RC2x15AMCClass::ResetTrip1()
+{
+	uint64_t timeNow = millis();
+	RC2x15AMC.Trip1StartTime = timeNow;
+	RC2x15AMC.Trip1StartDistance = 0.0f;
+	MCCStatus.mcStatus.ResetTrip1();
+}
+
+void RC2x15AMCClass::ResetTrip2()
+{
+	uint64_t timeNow = millis();
+	RC2x15AMC.Trip2StartTime = timeNow;
+	RC2x15AMC.Trip2StartDistance = 0.0f;
+	MCCStatus.mcStatus.ResetTrip2();
 }
 
 /// <summary>
@@ -325,8 +352,10 @@ void RC2x15AMCClass::Update()
 		success = ReadStatus();
 	}
 	
-	//TODO: Check that M1 is the Left motor and M2 is the right motor
+	//DONE: Check that M1 is the Left motor and M2 is the right motor: Left motor is M2, right motor is M1
 	MCCStatus.mcStatus.OdometerDist = ((float)(MCCStatus.mcStatus.M1Encoder) / KLTrack + (float)(MCCStatus.mcStatus.M2Encoder) / KRTrack) / 2000.0f;	// ±m
+	MCCStatus.mcStatus.Trip1Dist = MCCStatus.mcStatus.OdometerDist - Trip1StartDistance;
+	MCCStatus.mcStatus.Trip2Dist = MCCStatus.mcStatus.OdometerDist - Trip2StartDistance;
 	
 	// Calculate ground dynamics based on motor odometry:
 	MCCStatus.mcStatus.GroundSpeed = ((float)(MCCStatus.mcStatus.M1Speed) / KLTrack + (float)(MCCStatus.mcStatus.M2Speed) / KRTrack) / 2.0f;		// ±mm/s
@@ -347,6 +376,8 @@ void RC2x15AMCClass::Update()
 	MCCStatus.mcStatus.Heading = hdg;
 
 	MCCStatus.mcStatus.OdometerTime = timeNow - OdometerStartTime;
+	MCCStatus.mcStatus.Trip1Time = timeNow - Trip1StartTime;
+	MCCStatus.mcStatus.Trip2Time = timeNow - Trip2StartTime;
 	LastOdometryUpdateTime = timeNow;
 
 	// Save drive settings to test for changes next cycle:

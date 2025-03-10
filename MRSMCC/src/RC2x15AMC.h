@@ -67,13 +67,19 @@ protected:
 	float TrackSpan = defaulTrackSpan;
 	uint64_t OdometerStartTime = 0;					// ms; used to calculate odometer time
 	uint64_t LastOdometryUpdateTime = 0;			// ms; used to integrate dynamic measurements to obtain position and pose estimates
+	uint64_t Trip1StartTime = 0;					// ms;
+	float Trip1StartDistance = 0.0f;				// m
+	uint64_t Trip2StartTime = 0;					// ms;
+	float Trip2StartDistance = 0.0f;				// m
 
 public:
 	bool Init();
 	bool ReadStatus();
 	bool ResetUARTLink();
 
-	void ResetOdometer();
+	static void ResetOdometer();
+	static void ResetTrip1();
+	static void ResetTrip2();
 
 	bool DriveSettingsChanged();
 	void Update();

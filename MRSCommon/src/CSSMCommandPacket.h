@@ -22,10 +22,21 @@
 
 class CSSMCommandPacket
 {
+public:
+	enum CSSMCommandCodes
+	{
+		NoCommand = 0x00,
+
+		ResetMCOdometer = 0x10,
+		ResetMCTrip1 = 0x11,
+		ResetMCTrip2 = 0x12,
+
+	};
 protected:
-	uint8_t PacketType = 0x24;					// Identifies packet type; fixed for all CSSMCommandPackets
+	uint8_t PacketType = 0x24;								// Identifies packet type; fixed for all CSSMCommandPackets
 
 public:
+	CSSMCommandCodes command = CSSMCommandCodes::NoCommand;
 
 };
 

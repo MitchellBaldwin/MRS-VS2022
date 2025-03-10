@@ -236,6 +236,7 @@ void setup()
 	UpdateDisplayTask.enable();
 
 	EnvSensors.Init();
+	ReadEnvSensorsTask.enable();
 	
 	if (CSSMS3Status.ESPNOWStatus)
 	{
@@ -298,6 +299,7 @@ void SendCSSMPacketCallback()
 
 void ReadEnvSensorsCallback()
 {
+	EnvSensors.Update();
 }
 
 void OnMRSMCCDataSent(const uint8_t* mac_addr, esp_now_send_status_t status)
@@ -305,8 +307,6 @@ void OnMRSMCCDataSent(const uint8_t* mac_addr, esp_now_send_status_t status)
 	char buf[64];
 
 	bool result = (status == ESP_NOW_SEND_SUCCESS);
-
-	//cssmS3Controls.SetESPNOWStatus(status == ESP_NOW_SEND_SUCCESS);
 	if (result)
 	{
 		CSSMS3Status.ESPNOWPacketSentCount++;
@@ -317,10 +317,8 @@ void OnMRSMCCDataSent(const uint8_t* mac_addr, esp_now_send_status_t status)
 		CSSMS3Status.SendRetries++;
 
 		//_PL("ESP-NOW data send FAIL")
-		
 		//sprintf(buf, "ESP-NOW send error: %d", result);
 		//_PL(buf)
-		
 		////TODO: Need to change this to base test on whether sufficient time is left in the current task cycle to retry
 		////Consider defining a MAX_RETRIES parameter to limit the number of potential retries and so limit the time use on retries.  
 		//if (millis() < NextPacketSendTime + SendCSSMPacketInterval)
@@ -363,15 +361,4 @@ void OnMRSMCCDataReceived(const uint8_t* mac, const uint8_t* data, int lenght)
 	CSSMS3Status.MCCPacketReceiptInterval = receiptTime - CSSMS3Status.LastMCCPacketReceivedTime;
 	CSSMS3Status.LastMCCPacketReceivedTime = receiptTime;
 
-	//if (data[0] == 0x30)	// Packet type identifier for a RC2x15AMCStatusPacket
-	//{
-	//	memcpy(&(CSSMS3Status.mcStatus), data, sizeof(CSSMS3Status.mcStatus));
-	//	//sprintf(buf, MACSTR, MAC2STR(mac));
-	//	//MCCStatus.IncomingCSSMPacketMACString = String(buf);
-	//	CSSMS3Status.MRSMCCPacketReceivedCount++;
-	//	uint64_t receiptTime = millis();
-	//	CSSMS3Status.MCCPacketReceiptInterval = receiptTime - CSSMS3Status.LastMCCPacketReceivedTime;
-	//	CSSMS3Status.LastMCCPacketReceivedTime = receiptTime;
-
-	//}
 }
