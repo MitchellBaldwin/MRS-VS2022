@@ -58,6 +58,9 @@
     <Filter Include="src\_micro-api-readonly\libraries\Wire">
       <UniqueIdentifier>{9c33a467-ec13-4553-91f4-4dead3a3be6a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\_micro-api-readonly\libraries\BME680">
+      <UniqueIdentifier>{4894577f-246d-4c83-8c95-4aba136ae4ee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\arduino folders read me.txt">
@@ -89,6 +92,9 @@
     </None>
     <None Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\Wire\library.properties">
       <Filter>src\_micro-api-readonly\libraries\Wire</Filter>
+    </None>
+    <None Include="..\..\..\Arduino\libraries\libraries\BME680\library.properties">
+      <Filter>src\_micro-api-readonly\libraries\BME680</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -287,6 +293,12 @@
     </ClCompile>
     <ClCompile Include="src\Measurement.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MCCSensors.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Arduino\libraries\libraries\BME680\src\Zanshin_BME680.cpp">
+      <Filter>src\_micro-api-readonly\libraries\BME680</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -548,6 +560,12 @@
     <ClInclude Include="src\Measurement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\MCCSensors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Arduino\libraries\libraries\BME680\src\Zanshin_BME680.h">
+      <Filter>src\_micro-api-readonly\libraries\BME680</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\..\Arduino\libraries\libraries\roboclaw_arduino_library-master\keywords.txt">
@@ -582,6 +600,9 @@
     </Text>
     <Text Include="..\..\..\Arduino\Arduino15\packages\esp32\hardware\esp32\2.0.9\libraries\Wire\keywords.txt">
       <Filter>src\_micro-api-readonly\libraries\Wire</Filter>
+    </Text>
+    <Text Include="..\..\..\Arduino\libraries\libraries\BME680\keywords.txt">
+      <Filter>src\_micro-api-readonly\libraries\BME680</Filter>
     </Text>
   </ItemGroup>
 </Project>

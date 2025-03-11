@@ -30,6 +30,8 @@ public:
 		ResetMCOdometer = 0x10,
 		ResetMCTrip1 = 0x11,
 		ResetMCTrip2 = 0x12,
+		
+		StartMSOdometerCalibration = 0x18,
 
 	};
 protected:

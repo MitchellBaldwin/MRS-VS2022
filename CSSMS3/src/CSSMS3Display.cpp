@@ -479,7 +479,7 @@ void CSSMS3Display::DrawDRVPage()
 	cursorY += 10;
 	String str;
 	GetTimeString(CSSMS3Status.mcStatus.OdometerTime, &str);
-	sprintf(buf, "%ct: %s", 0x7F, str);
+	sprintf(buf, "%ct:  %s", 0x7F, str);
 	tft.drawString(buf, 12, cursorY);
 
 	cursorY += 10;
@@ -487,8 +487,27 @@ void CSSMS3Display::DrawDRVPage()
 	tft.drawString(buf, 12, cursorY);
 
 	cursorY += 10;
-	sprintf(buf, "Vbat:%5.1f V", CSSMS3Status.mcStatus.SupBatV);
+	sprintf(buf, "Vbat: %5.1f V", CSSMS3Status.mcStatus.SupBatV);
 	tft.drawString(buf, 12, cursorY);
+
+	cursorY = 76;
+	tft.setTextDatum(CL_DATUM);
+	GetTimeString(CSSMS3Status.mcStatus.Trip1Time, &str);
+	sprintf(buf, "%ct:  %s", 0x7F, str);
+	tft.drawString(buf, 60, cursorY);
+
+	cursorY += 10;
+	sprintf(buf, "%cd:%8.3f m", 0x7F, CSSMS3Status.mcStatus.Trip1Dist);
+	tft.drawString(buf, 60, cursorY);
+
+	cursorY = 104;
+	GetTimeString(CSSMS3Status.mcStatus.Trip2Time, &str);
+	sprintf(buf, "%ct:  %s", 0x7F, str);
+	tft.drawString(buf, 60, cursorY);
+
+	cursorY += 10;
+	sprintf(buf, "%cd:%8.3f m", 0x7F, CSSMS3Status.mcStatus.Trip2Dist);
+	tft.drawString(buf, 60, cursorY);
 
 	LTrackBarGauge.Update(CSSMS3Status.cssmDrivePacket.LThrottle, CSSMS3Status.mcStatus.M2Current);
 	RTrackBarGauge.Update(CSSMS3Status.cssmDrivePacket.RThrottle, CSSMS3Status.mcStatus.M1Current);

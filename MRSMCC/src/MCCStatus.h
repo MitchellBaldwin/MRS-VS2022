@@ -81,6 +81,8 @@ class MCCStatusClass
 	 CSSMDrivePacket lastCSSMDrivePacket;
 	 bool RC2x15AMCStatus = false;
 	 RC2x15AMCStatusPacket mcStatus;
+	 MRSStatusPacket mrsStatusPacket;
+	 MRSSensorPacket mrsSensorPacket;
 
 	 void Init();
 	 void Update();

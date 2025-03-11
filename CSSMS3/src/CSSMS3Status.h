@@ -68,6 +68,8 @@ public:
 	int ESPNOWPacketSentCount = 0;				// Running count of command packets successfully sent to the MRS MCC
 	uint16_t SendRetries = 0;					// Count of contiguous retries sending command packets to the MRS MCC
 
+	uint8_t MRSMCCMAC[6] = { 0xF0, 0xF5, 0xBD, 0x42, 0xB7, 0x78 };
+
 	uint32_t MRSMCCPacketReceivedCount = 0;		// Running count of telemetry packets received from the MRS MCC (not used?)
 	uint32_t SaveMRSMCCPacketReceivedCount = 0;	// (not used?)
 	uint64_t MCCPacketReceiptInterval = 0;		// Time in ms between receipt of the last two telemetry packets from the MRS MCC 

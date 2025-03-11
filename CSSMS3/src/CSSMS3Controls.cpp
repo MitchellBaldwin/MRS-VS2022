@@ -413,7 +413,7 @@ bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 	HDGPageMenu->AddItem(HDGHoldMenuItem);
 	HDGHoldMenuItem->SetOnExecuteHandler(nullptr);
 
-	HDGSetMenuItem = new MenuItemClass("HDG", 98, 157, 56, 12, MenuItemClass::MenuItemTypes::Numeric);
+	HDGSetMenuItem = new MenuItemClass("HDG", 98, 157, 48, 12, MenuItemClass::MenuItemTypes::Numeric);
 	HDGSetMenuItem->Init(tft);
 	HDGPageMenu->AddItem(HDGSetMenuItem);
 	HDGSetMenuItem->SetOnExecuteHandler(SetHDG);
@@ -424,7 +424,7 @@ bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 	HDGSetMenuItem->SetValue(CSSMS3Status.cssmDrivePacket.HeadingSetting);
 
 	//DONE: Change Speed setting from % of full speed to mm/s units
-	SPDSetMenuItem = new MenuItemClass("SPD", 162, 157, 56, 12, MenuItemClass::MenuItemTypes::Numeric);
+	SPDSetMenuItem = new MenuItemClass("SPD", 144, 157, 56, 12, MenuItemClass::MenuItemTypes::Numeric);
 	SPDSetMenuItem->Init(tft);
 	HDGPageMenu->AddItem(SPDSetMenuItem);
 	SPDSetMenuItem->SetOnExecuteHandler(SetSPD);
@@ -443,6 +443,16 @@ bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 	CaptureHDGMenuItem->Init(tft);
 	DRVPageMenu->AddItem(CaptureHDGMenuItem);
 	CaptureHDGMenuItem->SetOnExecuteHandler(CaptureHDG);
+
+	T1ResetMenuItem = new MenuItemClass("T1RST", 2, 70, 48, 12, MenuItemClass::MenuItemTypes::Action);
+	T1ResetMenuItem->Init(tft);
+	DRVPageMenu->AddItem(T1ResetMenuItem);
+	T1ResetMenuItem->SetOnExecuteHandler(T1Reset);
+
+	T2ResetMenuItem = new MenuItemClass("T2RST", 2, 98, 48, 12, MenuItemClass::MenuItemTypes::Action);
+	T2ResetMenuItem->Init(tft);
+	DRVPageMenu->AddItem(T2ResetMenuItem);
+	T2ResetMenuItem->SetOnExecuteHandler(T2Reset);
 
 	// Set up ADC:
 	SetupADC();
@@ -732,6 +742,45 @@ String CSSMS3Controls::GetKPVoltageString()
 	return KPVoltage.GetRealString();
 }
 
+void CSSMS3Controls::T1Reset(int value)
+{
+	CSSMCommandPacket cp;
+	cp.command = CSSMCommandPacket::ResetMCTrip1;
+	char buf2[64];
+
+	esp_err_t result = ESP_OK;
+
+	if (CSSMS3Status.ESPNOWStatus)
+	{
+		//_PL("Sending ResetMCTrip1 command...")
+		result = esp_now_send(CSSMS3Status.MRSMCCMAC, (uint8_t*)&cp, sizeof(cp));
+		if (result != ESP_NOW_SEND_SUCCESS)
+		{
+			sprintf(buf2, "ESP-NOW send error: %S", esp_err_to_name(result));
+			_PL(buf2)
+		}
+	}
+}
+
+void CSSMS3Controls::T2Reset(int value)
+{
+	CSSMCommandPacket cp;
+	cp.command = CSSMCommandPacket::ResetMCTrip2;
+	char buf2[64];
+
+	esp_err_t result = ESP_OK;
+
+	if (CSSMS3Status.ESPNOWStatus)
+	{
+		result = esp_now_send(CSSMS3Status.MRSMCCMAC, (uint8_t*)&cp, sizeof(cp));
+		if (result != ESP_NOW_SEND_SUCCESS)
+		{
+			sprintf(buf2, "ESP-NOW send error: %S", esp_err_to_name(result));
+			_PL(buf2)
+		}
+	}
+}
+
 String CSSMS3Controls::GetKPVoltageString(String format)
 {
 	return KPVoltage.GetRealString(format);
@@ -826,6 +875,7 @@ void CSSMS3Controls::SetWiFi(int value)
 
 void CSSMS3Controls::StartMCCalib(int /* value */)
 {
+	//TODO: Update to initiate calibration using a CSSMCommand
 	CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::CALIB;
 }
 

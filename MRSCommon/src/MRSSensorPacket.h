@@ -26,6 +26,12 @@ protected:
 	uint8_t PacketType = 0x32;					// Identifies packet type; fixed for all MRSSensorPackets
 
 public:
+	float BME280Temp = 0.0f;
+	float BME280Pbaro = 0.0f;
+	float BME280RH = 0.0f;
+	float BME280Gas = 0.0f;
+	float BME280Alt = 0.0f;
+
 };
 
 //extern MRSSensorPacket ;

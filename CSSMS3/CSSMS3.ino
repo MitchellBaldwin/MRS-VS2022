@@ -67,8 +67,7 @@ Task ReadEnvSensorsTask((ReadEnvSensorsInterval * TASK_MILLISECOND), TASK_FOREVE
 #include "src/CSSMS3Status.h"
 #include <I2CBus.h>
 
-#include <esp_now.h>
-uint8_t MRSMCCMAC[] = { 0xF0, 0xF5, 0xBD, 0x42, 0xB7, 0x78 };
+//uint8_t MRSMCCMAC[] = { 0xF0, 0xF5, 0xBD, 0x42, 0xB7, 0x78 };
 //uint8_t MRSMCCMAC[] = { 0x48, 0x27, 0xE2, 0xEA, 0xCA, 0x4C };		// Breadboard prototype
 esp_now_peer_info_t MRSMCCInfo;
 
@@ -191,7 +190,7 @@ void setup()
 		esp_now_register_send_cb(OnMRSMCCDataSent);
 
 		// Register peer
-		memcpy(MRSMCCInfo.peer_addr, MRSMCCMAC, 6);
+		memcpy(MRSMCCInfo.peer_addr, CSSMS3Status.MRSMCCMAC, 6);
 		//MRSMCCInfo.channel = 0;
 		MRSMCCInfo.channel = channel;
 		MRSMCCInfo.encrypt = false;
@@ -286,14 +285,12 @@ void SendCSSMPacketCallback()
 
 	if (CSSMS3Status.ESPNOWStatus)
 	{
-		result = esp_now_send(MRSMCCMAC, (uint8_t*)&CSSMS3Status.cssmDrivePacket, sizeof(CSSMS3Status.cssmDrivePacket));
-
+		result = esp_now_send(CSSMS3Status.MRSMCCMAC, (uint8_t*)&CSSMS3Status.cssmDrivePacket, sizeof(CSSMS3Status.cssmDrivePacket));
 		if (result != ESP_NOW_SEND_SUCCESS)
 		{
 			sprintf(buf2, "ESP-NOW send error: %S", esp_err_to_name(result));
 			_PL(buf2)
 		}
-
 	}
 }
 

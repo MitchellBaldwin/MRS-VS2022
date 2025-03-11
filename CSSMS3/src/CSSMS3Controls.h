@@ -24,6 +24,9 @@
 #include "Measurement.h"
 #include "BME280Data.h"
 #include "esp_adc_cal.h"
+
+#include <esp_now.h>
+
 constexpr uint32_t defaultVRef = 1100;
 
 constexpr byte defaultTS2Pin = GPIO_NUM_21;
@@ -126,6 +129,8 @@ protected:
 	static void SetHDG(int value);				// Set the HDG from the value field of the HDGSetMenuItem object
 	static void CaptureHDG(int value);			// Capture current heading and enter HDG drive mode
 	static void SetSPD(int value);				// Set the Speed from the value field of the SPDSetMenuItem object
+	static void T1Reset(int value);				// Send command to MRS resetting Trip 1 odometer measurements
+	static void T2Reset(int value);				// Send command to MRS resetting Trip 1 odometer measurements
 
 public:
 	enum NavEncoderModes
@@ -173,6 +178,8 @@ public:
 
 	TFTMenuClass* DRVPageMenu;			// DRV page menu
 	MenuItemClass* CaptureHDGMenuItem;
+	MenuItemClass* T1ResetMenuItem;
+	MenuItemClass* T2ResetMenuItem;
 
 	TFTMenuClass* WPTPageMenu;			// WPT page menu
 	MenuItemClass* DirectToMenuItem;

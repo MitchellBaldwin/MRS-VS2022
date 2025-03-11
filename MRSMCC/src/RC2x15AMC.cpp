@@ -256,7 +256,7 @@ void RC2x15AMCClass::ResetTrip1()
 {
 	uint64_t timeNow = millis();
 	RC2x15AMC.Trip1StartTime = timeNow;
-	RC2x15AMC.Trip1StartDistance = 0.0f;
+	RC2x15AMC.Trip1StartDistance = MCCStatus.mcStatus.OdometerDist;
 	MCCStatus.mcStatus.ResetTrip1();
 }
 
@@ -264,7 +264,7 @@ void RC2x15AMCClass::ResetTrip2()
 {
 	uint64_t timeNow = millis();
 	RC2x15AMC.Trip2StartTime = timeNow;
-	RC2x15AMC.Trip2StartDistance = 0.0f;
+	RC2x15AMC.Trip2StartDistance = MCCStatus.mcStatus.OdometerDist;
 	MCCStatus.mcStatus.ResetTrip2();
 }
 

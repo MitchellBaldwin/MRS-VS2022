@@ -35,6 +35,7 @@ void ToggleBuiltinLEDCallback();
 Task ToggleBuiltinLEDTask((NormalHeartbeatLEDToggleInterval* TASK_MILLISECOND), TASK_FOREVER, &ToggleBuiltinLEDCallback, &MainScheduler, false);
 
 #include "src/MCCControls.h"
+#include "src/MCCSensors.h"
 
 constexpr long ReadControlsInterval = 100;
 void ReadControlsCallback();
@@ -187,6 +188,15 @@ void setup()
 	ReadButtonsTask.enable();
 	ReadControlsTask.enable();
 
+	if (mccSensors.Init())
+	{
+		_PL("mccSensors initialized successfully")
+	}
+	else
+	{
+		_PL("mccSensors initialization FAILED")
+	}
+
 	UpdateMotorControllerTask.enable();
 	if (MCCStatus.RC2x15AUARTStatus)
 	{
@@ -309,34 +319,31 @@ void OnMRSRCCSSMDataSent(const uint8_t* mac_addr, esp_now_send_status_t status)
 void OnMRSRCCSSMDataReceived(const uint8_t* mac, const uint8_t* data, int lenght)
 {
 	char buf[32];
+	CSSMCommandPacket cp;
 	
-	if (data[0] == 0x20)	// Packet type identifier for a CSSMDrivePacket
+	switch (data[0])
 	{
+	case 0x20:	// CSSMDrivePacket
 		memcpy(&(MCCStatus.cssmDrivePacket), data, sizeof(MCCStatus.cssmDrivePacket));
-		//sprintf(buf, MACSTR, MAC2STR(mac));
-		//MCCStatus.IncomingCSSMPacketMACString = String(buf);
-		MCCStatus.CSSMPacketReceivedCount++;
-		uint64_t receiptTime = millis();
-		MCCStatus.CSSMPacketReceiptInterval = receiptTime - MCCStatus.LastCSSMPacketReceivedTime;
-		MCCStatus.LastCSSMPacketReceivedTime = receiptTime;
-
-	// Test code (Move handling of CSSM command packets to the RC2x15AMC class):
-		//// Check UART lint to motor controller:
-		//if (!MCCStatus.RC2x15AMCStatus)
-		//{
-		//	// If the UART link is down then try to reset:
-		//	if (!RC2x15AMC.ResetUARTLink())
-		//	{
-		//		// If reset appempt fails then return:
-		//		return;
-		//	}
-		//}
-		// While UART link is up pass CSSM steering commands to the motor controller:
-		//if (MCCStatus.RC2x15AMCStatus)
-		//{
-		//	RC2x15AMC.DriveThrottleTurnRate(MCCStatus.cssmDrivePacket.Throttle, MCCStatus.cssmDrivePacket.OmegaXY);
-		//}
-	// End of test code block
-
+		break;
+	case 0x24:	// CSSMCommandPacket
+		memcpy(&cp, data, sizeof(cp));
+		if (cp.command == CSSMCommandPacket::ResetMCTrip1)
+		{
+			//_PL("Received ResetMCTrip1 command...")
+			RC2x15AMC.ResetTrip1();
+		}
+		else if (cp.command == CSSMCommandPacket::ResetMCTrip2)
+		{
+			RC2x15AMC.ResetTrip2();
+		}
+		break;
+	default:
+		break;
 	}
+	MCCStatus.CSSMPacketReceivedCount++;
+	uint64_t receiptTime = millis();
+	MCCStatus.CSSMPacketReceiptInterval = receiptTime - MCCStatus.LastCSSMPacketReceivedTime;
+	MCCStatus.LastCSSMPacketReceivedTime = receiptTime;
+
 }
