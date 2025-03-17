@@ -288,7 +288,7 @@ void SendCSSMPacketCallback()
 		result = esp_now_send(CSSMS3Status.MRSMCCMAC, (uint8_t*)&CSSMS3Status.cssmDrivePacket, sizeof(CSSMS3Status.cssmDrivePacket));
 		if (result != ESP_NOW_SEND_SUCCESS)
 		{
-			sprintf(buf2, "ESP-NOW send error: %S", esp_err_to_name(result));
+			sprintf(buf2, "Error sending CSSMDrivePacket: %S", esp_err_to_name(result));
 			_PL(buf2)
 		}
 	}

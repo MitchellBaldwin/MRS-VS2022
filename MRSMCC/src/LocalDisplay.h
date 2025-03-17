@@ -35,6 +35,7 @@ public:
 		POW,
 		COM,
 		DBG,
+		SEN,
 
 		NONE
 	};
@@ -54,6 +55,7 @@ protected:
 		"   Power",
 		"   Comms",
 		"   Debug",
+		" Sensors",
 
 	};
 
@@ -84,6 +86,7 @@ protected:
 	void DrawPOWPage();
 	void DrawCOMPage();
 	void DrawDBGPage();
+	void DrawSENPage();
 
 	void DrawNONEPage();
 
@@ -96,6 +99,7 @@ public:
 		POWPage,
 		COMPage,
 		DBGPage,
+		SENPage,
 		I2CScan,
 
 		Prev,

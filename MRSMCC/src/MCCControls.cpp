@@ -25,11 +25,6 @@ void MCCControls::HandleFuncButtonEvents(ace_button::AceButton* b, uint8_t event
 	}
 }
 
-uint32_t MCCControls::ReadCalibratedADC1(int rawADC1)
-{
-	return esp_adc_cal_raw_to_voltage(rawADC1, &ADC1Chars);
-}
-
 bool MCCControls::Init(TFT_eSPI* parentTFT)
 {
 	char buf[64];
@@ -134,37 +129,6 @@ bool MCCControls::Init(TFT_eSPI* parentTFT)
 	NextPageMenuItem->SetMaxValue(LocalDisplayClass::Pages::NONE);
 	NextPageMenuItem->SetValue(LocalDisplayClass::Pages::COM);
 
-	// Set up ADC:
-	esp_adc_cal_value_t val_type = esp_adc_cal_characterize(ADC_UNIT_1, ADC_ATTEN_DB_11, ADC_WIDTH_BIT_12, 1100, &ADC1Chars);    //Check type of calibration value used to characterize ADC
-	if (val_type == ESP_ADC_CAL_VAL_EFUSE_VREF) {
-		sprintf(buf, "eFuse Vref: %u mV", ADC1Chars.vref);
-		_PL(buf);
-		//Vref = adc_chars.vref;
-	}
-	else if (val_type == ESP_ADC_CAL_VAL_EFUSE_TP) {
-		sprintf(buf, "Two Point --> coeff_a:%umV coeff_b:%umV\n", ADC1Chars.coeff_a, ADC1Chars.coeff_b);
-		_PL(buf);
-	}
-	else {
-		//Serial.println("Default Vref: 1100mV");
-		sprintf(buf, "ADC1Chars.vref: %u mV", ADC1Chars.vref);
-		_PL(buf);
-		VRef = defaultVRef;
-		sprintf(buf, "Defaul VRef: %u mV", VRef);
-		_PL(buf);
-	}
-
-	pinMode(defaultVMCUPin, INPUT);
-	VMCU.Init(0, 66, 40960, "V");
-
-	if (!WSUPS3SINA219->begin())
-	{
-		_PL("INA219 initialization FAILED")
-	}
-	else
-	{
-		_PL("INA219 initialized")
-	}
 
 	return true;
 }
@@ -285,36 +249,8 @@ void MCCControls::Update()
 	}
 
 
-	uint16_t newReading = analogRead(defaultVMCUPin);
-	VMCU.AddReading(newReading);
-
-	INA219VBus = WSUPS3SINA219->getBusVoltage_V();
-	INA219VShunt = WSUPS3SINA219->getShuntVoltage_mV();
-	INA219Current = WSUPS3SINA219->getCurrent_mA();
-	INA219Power = WSUPS3SINA219->getPower_mW();
-	INA219VLoad = INA219VBus + (INA219VShunt / 1000.0f);
-
 }
 
-uint16_t MCCControls::GetMCURawADC()
-{
-	return VMCU.GetAverageRawValue();
-}
-
-float MCCControls::GetMCUVoltageReal()
-{
-	return VMCU.GetAverageRealValue();
-}
-
-String MCCControls::GetMCUVoltageString()
-{
-	return VMCU.GetRealString();
-}
-
-String MCCControls::GetMCUVoltageString(String format)
-{
-	return VMCU.GetRealString(format);
-}
 
 void MCCControls::CheckButtons()
 {

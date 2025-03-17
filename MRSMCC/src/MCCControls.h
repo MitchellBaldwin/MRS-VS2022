@@ -22,11 +22,6 @@
 
 #include "Measurement.h"
 
-#include "esp_adc_cal.h"
-constexpr uint32_t defaultVRef = 1100;
-
-constexpr byte defaultVMCUPin = GPIO_NUM_4;
-
 #include <seesaw_neopixel.h>
 #include <Adafruit_seesaw.h>
 constexpr byte SS_BUTTON = 0x18;
@@ -60,17 +55,10 @@ constexpr byte defaultFuncEncoderI2CAddress = 0x36;	// Top rotary encoder, used 
 
 #include <TFTMenu.h>
 
-#include <Adafruit_INA219.h>
-
-constexpr byte defaultINA219Address = 0x41;			// I2C address of INA219 sensor on WaveShare UPS 3S module
-
 class MCCControls
 {
 protected:
 	MeasurementClass VMCU;						// Analog voltage measured at the MCU battery JST connector
-
-	esp_adc_cal_characteristics_t ADC1Chars;
-	uint32_t VRef = defaultVRef;
 
 	Adafruit_seesaw NavEncoder;
 	seesaw_NeoPixel NavNeoPix = seesaw_NeoPixel(1, SS_NEOPIX, NEO_GRB + NEO_KHZ800);
@@ -86,10 +74,6 @@ protected:
 
 	TFT_eSPI* tft;
 
-	uint32_t ReadCalibratedADC1(int rawADC1);	// Returns calibrated ADC1 measurement in mV
-
-	Adafruit_INA219* WSUPS3SINA219 = new Adafruit_INA219(defaultINA219Address);
-
 public:
 	uint32_t NavSetting = 0;
 	static bool NavSelected;
@@ -103,19 +87,8 @@ public:
 	MenuItemClass* BRTMenuItem;
 	MenuItemClass* NextPageMenuItem;
 
-	float INA219VShunt = 0.0f;		// mV
-	float INA219VBus = 0.0f;		// V
-	float INA219VLoad = 0.0f;		// V
-	float INA219Current = 0.0f;		// mA
-	float INA219Power = 0.0f;		// mW
-
 	bool Init(TFT_eSPI* parentTFT);
 	void Update();
-
-	uint16_t GetMCURawADC();
-	float GetMCUVoltageReal();
-	String GetMCUVoltageString();
-	String GetMCUVoltageString(String format);
 
 	void CheckButtons();
 

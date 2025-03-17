@@ -57,6 +57,14 @@ constexpr long SendRC2x15AMCStatusPacketInterval = 150;
 void SendRC2x15AMCStatusPacketCallback();
 Task SendRC2x15AMCStatusPacketTask((SendRC2x15AMCStatusPacketInterval* TASK_MILLISECOND), TASK_FOREVER, &SendRC2x15AMCStatusPacketCallback, &MainScheduler, false);
 
+constexpr long UpdateSensorsInterval = 200;
+void UpdateSensorsCallback();
+Task UpdateSensorsTask((UpdateSensorsInterval* TASK_MILLISECOND), TASK_FOREVER, &UpdateSensorsCallback, &MainScheduler, false);
+
+constexpr long SendMRSSensorPacketInterval = 1000;
+void SendMRSSensorPacketCallback();
+Task SendMRSSensorPacketTask((SendMRSSensorPacketInterval* TASK_MILLISECOND), TASK_FOREVER, &SendMRSSensorPacketCallback, &MainScheduler, false);
+
 #include "src/DEBUG Macros.h"
 #include "src/MCCStatus.h"
 #include "src/LocalDisplay.h"
@@ -190,6 +198,7 @@ void setup()
 
 	if (mccSensors.Init())
 	{
+		UpdateSensorsTask.enable();
 		_PL("mccSensors initialized successfully")
 	}
 	else
@@ -237,10 +246,13 @@ void setup()
 	if (MCCStatus.ESPNOWStatus)
 	{
 		SendRC2x15AMCStatusPacketTask.enable();
+		SendMRSSensorPacketTask.enable();
+
 		// Set ESPNOWStatus to match initial setting of the ESP-NOW menu item used to enable / disable the telemetry stream from 
 		//the MCC to the MRS RC CSSM, which should be TRUE to start
 		// User initiates telemetry to the MRS through the on-screen menu system when ready:
 		MCCStatus.ESPNOWStatus = mccControls.GetESPNowStatus();
+
 	}
 
 	ToggleBuiltinLEDTask.enable();
@@ -279,6 +291,30 @@ void UpdateLocalDisplayCallback()
 void UpdateMotorControllerCallback()
 {
 	RC2x15AMC.Update();
+}
+
+void UpdateSensorsCallback()
+{
+	mccSensors.Update();
+}
+
+void SendMRSSensorPacketCallback()
+{
+	char buf2[64];
+
+	esp_err_t result = ESP_OK;
+
+	if (MCCStatus.ESPNOWStatus)
+	{
+		result = esp_now_send(MRSRCCSSMS3MAC, (uint8_t*)&MCCStatus.mrsSensorPacket, sizeof(MCCStatus.mrsSensorPacket));
+
+		if (result != ESP_NOW_SEND_SUCCESS)
+		{
+			sprintf(buf2, "Error sending MRSSensorPacket: %S", esp_err_to_name(result));
+			_PL(buf2)
+		}
+
+	}
 }
 
 void SendRC2x15AMCStatusPacketCallback()

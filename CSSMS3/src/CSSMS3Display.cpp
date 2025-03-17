@@ -364,10 +364,13 @@ void CSSMS3Display::DrawDBGPage()
 
 void CSSMS3Display::DrawSENPage()
 {
-	currentPage = SEN;
+	int32_t halfScreenWidth = tft.width() / 2;
+	int32_t halfScreenHeight = tft.height() / 2;
 	String TempString;
 	String PbaroString;
 	String RHString;
+
+	currentPage = SEN;
 
 	if (lastPage != currentPage)
 	{
@@ -390,11 +393,9 @@ void CSSMS3Display::DrawSENPage()
 	// Update dynamic displays:
 	DrawDashboard(tft.width() / 2, tft.height() - 50);
 
-	int32_t halfScreenWidth = tft.width() / 2;
-	int32_t halfScreenHeight = tft.height() / 2;
-
 	tft.setTextSize(1);
-	int32_t CursorY = 30;
+	int32_t cursorX = 2;
+	int32_t cursorY = 30;
 
 	EnvSensors.BME280Data.GetTchipString(&TempString);
 	EnvSensors.BME280Data.GetPbaroString(&PbaroString);
@@ -402,8 +403,22 @@ void CSSMS3Display::DrawSENPage()
 	tft.setTextColor(TFT_GREEN, TFT_BLACK, true);
 	tft.setTextDatum(CL_DATUM);
 	sprintf(buf, "CSSM BME280 %s %s %s", TempString, RHString, PbaroString);
-	tft.drawString(buf, 2, CursorY, 1);
+	tft.drawString(buf, cursorX, cursorY, 1);
 
+	cursorY += 10;
+	sprintf(buf, "MRS  BME680 %7.2f %cC  %6.2f %%RH  %6.2f hPa",
+			CSSMS3Status.mrsSensorPacket.BME280Temp, 0xF7,
+			CSSMS3Status.mrsSensorPacket.BME280RH,
+			CSSMS3Status.mrsSensorPacket.BME280Pbaro);
+	tft.drawString(buf, cursorX, cursorY, 1);
+
+	cursorX += 80;
+	cursorY += 10;
+	tft.setTextColor(TFT_GREENYELLOW, TFT_BLACK, true);
+	sprintf(buf, "Alt:%7.0f m  Gas:%7.2f ohm",
+			CSSMS3Status.mrsSensorPacket.BME280Alt,
+			CSSMS3Status.mrsSensorPacket.BME280Gas);
+	tft.drawString(buf, cursorX, cursorY, 1);
 
 }
 

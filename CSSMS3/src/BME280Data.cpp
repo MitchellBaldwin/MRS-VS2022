@@ -113,7 +113,7 @@ void BME280DataClass::ReadENVData()
 void BME280DataClass::GetTchipString(String* tempString)
 {
 	BME280::TempUnit tempUnit(BME280::TempUnit_Celsius);
-	snprintf(buf, 22, "%7.2f%c%s", Tchip, 0xF7, tempUnit == BME280::TempUnit_Celsius ? "C" : "F");
+	snprintf(buf, 22, "%7.2f %c%s", Tchip, 0xF7, tempUnit == BME280::TempUnit_Celsius ? "C" : "F");
 	*tempString = buf;
 	return;
 }
@@ -128,7 +128,7 @@ void BME280DataClass::GetPbaroString(String* pbaroString)
 
 void BME280DataClass::GetRHString(String* rhString)
 {
-	snprintf(buf, 22, "%7.2f%%RH", RH);
+	snprintf(buf, 22, "%7.2f %%RH", RH);
 	*rhString = buf;
 	return;
 }

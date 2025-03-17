@@ -8,6 +8,7 @@
 #include <I2CBus.h>
 #include "MCCStatus.h"
 #include "MCCControls.h"
+#include "MCCSensors.h"
 #include "DEBUG Macros.h"
 
 #include <WiFi.h>
@@ -211,7 +212,7 @@ void LocalDisplayClass::DrawSYSPage()
 
 	cursorY = tft.height() / 2 + 50;
 	tft.setTextColor(TFT_SILVER, TFT_BLACK, true);
-	sprintf(buf, "VMCU %s", mccControls.GetMCUVoltageString());
+	sprintf(buf, "VMCU %s", mccSensors.GetMCUVoltageString());
 	tft.drawString(buf, tft.width() / 2, cursorY);
 
 	// Display rotary encoder settings:
@@ -290,27 +291,27 @@ void LocalDisplayClass::DrawPOWPage()
 	tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);	//DONE: Does bgfill = true work with the print() method? -> Yes, newly printed text clears the background
 	tft.setTextSize(2);
 	tft.setTextDatum(BR_DATUM);
-	sprintf(buf, "%5.2F  V", mccControls.GetMCUVoltageReal());
+	sprintf(buf, "%5.2F  V", mccSensors.GetMCUVoltageReal());
 	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
 
 	cursorY -= 20;
 	tft.setTextDatum(BR_DATUM);
-	sprintf(buf, "%5.0F mW", mccControls.INA219Power);
+	sprintf(buf, "%5.0F mW", MCCStatus.mrsSensorPacket.INA219Power);
 	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
 
 	cursorY -= 20;
 	tft.setTextDatum(BR_DATUM);
-	sprintf(buf, "%5.1F mA", mccControls.INA219Current);
+	sprintf(buf, "%5.0F mA", MCCStatus.mrsSensorPacket.INA219Current);
 	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
 
 	cursorY -= 20;
 	tft.setTextDatum(BR_DATUM);
-	sprintf(buf, "%5.2F  V", mccControls.INA219VLoad);
+	sprintf(buf, "%5.2F  V", MCCStatus.mrsSensorPacket.INA219VLoad);
 	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
 
 	cursorY -= 20;
 	tft.setTextDatum(BR_DATUM);
-	sprintf(buf, "%5.2F  V", mccControls.INA219VBus);
+	sprintf(buf, "%5.2F  V", MCCStatus.mrsSensorPacket.INA219VBus);
 	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
 
 }
@@ -492,6 +493,64 @@ void LocalDisplayClass::DrawDBGPage()
 
 }
 
+void LocalDisplayClass::DrawSENPage()
+{
+	int16_t cursorX, cursorY;
+	int16_t halfScreenWidth = tft.width() / 2;
+	int16_t halfScreenHeight = tft.height() / 2;
+
+	currentPage = SEN;
+
+	if (lastPage != currentPage)	// Clear display and redraw static elements of the page format:
+	{
+		DrawPageHeaderAndFooter();
+
+		cursorY = tft.height() - 20;
+		tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);	//DONE: Does bgfill = true work with the print() method? -> Yes, newly printed text clears the background
+
+
+		lastPage = currentPage;
+	}
+
+	// Update dynamic displays:
+
+	cursorX = 2;
+	cursorY = 30;
+	tft.setTextDatum(CL_DATUM);
+	tft.setTextColor(TFT_GREENYELLOW, TFT_BLACK, true);
+	sprintf(buf, "Tatm %7.2f %cC", MCCStatus.mrsSensorPacket.BME280Temp, 0xF7);
+	tft.drawString("Local BME680:", cursorX, cursorY);
+
+	cursorX = 12;
+	cursorY += 10;
+	tft.setTextColor(TFT_GREEN, TFT_BLACK, true);
+	sprintf(buf, "Tatm %7.2f %cC", MCCStatus.mrsSensorPacket.BME280Temp, 0xF7);
+	tft.drawString(buf, cursorX, cursorY);
+
+	cursorY += 10;
+	sprintf(buf, "RH   %7.2f %%", MCCStatus.mrsSensorPacket.BME280RH);
+	tft.drawString(buf, cursorX, cursorY);
+
+	cursorY += 10;
+	sprintf(buf, "Pbar %7.2f hPa", MCCStatus.mrsSensorPacket.BME280Pbaro);
+	tft.drawString(buf, cursorX, cursorY);
+
+	cursorY += 10;
+	sprintf(buf, "Alt  %7.0f m", MCCStatus.mrsSensorPacket.BME280Alt);
+	tft.drawString(buf, cursorX, cursorY);
+
+	cursorY += 10;
+	sprintf(buf, "Gas  %7.2f ohm", MCCStatus.mrsSensorPacket.BME280Gas);
+	tft.drawString(buf, cursorX, cursorY);
+
+	cursorX = 2;
+	cursorY += 20;
+	tft.setTextColor(TFT_SILVER, TFT_BLACK, true);
+	sprintf(buf, "VMCU %s", mccSensors.GetMCUVoltageString());
+	tft.drawString(buf, cursorX, cursorY);
+
+}
+
 void LocalDisplayClass::DrawNONEPage()
 {
 	currentPage = NONE;
@@ -532,6 +591,9 @@ void LocalDisplayClass::Update()
 	case DBG:
 		DrawDBGPage();
 		break;
+	case SEN:
+		DrawSENPage();
+		break;
 
 	default:
 		DrawNONEPage();
@@ -553,6 +615,9 @@ void LocalDisplayClass::Control(uint8_t command)
 		break;
 	case DBGPage:
 		DrawDBGPage();
+		break;
+	case SENPage:
+		DrawSENPage();
 		break;
 	case Next:
 		NextPage(0);
