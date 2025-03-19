@@ -21,12 +21,30 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MRSSENXIAOS3.ino" />
+    <ClCompile Include="src\MRSNavSensors.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MRSSENLocDisplay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MRSSENStatus.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="__vm\.MRSSENXIAOS3.vsarduino.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\DEBUG Macros.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MRSNavSensors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MRSSENLocDisplay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MRSSENStatus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

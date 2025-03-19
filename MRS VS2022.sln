@@ -288,6 +288,8 @@ Global
 		MRSCommon\MRSCommon.vcxitems*{25df7ed6-ef8f-4f4a-87be-741f945cbe57}*SharedItemsImports = 4
 		..\..\Arduino\libraries\I2CBus\I2CBus.vcxitems*{28025b43-6e1c-4724-8d23-8d5529901e14}*SharedItemsImports = 4
 		..\..\Arduino\libraries\TFTMenu\TFTMenu.vcxitems*{28025b43-6e1c-4724-8d23-8d5529901e14}*SharedItemsImports = 4
+		..\..\Arduino\libraries\I2CBus\I2CBus.vcxitems*{38d3258b-309a-4551-9c1a-855936fb2d44}*SharedItemsImports = 4
+		MRSCommon\MRSCommon.vcxitems*{38d3258b-309a-4551-9c1a-855936fb2d44}*SharedItemsImports = 4
 		DEBUG Helpers\DEBUG Helpers.vcxitems*{530244f0-94ac-4e9e-9304-7fb159b0023d}*SharedItemsImports = 4
 		..\..\Arduino\libraries\I2CBus\I2CBus.vcxitems*{5a4b0045-cda2-4498-8290-e4791807b4a3}*SharedItemsImports = 9
 		..\..\Arduino\libraries\I2CBus\I2CBus.vcxitems*{5b3473d2-4ec1-495b-8aaf-b1370260782d}*SharedItemsImports = 4
