@@ -25,14 +25,25 @@ bool MRSSENLocDisplay::Init()
 	}
 	else
 	{
+		display->setRotation(2);
 		display->clearDisplay();
-		display->setCursor(0, 0);
 		display->cp437();
 		display->setTextSize(1);
 		display->setTextColor(SSD1306_WHITE);
 
 		snprintf(buf, 31, "MRS Sensors v%d.%d", mrsSENStatus.MajorVersion, mrsSENStatus.MinorVersion);
+		display->setCursor(0, 0);
 		display->write(buf);
+		display->setCursor(0, 10);
+		display->write("Initializing:");
+		snprintf(buf, 31, "Display %dw x %dh", display->width(), display->height());
+		display->setCursor(10, 20);
+		display->write(buf);
+		display->setCursor(10, 30);
+		display->write(mrsSENStatus.OTOSVersion.c_str());
+		display->setCursor(10, 40);
+		display->write(mrsSENStatus.FwdVL53L1XSWVersion.c_str());
+		
 		display->display();
 	}
 

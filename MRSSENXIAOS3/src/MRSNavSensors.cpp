@@ -17,7 +17,8 @@ bool MRSNavSensors::Init()
 	sfe_otos_version_t hwVersion;
 	sfe_otos_version_t fwVersion;
 	OTOS->getVersionInfo(hwVersion, fwVersion);
-	sprintf(buf, "OTOS HWv%X.%X FWv%X.%X", hwVersion.major, hwVersion.minor, fwVersion.major, fwVersion.minor);
+	snprintf(buf, 31, "OTOS HWv%X.%X FWv%X.%X", hwVersion.major, hwVersion.minor, fwVersion.major, fwVersion.minor);
+	mrsSENStatus.OTOSVersion = buf;
 	_PL(buf)
 
 	// Initialize proximity & distance sensors:
@@ -27,8 +28,13 @@ bool MRSNavSensors::Init()
 	{
 		_PL("Forward VL53L1X initialization FAILED")
 	}
-
-
+	else
+	{
+		VL53L1X_Version_t ver = FwdVL53L1X->getSoftwareVersion();
+		snprintf(buf, 31, "FwdVL53L1X v%d.%d.%d.%d", ver.major, ver.minor, ver.revision, ver.build);
+		mrsSENStatus.FwdVL53L1XSWVersion = buf;
+		_PL(buf)
+	}
 
 	return true;
 }

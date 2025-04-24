@@ -26,7 +26,6 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 constexpr uint8_t DefaultOLEDAddress = 0x3C;
-//constexpr uint8_t DefaultOLEDAddress = 0x78;
 constexpr uint8_t SCREEN_WIDTH = 128;
 constexpr uint8_t SCREEN_HEIGHT = 64;
 constexpr int8_t OLED_RESET = -1;				// Reset pin # (or -1 if sharing Arduino reset pin)

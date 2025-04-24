@@ -33,7 +33,9 @@ public:
 
 	bool LocDispStatus = false;
 	bool OTOSStatus = false;
+	String OTOSVersion;
 	bool FwdVL53L1XStatus = false;
+	String FwdVL53L1XSWVersion;
 	
 	MRSSensorPacket mrsSensorPacket;
 
