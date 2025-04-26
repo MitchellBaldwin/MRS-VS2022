@@ -95,7 +95,8 @@ void MRSNavSensors::Update()
 	sfe_otos_pose2d_t pose;
 	OTOS->getPosition(pose);
 	mrsSENStatus.mrsSensorPacket.ODOSPosX = pose.x;
-
+	mrsSENStatus.mrsSensorPacket.ODOSPosY = pose.y;
+	mrsSENStatus.mrsSensorPacket.ODOSHdg = pose.h;
 
 	// Read forward VL53L1X distance:
 	if (FwdVL53L1X->checkForDataReady())

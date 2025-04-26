@@ -96,12 +96,24 @@ void MRSSENLocDisplay::AddLine(const int lineNo, char* text)
 
 void MRSSENLocDisplay::Update()
 {
-	display->fillRect(0, 40, display->width(), 10, SSD1306_BLACK);
+	display->fillRect(0, 10, display->width(), 60, SSD1306_BLACK);
+
+	snprintf(buf, 31, "OTOS Pos (%+7.3f,%+7.3f) m", mrsSENStatus.mrsSensorPacket.ODOSPosX, mrsSENStatus.mrsSensorPacket.ODOSPosY);
+	display->setCursor(0, 10);
+	display->write("OTOS:");
+
+	snprintf(buf, 31, "(%6.3f,%6.3f) m", mrsSENStatus.mrsSensorPacket.ODOSPosX, mrsSENStatus.mrsSensorPacket.ODOSPosY);
+	display->setCursor(10, 20);
+	display->write(buf);
+
+	snprintf(buf, 31, "Hdg %+6.1f%c", mrsSENStatus.mrsSensorPacket.ODOSHdg, 0xF8);
+	display->setCursor(10, 30);
+	display->write(buf);
+
 	snprintf(buf, 31, "FwdVL53L1X %4d mm", mrsSENStatus.mrsSensorPacket.FWDVL53L1XRange);
 	display->setCursor(10, 40);
 	display->write(buf);
 
-	display->fillRect(0, 50, display->width(), 10, SSD1306_BLACK);
 	display->setCursor(10, 50);
 	display->write(mrsSENStatus.GetDateTimeString().c_str());
 	

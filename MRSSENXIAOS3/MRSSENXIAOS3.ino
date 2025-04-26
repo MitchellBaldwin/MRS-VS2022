@@ -19,8 +19,15 @@
 #include <TaskScheduler.h>
 #include <TaskSchedulerDeclarations.h>
 #include <TaskSchedulerSleepMethods.h>
-
 Scheduler MainScheduler;
+
+#include <TinyStepper_28BYJ_48.h>
+constexpr int IN1 = 0;
+constexpr int IN2 = 1;
+constexpr int IN3 = 2;
+constexpr int IN4 = 3;
+constexpr int StepsPerRev = 2048;
+TinyStepper_28BYJ_48 SensorTurretMotor;
 
 constexpr int HeartbeatLEDPin = BUILTIN_LED;
 constexpr auto NormalHeartbeatLEDToggleInterval = 1000;		// 1 s on, 1 s off; indicates successful initialization of all subsystems
@@ -28,7 +35,11 @@ constexpr auto ErrorHeartbeatLEDToggleInterval = 250;		// 2 Hz to indicate some 
 
 long HeartbeatLEDTogglePeriod = NormalHeartbeatLEDToggleInterval;
 void ToggleHeartbeatLEDCallback();
-Task ToggleHeartbeatLEDTask((NormalHeartbeatLEDToggleInterval* TASK_MILLISECOND), TASK_FOREVER, &ToggleHeartbeatLEDCallback, &MainScheduler, false);
+Task ToggleHeartbeatLEDTask((NormalHeartbeatLEDToggleInterval * TASK_MILLISECOND), TASK_FOREVER, &ToggleHeartbeatLEDCallback, &MainScheduler, false);
+
+long LocalDisplayStartupPeriod = 2000;	// ms
+void LocalDisplayStartupCallback();
+Task LocalDisplayStartupTask((LocalDisplayStartupPeriod * TASK_MILLISECOND), TASK_FOREVER, &LocalDisplayStartupCallback, &MainScheduler, false);
 
 long UpdateLocalDisplayPeriod = 100;	// ms
 void UpdateLocalDisplayCallback();
@@ -84,7 +95,9 @@ void setup()
 	if (mrsSENStatus.LocDispStatus)
 	{
 		// Enable local display updates:
-		UpdateLocalDisplayTask.enable();
+		//UpdateLocalDisplayTask.enable();
+		//LocalDisplayStartupTask.setOnDisable(&LocalDisplayDisableCallback);
+		LocalDisplayStartupTask.enable();
 	}
 	else
 	{
@@ -94,6 +107,15 @@ void setup()
 
 	ToggleHeartbeatLEDTask.setInterval(HeartbeatLEDTogglePeriod * TASK_MILLISECOND);
 	ToggleHeartbeatLEDTask.enable();
+
+	// Test code:
+	SensorTurretMotor.connectToPins(IN1, IN2, IN3, IN4);
+	SensorTurretMotor.setSpeedInStepsPerSecond(256);
+	SensorTurretMotor.setAccelerationInStepsPerSecondPerSecond(512);
+	SensorTurretMotor.moveRelativeInSteps(-2048);
+	delay(1000);
+	//SensorTurretMotor.moveRelativeInSteps(2048);
+
 }
 
 void loop()
@@ -104,6 +126,26 @@ void loop()
 void ToggleHeartbeatLEDCallback()
 {
 	digitalWrite(HeartbeatLEDPin, !digitalRead(HeartbeatLEDPin));
+}
+
+void LocalDisplayStartupCallback()
+{
+	//_PL("Local display startup callback")
+	static bool firstTime = true;
+	if (firstTime)
+	{
+		firstTime = false;
+	}
+	else
+	{
+		LocalDisplayStartupTask.disable();
+		UpdateLocalDisplayTask.enable();
+	}
+}
+
+void LocalDisplayDisableCallback()
+{
+	//UpdateLocalDisplayTask.enable();
 }
 
 void UpdateLocalDisplayCallback()
