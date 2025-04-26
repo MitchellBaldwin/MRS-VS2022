@@ -20,6 +20,7 @@
 #endif
 
 #include "C:\Repos\MRS-VS2022\MRSCommon\src\MRSSensorPacket.h"
+#include <PCF8563.h>
 
 class MRSSENStatus
 {
@@ -36,10 +37,14 @@ public:
 	String OTOSVersion;
 	bool FwdVL53L1XStatus = false;
 	String FwdVL53L1XSWVersion;
+	bool RTCStatus = false;
+	Time RTCtime;
 	
 	MRSSensorPacket mrsSensorPacket;
 
 	bool Init();
+	String GetDateTimeString();
+
 };
 
 extern MRSSENStatus mrsSENStatus;

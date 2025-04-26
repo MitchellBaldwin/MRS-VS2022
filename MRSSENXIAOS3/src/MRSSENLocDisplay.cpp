@@ -43,7 +43,9 @@ bool MRSSENLocDisplay::Init()
 		display->write(mrsSENStatus.OTOSVersion.c_str());
 		display->setCursor(10, 40);
 		display->write(mrsSENStatus.FwdVL53L1XSWVersion.c_str());
-		
+		display->setCursor(10, 50);
+		display->write(mrsSENStatus.GetDateTimeString().c_str());
+
 		display->display();
 	}
 
@@ -89,6 +91,20 @@ void MRSSENLocDisplay::AddLine(const int lineNo, char* text)
 {
 	display->setCursor(0, lineNo * 10);
 	display->write(text);
+	display->display();
+}
+
+void MRSSENLocDisplay::Update()
+{
+	display->fillRect(0, 40, display->width(), 10, SSD1306_BLACK);
+	snprintf(buf, 31, "FwdVL53L1X %4d mm", mrsSENStatus.mrsSensorPacket.FWDVL53L1XRange);
+	display->setCursor(10, 40);
+	display->write(buf);
+
+	display->fillRect(0, 50, display->width(), 10, SSD1306_BLACK);
+	display->setCursor(10, 50);
+	display->write(mrsSENStatus.GetDateTimeString().c_str());
+	
 	display->display();
 }
 

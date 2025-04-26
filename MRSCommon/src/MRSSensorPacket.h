@@ -38,6 +38,12 @@ public:
 	float BME280Gas = 0.0f;			// ohm
 	float BME280Alt = 0.0f;			// m
 
+	int FWDVL53L1XRange = 0;		// mm
+
+	float ODOSPosX = 0.0f;			// m
+	float ODOSPosY = 0.0f;			// m
+	float ODOSHdg = 0.0f;			// °
+
 };
 
 #endif

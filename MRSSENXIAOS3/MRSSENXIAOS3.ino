@@ -108,9 +108,10 @@ void ToggleHeartbeatLEDCallback()
 
 void UpdateLocalDisplayCallback()
 {
-
+	mrsSENLocDisplay.Update();
 }
 
 void UpdateNavSensorsCallback()
 {
+	mrsNavSensors.Update();
 }

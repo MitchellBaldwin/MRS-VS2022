@@ -41,7 +41,7 @@ public:
 	bool Test();
 	Adafruit_SSD1306* GetDisplay();
 	void AddLine(const int lineNo, char* text);
-
+	void Update();
 };
 
 extern MRSSENLocDisplay mrsSENLocDisplay;
