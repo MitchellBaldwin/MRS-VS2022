@@ -109,12 +109,37 @@ void setup()
 	ToggleHeartbeatLEDTask.enable();
 
 	// Test code:
-	SensorTurretMotor.connectToPins(IN1, IN2, IN3, IN4);
+	SensorTurretMotor.connectToPins(IN1, IN2, IN3, IN4);	// ccw reverse, cw forward
+	//SensorTurretMotor.connectToPins(IN1, IN2, IN4, IN3);	// cw reverse, no forward
+	//SensorTurretMotor.connectToPins(IN1, IN3, IN2, IN4);	// no reverse, no forward
+	//SensorTurretMotor.connectToPins(IN1, IN3, IN4, IN2);	// no reverse, cw forward
+	//SensorTurretMotor.connectToPins(IN1, IN4, IN3, IN2);	// no reverse, no forward
+	//SensorTurretMotor.connectToPins(IN2, IN1, IN3, IN4);	// no reverse, cw forward
+	//SensorTurretMotor.connectToPins(IN2, IN1, IN4, IN3);	// cw reverse, no forward
+	//SensorTurretMotor.connectToPins(IN2, IN3, IN1, IN4);	// no reverse, no forward
+	//SensorTurretMotor.connectToPins(IN2, IN3, IN4, IN1);	// no reverse, cw forward
+	//SensorTurretMotor.connectToPins(IN2, IN4, IN1, IN3);	// no reverse, no forward
+	//SensorTurretMotor.connectToPins(IN2, IN4, IN3, IN1);	// cw reverse, no forward
+	//SensorTurretMotor.connectToPins(IN3, IN1, IN2, IN4);	// cw reverse, no forward
+	//SensorTurretMotor.connectToPins(IN3, IN1, IN4, IN2);	// no reverse, cw forward
+	//SensorTurretMotor.connectToPins(IN3, IN2, IN1, IN4);	// cw reverse, no forward
+	//SensorTurretMotor.connectToPins(IN3, IN2, IN4, IN1);	// no reverse, no forward
+	//SensorTurretMotor.connectToPins(IN3, IN4, IN1, IN2);	// no reverse, cw forward
+	//SensorTurretMotor.connectToPins(IN3, IN4, IN2, IN1);	// no reverse, cw forward
+	//SensorTurretMotor.connectToPins(IN4, IN1, IN2, IN3);	// no reverse, cw forward
+	//SensorTurretMotor.connectToPins(IN4, IN1, IN3, IN2);	// no reverse, no forward
+	//SensorTurretMotor.connectToPins(IN4, IN2, IN1, IN3);	// no reverse, cw forward
+	//SensorTurretMotor.connectToPins(IN4, IN2, IN3, IN1);	// no reverse, no forward
+	//SensorTurretMotor.connectToPins(IN4, IN3, IN1, IN2);	// cw reverse. no forward
+	//SensorTurretMotor.connectToPins(IN4, IN3, IN2, IN1);	// cw reverse, no forward
 	SensorTurretMotor.setSpeedInStepsPerSecond(256);
 	SensorTurretMotor.setAccelerationInStepsPerSecondPerSecond(512);
+	_PL("Reverse direction")
 	SensorTurretMotor.moveRelativeInSteps(-2048);
 	delay(1000);
-	//SensorTurretMotor.moveRelativeInSteps(2048);
+	_PL("Forward direction")
+	SensorTurretMotor.moveRelativeInSteps(2048);
+	_PL("Motor test complete")
 
 }
 

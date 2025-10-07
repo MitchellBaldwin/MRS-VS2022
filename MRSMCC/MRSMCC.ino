@@ -17,6 +17,11 @@
 #include "src/RC2x15AMC.h"
 
 #include <WiFi.h>
+#define LocalWiFiSSID "WeatherDogPacNW"
+#define LocalWiFiPW "5TgbnhY6"
+//#define LocalWiFiSSID "320"
+//#define LocalWiFiPW "103187OS"
+
 #include <esp_now.h>
 
 uint8_t MRSRCCSSMS3MAC[] = { 0xF0, 0xF5, 0xBD, 0x48, 0x0A, 0x4C };
@@ -130,7 +135,7 @@ void setup()
 	{
 		for (uint8_t i = 0; i < n; i++)
 		{
-			if (!strcmp("320", WiFi.SSID(i).c_str()))
+			if (!strcmp(LocalWiFiSSID, WiFi.SSID(i).c_str()))
 			{
 				channel = WiFi.channel(i);
 			}
@@ -140,7 +145,14 @@ void setup()
 	_PL(buf);
 
 	WiFi.mode(WIFI_MODE_APSTA);
-	WiFi.begin("320", "103187OS", channel);
+	if (WiFi.begin(LocalWiFiSSID, LocalWiFiPW, channel))
+	{
+		MCCStatus.WiFiStatus = true;
+	}
+	else
+	{
+		MCCStatus.WiFiStatus = false;
+	}
 
 	WiFi.printDiag(Serial);
 

@@ -55,10 +55,10 @@ void CSSMS3Display::DrawPageHeaderAndFooter()
 
 }
 
-void CSSMS3Display::DrawDashboard(int32_t xTL, int32_t yTL, bool showDriveData, bool showHDGBox, bool showCRSBox)
+void CSSMS3Display::DrawDashboard(int32_t xTC, int32_t yTC, bool showDriveData, bool showHDGBox, bool showCRSBox)
 {
 	// Control inputs line:
-	int32_t cursorY = yTL;
+	int32_t cursorY = yTC;
 	if (showDriveData)
 	{
 		tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);
@@ -69,7 +69,7 @@ void CSSMS3Display::DrawDashboard(int32_t xTL, int32_t yTL, bool showDriveData, 
 			CSSMS3Status.cssmDrivePacket.RThrottle,
 			CSSMS3Status.mcStatus.SupBatV,
 			(CSSMS3Status.mcStatus.M1Current > CSSMS3Status.mcStatus.M2Current) ? CSSMS3Status.mcStatus.M1Current : CSSMS3Status.mcStatus.M2Current);
-		tft.drawString(buf, xTL + 2, cursorY);
+		tft.drawString(buf, xTC + 2, cursorY);
 
 		// Basic motion data line (from MRS telemetry):
 		cursorY += 10;
@@ -79,7 +79,7 @@ void CSSMS3Display::DrawDashboard(int32_t xTL, int32_t yTL, bool showDriveData, 
 			CSSMS3Status.mcStatus.GroundSpeed,
 			CSSMS3Status.cssmDrivePacket.OmegaXYSettingPct,
 			CSSMS3Status.mcStatus.TurnRate);
-		tft.drawString(buf, xTL + 2, cursorY);
+		tft.drawString(buf, xTC + 2, cursorY);
 
 		// Proximity sensor line (from MRS telemetry):
 		cursorY += 10;
@@ -229,7 +229,7 @@ void CSSMS3Display::DrawCOMPage()
 
 		tft.setTextDatum(CL_DATUM);
 		tft.setTextColor(TFT_GREEN);
-		sprintf(buf, "WiFi Ch %d %s %s", WiFi.channel(), CSSMS3Status.WiFiStatus ? "SSID:" : "NO", WiFi.SSID());
+		sprintf(buf, "WiFi Ch %d %s %s", WiFi.channel(), CSSMS3Status.WiFiStatus ? "SSID:" : "NO", WiFi.SSID().c_str());
 		tft.drawString(buf, 2, halfScreenHeight + 20);
 
 		sprintf(buf, "IP: %s %d dBm", WiFi.localIP().toString(), WiFi.RSSI());
@@ -424,6 +424,7 @@ void CSSMS3Display::DrawSENPage()
 
 void CSSMS3Display::DrawMRSPage()
 {
+	int32_t cursorX = 2, cursorY = 20;
 	currentPage = MRS;
 
 	if (lastPage != currentPage)
@@ -432,7 +433,27 @@ void CSSMS3Display::DrawMRSPage()
 		DrawPageHeaderAndFooter();
 
 		tft.setTextSize(1);
+		tft.setTextDatum(TL_DATUM);
+		tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);
+		tft.drawString("LUPS Vbus", cursorX, cursorY);
+		cursorX += 30;
+		cursorY += 10;
+		tft.drawString("Vload", cursorX, cursorY);
+		cursorY += 10;
+		tft.drawString("Current", cursorX, cursorY);
+		cursorY += 10;
+		tft.drawString("Power", cursorX, cursorY);
 
+		cursorX = tft.width() / 2 + 15;
+		cursorY = 20;
+		tft.drawString("RUPS Vbus", cursorX, cursorY);
+		cursorX += 30;
+		cursorY += 10;
+		tft.drawString("Vload", cursorX, cursorY);
+		cursorY += 10;
+		tft.drawString("Current", cursorX, cursorY);
+		cursorY += 10;
+		tft.drawString("Power", cursorX, cursorY);
 
 		// Draw footer menu:
 		if (cssmS3Controls.MainMenu != nullptr)
@@ -445,10 +466,39 @@ void CSSMS3Display::DrawMRSPage()
 	}
 
 	// Update dynamic displays:
-
 	DrawDashboard(tft.width() / 2, tft.height() - 50);
 
+	tft.setTextSize(1);
+	tft.setTextDatum(TR_DATUM);
+	tft.setTextColor(TFT_RED, TFT_BLACK, true);
+	cursorX = tft.width() / 2 - 20;
+	cursorY = 20;
+	sprintf(buf, "%5.2F  V", CSSMS3Status.mrsSensorPacket.INA219VBus);
+	tft.drawString(buf, cursorX, cursorY);	// Right justified
+	cursorY += 10;
+	sprintf(buf, "%5.2F  V", CSSMS3Status.mrsSensorPacket.INA219VLoad);
+	tft.drawString(buf, cursorX, cursorY);	// Right justified
+	cursorY += 10;
+	sprintf(buf, "%5.1F mA", CSSMS3Status.mrsSensorPacket.INA219Current);
+	tft.drawString(buf, cursorX, cursorY);	// Right justified
+	cursorY += 10;
+	sprintf(buf, "%5.0F mW", CSSMS3Status.mrsSensorPacket.INA219Power);
+	tft.drawString(buf, cursorX, cursorY);	// Right justified
 
+	tft.setTextColor(TFT_GREEN, TFT_BLACK, true);
+	cursorX = tft.width() - 5;
+	cursorY = 20;
+	sprintf(buf, "%5.2F  V", CSSMS3Status.mrsSensorPacket.INA219VBus);
+	tft.drawString(buf, cursorX, cursorY);	// Right justified
+	cursorY += 10;
+	sprintf(buf, "%5.2F  V", CSSMS3Status.mrsSensorPacket.INA219VLoad);
+	tft.drawString(buf, cursorX, cursorY);	// Right justified
+	cursorY += 10;
+	sprintf(buf, "%5.1F mA", CSSMS3Status.mrsSensorPacket.INA219Current);
+	tft.drawString(buf, cursorX, cursorY);	// Right justified
+	cursorY += 10;
+	sprintf(buf, "%5.0F mW", CSSMS3Status.mrsSensorPacket.INA219Power);
+	tft.drawString(buf, cursorX, cursorY);	// Right justified
 }
 
 void CSSMS3Display::DrawDRVPage()
@@ -896,17 +946,17 @@ void CSSMS3Display::ShowFontTableFixed(int /*value*/)
 	//cssmS3Display.ShowFontTable(cssmS3Display.tft.width() / 2 + 10, 10);
 }
 
-void CSSMS3Display::ShowFontTable(int32_t xTL, int32_t yTL)
+void CSSMS3Display::ShowFontTable(int32_t xTC, int32_t yTC)
 {
-	yTL -= 20;	// Subtract starting row index x row height (2 * 10 = 20)
-	tft.fillRect(xTL, yTL, 128, 160, TFT_BLACK);
+	yTC -= 20;	// Subtract starting row index x row height (2 * 10 = 20)
+	tft.fillRect(xTC, yTC, 128, 160, TFT_BLACK);
 	tft.setTextDatum(TL_DATUM);
 	tft.setTextColor(TFT_GOLD, TFT_BLACK, true);
 	for (byte i = 2; i < 16; ++i)
 	{
 		for (byte j = 0; j < 16; ++j)
 		{
-			tft.drawString(String((char)(i * 16 + j)), xTL + 8 * j, yTL + 10 * i);
+			tft.drawString(String((char)(i * 16 + j)), xTC + 8 * j, yTC + 10 * i);
 		}
 	}
 }

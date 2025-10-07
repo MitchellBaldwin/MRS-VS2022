@@ -75,6 +75,10 @@ constexpr uint16_t MaxCSSMSendRetries = 16;
 
 //#include "src/ESP32WiFi.h"
 #include <WiFi.h>
+#define LocalWiFiSSID "WeatherDogPacNW"
+#define LocalWiFiPW "5TgbnhY6"
+//#define LocalWiFiSSID "320"
+//#define LocalWiFiPW "103187OS"
 
 #include "src/CSSMS3EnvSensors.h"
 
@@ -144,7 +148,7 @@ void setup()
 	{
 		for (uint8_t i = 0; i < n; i++)
 		{
-			if (!strcmp("320", WiFi.SSID(i).c_str()))
+			if (!strcmp(LocalWiFiSSID, WiFi.SSID(i).c_str()))
 			{
 				channel = WiFi.channel(i);
 			}
@@ -154,7 +158,15 @@ void setup()
 	_PL(buf);
 
 	WiFi.mode(WIFI_MODE_APSTA);
-	WiFi.begin("320", "103187OS", channel);
+	if (WiFi.begin(LocalWiFiSSID, LocalWiFiPW, channel))
+	{
+		CSSMS3Status.WiFiStatus = true;
+	}
+	else
+	{
+		CSSMS3Status.WiFiStatus = false;
+	}
+
 
 	WiFi.printDiag(Serial);
 

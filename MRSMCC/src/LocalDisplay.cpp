@@ -338,7 +338,7 @@ void LocalDisplayClass::DrawCOMPage()
 
 		tft.setTextColor(TFT_GREEN);
 		tft.setTextDatum(CL_DATUM);
-		sprintf(buf, "IP: %s", WiFi.localIP().toString());
+		sprintf(buf, "IP: %s Ch: %d %s %d dBm", WiFi.localIP().toString(), WiFi.channel(), WiFi.SSID().c_str(), WiFi.RSSI());
 		tft.drawString(buf, 2, halfScreenHeight + 40);
 
 		tft.setTextColor(TFT_CYAN);
@@ -382,9 +382,6 @@ void LocalDisplayClass::DrawCOMPage()
 	tft.setTextDatum(CL_DATUM);
 	sprintf(buf, "%s %5d", "Uplink retries  ", MCCStatus.SendRetries);
 	tft.drawString(buf, tft.width() / 2, 60);
-
-	//sprintf(buf, "%s %s %5u ms", "CSSM D/L time", MCCStatus.ESPNOWStatus ? "OK" : "NO", MCCStatus.CSSMPacketReceiptInterval);
-	//tft.drawString(buf, tft.width() / 2, 70);
 
 	sprintf(buf, "CSSM D/L time    %5u ms", MCCStatus.CSSMPacketReceiptInterval);
 	tft.drawString(buf, tft.width() / 2, 80);
