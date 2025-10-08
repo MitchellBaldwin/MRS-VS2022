@@ -301,7 +301,7 @@ void LocalDisplayClass::DrawPOWPage()
 
 	cursorY -= 20;
 	tft.setTextDatum(BR_DATUM);
-	sprintf(buf, "%5.0F mA", MCCStatus.mrsSensorPacket.INA219Current);
+	sprintf(buf, "%5.1F mA", MCCStatus.mrsSensorPacket.INA219Current);
 	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
 
 	cursorY -= 20;

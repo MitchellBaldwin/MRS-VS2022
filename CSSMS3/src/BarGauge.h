@@ -41,10 +41,10 @@ protected:
 	
 	BarGaugeLayoutTypes LayoutType = BarGaugeLayoutTypes::NoPowerBar;
 
-	int X0 = 0;
-	int Xtl = 0;
-	int Y0 = 0;
-	int Ytl = 0;
+	int X0 = 0;							// Horizontal center of the gauge
+	int Xtl = 0;						// Top left corner of the frame
+	int Y0 = 0;							// Vertical center of the gauge
+	int Ytl = 0;						// Top left corner of the frame
 	int WFrame = defaultFrameWidth;
 	int HFrame = defaultFrameHeight;
 	int WBar = defaultFrameWidth - 4;

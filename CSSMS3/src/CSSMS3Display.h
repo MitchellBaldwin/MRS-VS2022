@@ -102,7 +102,7 @@ protected:
 	void GetTimeString(uint64_t msTime, String* timeString);
 
 	void DrawPageHeaderAndFooter();
-	void DrawDashboard(int32_t xTC, int32_t yTC, bool showDriveData = true, bool showHDGBox = true, bool showCRSBox = true);
+	void DrawDashboard(int32_t xTC, int32_t yTC, bool showDriveData = true, bool showProximityData = true, bool showHDGBox = true, bool showCRSBox = true);
 	void DrawSYSPage();
 	void DrawCOMPage();
 	void DrawDBGPage();

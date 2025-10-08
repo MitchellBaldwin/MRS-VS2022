@@ -444,12 +444,12 @@ bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 	DRVPageMenu->AddItem(CaptureHDGMenuItem);
 	CaptureHDGMenuItem->SetOnExecuteHandler(CaptureHDG);
 
-	T1ResetMenuItem = new MenuItemClass("T1RST", 2, 70, 48, 12, MenuItemClass::MenuItemTypes::Action);
+	T1ResetMenuItem = new MenuItemClass("T1RST", 2, 90, 48, 12, MenuItemClass::MenuItemTypes::Action);
 	T1ResetMenuItem->Init(tft);
 	DRVPageMenu->AddItem(T1ResetMenuItem);
 	T1ResetMenuItem->SetOnExecuteHandler(T1Reset);
 
-	T2ResetMenuItem = new MenuItemClass("T2RST", 2, 98, 48, 12, MenuItemClass::MenuItemTypes::Action);
+	T2ResetMenuItem = new MenuItemClass("T2RST", 2, 118, 48, 12, MenuItemClass::MenuItemTypes::Action);
 	T2ResetMenuItem->Init(tft);
 	DRVPageMenu->AddItem(T2ResetMenuItem);
 	T2ResetMenuItem->SetOnExecuteHandler(T2Reset);

@@ -20,10 +20,10 @@ bool BarGauge::Init(TFT_eSPI* _tft, int x0, int y0, BarGaugeLayoutTypes layoutTy
 	WFrame = frameWidth;
 	HFrame = frameHeight;
 
-	X0 = x0;
-	Xtl = x0 - WFrame / 2;
-	Y0 = y0;
-	Ytl = y0 - HFrame / 2;
+	X0 = x0;					// Horizontal center of the gauge
+	Xtl = x0 - WFrame / 2;		// Top left corner of the frame
+	Y0 = y0;					// Vertical center of the gauge
+	Ytl = y0 - HFrame / 2;		// Top left corner of the frame
 
 	WBar = WFrame - 4;
 
@@ -78,23 +78,25 @@ void BarGauge::DrawFrame()
 	tft->drawRect(Xtl, Ytl, WFrame, HFrame, FrameColor);
 	tft->drawLine(Xtl, Y0, X0 + WFrame / 2, Y0, FrameColor);
 	tft->setTextColor(LabelColor, TFT_BLACK, true);
-	switch (LayoutType)
-	{
-	case NoPowerBar:
-		tft->setTextDatum(TC_DATUM);
-		tft->drawString(Label, X0 + 1, Ytl + HFrame + 2, 1);
-		break;
-	case PowerBarLeft:
-		tft->setTextDatum(TL_DATUM);
-		tft->drawString(Label, Xtl - 4, Ytl + HFrame + 2, 1);
-		break;
-	case PowerBarRight:
-		tft->setTextDatum(TR_DATUM);
-		tft->drawString(Label, Xtl + WFrame + 4, Ytl + HFrame + 2, 1);
-		break;
-	default:
-		break;
-	}
+	tft->setTextDatum(TC_DATUM);
+	tft->drawString(Label, X0 + 1, Ytl + HFrame + 2, 1);
+	//switch (LayoutType)
+	//{
+	//case NoPowerBar:
+	//	tft->setTextDatum(TC_DATUM);
+	//	tft->drawString(Label, X0 + 1, Ytl + HFrame + 2, 1);
+	//	break;
+	//case PowerBarLeft:
+	//	tft->setTextDatum(TL_DATUM);
+	//	tft->drawString(Label, Xtl - 4, Ytl + HFrame + 2, 1);
+	//	break;
+	//case PowerBarRight:
+	//	tft->setTextDatum(TR_DATUM);
+	//	tft->drawString(Label, Xtl + WFrame + 4, Ytl + HFrame + 2, 1);
+	//	break;
+	//default:
+	//	break;
+	//}
 }
 
 void BarGauge::Update(float newReading, float newPowerReading)
@@ -118,31 +120,39 @@ void BarGauge::Update(float newReading, float newPowerReading)
 		tft->setTextColor(PosBarColor, TFT_BLACK, true);
 	}
 
-
 	powerReading = newPowerReading;
-	HBar = powerReading / maxPowerReading * HFrame;
-	sprintf(buf, "%+04.0f", reading);
+	// Constrain height of power bar to 0..maxPowerReading:
+	HBar = min((int)(powerReading / maxPowerReading * HFrame), HFrame);
+
+	// Display numeric reading as pecent of full scale:
+	float pctReading = 0.0f;
+	if (reading < 0.0f)
+	{
+		pctReading = 0.0f - reading / minReading * 100.0f;
+	}
+	else
+	{
+		pctReading = reading / maxReading * 100.0f;
+	}
+	sprintf(buf, "%+04.0f", pctReading);
+
+	tft->setTextDatum(TC_DATUM);
+	tft->drawString(buf, X0 + 1, Ytl + HFrame + 12, 1);
 	switch (LayoutType)
 	{
 	case NoPowerBar:
-		tft->setTextDatum(TC_DATUM);
-		tft->drawString(buf, X0 + 1, Ytl + HFrame + 12, 1);
 		break;
 	case PowerBarLeft:
 		// Erase old power bar:
 		tft->fillRect(Xtl - 4, Ytl, 3, HFrame, TFT_BLACK);
 		// Draw power bar:
 		tft->fillRect(Xtl - 4, Ytl + HFrame - HBar, 3, HBar, PowBarColor);
-		tft->setTextDatum(TL_DATUM);
-		tft->drawString(buf, Xtl - 4, Ytl + HFrame + 12, 1);
 		break;
 	case PowerBarRight:
 		// Erase old power bar:
 		tft->fillRect(Xtl + WFrame + 2, Ytl, 3, HFrame, TFT_BLACK);
 		// Draw power bar:
 		tft->fillRect(Xtl + WFrame + 2, Ytl + HFrame - HBar, 3, HBar, PowBarColor);
-		tft->setTextDatum(TR_DATUM);
-		tft->drawString(buf, Xtl + WFrame + 4, Ytl + HFrame + 12, 1);
 		break;
 	default:
 		break;
