@@ -22,7 +22,7 @@ void LocalDisplayClass::DrawPageHeaderAndFooter()
 	tft.setTextSize(1);
 	tft.setTextColor(TFT_BLUE, TFT_BLACK, false);
 	tft.setTextDatum(TL_DATUM);
-	tft.drawString("MRSRC PCM", 2, 2);
+	tft.drawString("MRS MCC", 2, 2);
 	sprintf(buf, "v%d.%d", MCCStatus.MajorVersion, MCCStatus.MinorVersion);
 	tft.drawString(buf, 2, 12);
 

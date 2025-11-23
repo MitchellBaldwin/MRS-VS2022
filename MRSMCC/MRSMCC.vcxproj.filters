@@ -300,6 +300,9 @@
     <ClCompile Include="..\..\..\Arduino\libraries\libraries\BME680\src\Zanshin_BME680.cpp">
       <Filter>src\_micro-api-readonly\libraries\BME680</Filter>
     </ClCompile>
+    <ClCompile Include="src\INA219.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="__vm\.MRSMCC.vsarduino.h">
@@ -565,6 +568,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Arduino\libraries\libraries\BME680\src\Zanshin_BME680.h">
       <Filter>src\_micro-api-readonly\libraries\BME680</Filter>
+    </ClInclude>
+    <ClInclude Include="src\INA219.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

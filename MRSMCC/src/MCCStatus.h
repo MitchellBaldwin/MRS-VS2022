@@ -44,14 +44,18 @@ class MCCStatusClass
 		 IDCPktSerial,	// COBS encoded packet exchange with MRS RC MCC through UART2 (Default mode)
 		 WiFiTCP,		// For the CSSM, direct WiFi connection to MRS MCC, bypassing MRS RC MCC 
 		 ESPNOW,		// For the CSSM, direct ESP-NOW connection with MRS MCC, bypassing MRS RC MCC
-
 		 NoComs
+
 	 };
 	 ComModes ComMode = ComModes::ESPNOW;
 
 	 bool UART0Status = false;
 	 bool RC2x15AUARTStatus = false;
 	 bool UART2Status = false;
+
+	 bool WSUPS3SINA219Status = false;
+
+	 bool RC2x15AMCStatus = false;
 
 	 bool ESPNOWStatus = false;
 	 uint32_t CSSMPacketSentCount = 0;
@@ -72,14 +76,13 @@ class MCCStatusClass
 	 bool NavEncoderStatus = false;
 	 bool FuncEncoderStatus = false;
 
-	 bool BME280Status = false;
+	 bool BME680Status = false;
 	 bool IMUStatus = false;
 
 	 String debugTextLines[MAX_TEXT_LINES];
 
 	 CSSMDrivePacket cssmDrivePacket;
 	 CSSMDrivePacket lastCSSMDrivePacket;
-	 bool RC2x15AMCStatus = false;
 	 RC2x15AMCStatusPacket mcStatus;
 	 MRSStatusPacket mrsStatusPacket;
 	 MRSSensorPacket mrsSensorPacket;

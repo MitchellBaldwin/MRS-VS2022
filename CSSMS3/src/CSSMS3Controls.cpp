@@ -58,7 +58,7 @@ void CSSMS3Controls::DriveOSBHandler(int value)
 {
 	if (CSSMS3Status.cssmDrivePacket.EStop)
 	{
-		// Take steps to ensure a safe restrat after an emergency stop:
+		// TODO: Take steps to ensure a safe restart after an emergency stop:
 
 
 		CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::STOP;

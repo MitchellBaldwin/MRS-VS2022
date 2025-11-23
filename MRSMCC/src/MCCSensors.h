@@ -24,17 +24,23 @@
 #include <Zanshin_BME680.h>
 constexpr byte defaultBME680Address = 0x77;
 
-#include <Adafruit_INA219.h>
+//#include <Adafruit_INA219.h>
+#include "INA219.h"
 constexpr byte defaultINA219Address = 0x41;			// I2C address of INA219 sensor on WaveShare UPS 3S module
 
 #include "esp_adc_cal.h"
 constexpr uint32_t defaultVRef = 1100;
 
-constexpr byte defaultVMCUPin = GPIO_NUM_4;
+// Circuit internal to Lilygo T-Display S3 AMOLED: Battery positive terminal -> 100k resistor -> VMCU pin -> 100k resistor -> Battery negative terminal (GND)
+constexpr byte defaultVMCUPin = GPIO_NUM_4;			// ADC1 channel 3; analog voltage measured at the MCU battery JST connector
+
+constexpr byte TS3MCSupplySensePin = GPIO_NUM_21;	// Digital input; low when battery power is connected through TS3
 
 class MCCSensors
 {
 protected:
+	char buf[64];
+
 	BME680_Class* BME680;
 	float BME680Altitude(const int32_t press, const float seaLevel = 1013.25);
 
@@ -45,7 +51,8 @@ protected:
 	bool SetupADC();
 	uint32_t ReadCalibratedADC1(int rawADC1);		// Returns calibrated ADC1 measurement in mV
 
-	Adafruit_INA219* WSUPS3SINA219 = new Adafruit_INA219(defaultINA219Address);
+	//Adafruit_INA219* WSUPS3SINA219 = new Adafruit_INA219(defaultINA219Address);
+	INA219* WSUPS3SINA219 = new INA219(defaultINA219Address);
 
 public:
 	

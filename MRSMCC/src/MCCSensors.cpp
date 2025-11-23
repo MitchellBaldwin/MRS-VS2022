@@ -48,22 +48,45 @@ bool MCCSensors::Init()
 	pinMode(defaultVMCUPin, INPUT);
 	VMCU.Init(0, 66, 40960, "V");
 
-	if (!WSUPS3SINA219->begin())
+	// Initialize digital input to sense TS3 power supply presence:
+	pinMode(TS3MCSupplySensePin, INPUT);
+	sprintf(buf, "TS3 MC Supply Sense on GPIO%02D: %02D", TS3MCSupplySensePin, digitalRead(TS3MCSupplySensePin));
+	_PL(buf)
+
+	//if (!WSUPS3SINA219->begin())
+	//{
+	//	WSUPS3SINA219->setCalibration_32V_2A();	// Configure for 32V, 2A operation
+
+	//	_PL("INA219 initialization FAILED")
+	//}
+	//else
+	//{
+	//	_PL("INA219 initialized")
+	//}
+
+	WSUPS3SINA219->begin();
+	WSUPS3SINA219->setCalibration_32V_2A();	// Configure for 32V, 2A operation
+	if (WSUPS3SINA219->getBusVoltage_V() > 0.0)
 	{
-		_PL("INA219 initialization FAILED")
+		MCCStatus.WSUPS3SINA219Status = true;
+		_PL("WS UPS 3S INA219 initialized")
 	}
 	else
 	{
-		_PL("INA219 initialized")
+		MCCStatus.WSUPS3SINA219Status = false;
+		_PL("WS UPS 3S INA219 initialization FAILED")
 	}
+
+	//TODO: Check integrity of INA219 initialization so we can avoid delays in Update() if it failed
+
 
 	// Initialize BME680 sensor:
 	BME680 = new BME680_Class();
-	bool success = BME680->begin(Wire.getClock(), defaultBME680Address);
-	if (!success)
+	MCCStatus.BME680Status = BME680->begin(Wire.getClock(), defaultBME680Address);
+	if (!MCCStatus.BME680Status)
 	{
+		//MCCStatus.BME680Status = false;
 		_PL("Failed to initialize BME680 sensor")
-
 	}
 	else
 	{
@@ -72,13 +95,14 @@ bool MCCSensors::Init()
 		BME680->setOversampling(PressureSensor, Oversample16);		// Use enumerated type values
 		BME680->setIIRFilter(IIR4);									// Use enumerated type values
 		BME680->setGas(320, 150);									// 320?c for 150 milliseconds
+		//MCCStatus.BME680Status = true;
 	}
 
 	// Initialize VL53L1X distance sensor:
 
 	// Initialoze Odometry sensor:
 
-
+	bool success = MCCStatus.WSUPS3SINA219Status && MCCStatus.BME680Status;
 	return success;
 }
 
@@ -88,21 +112,24 @@ void MCCSensors::Update()
 	static int32_t temp, rh, pbaro, gas;
 	static uint32_t loopCounter = 0;
 
-	// Start a measurement the first time through:
-	if (!loopCounter)
+	if (MCCStatus.BME680Status)
 	{
-		BME680->getSensorData(temp, rh, pbaro, gas, true);				// Setting waitSwitch = false to read asynchronously?
-	}
-	// Read environment sensors at a lower frequency (e.g., 200 ms x 10 x 2 = 4000 ms sampling period):
-	if (loopCounter++ % 10 == 0)
-	{
-		// If not measuring then assume the last measurement period has ended:
-		MCCStatus.mrsSensorPacket.BME280Temp = (float)temp / 100.0f;	// Convert from centidegrees
-		MCCStatus.mrsSensorPacket.BME280RH = (float)rh / 1000.0f;		// Convert from milli-%
-		MCCStatus.mrsSensorPacket.BME280Pbaro = (float)pbaro / 100.0f;	// Convert from Pa to hPa
-		MCCStatus.mrsSensorPacket.BME280Gas = (float)gas / 100.0f;		// Convert from milliohms (?)
-		MCCStatus.mrsSensorPacket.BME280Alt = BME680Altitude(pbaro);	// m
-		BME680->getSensorData(temp, rh, pbaro, gas, false);				// Setting waitSwitch = false to read asynchronously
+		// Start a measurement the first time through:
+		if (!loopCounter)
+		{
+			BME680->getSensorData(temp, rh, pbaro, gas, true);				// Setting waitSwitch = false to read asynchronously?
+		}
+		// Read environment sensors at a lower frequency (e.g., 200 ms x 10 x 2 = 4000 ms sampling period):
+		if (loopCounter++ % 10 == 0)
+		{
+			// If not measuring then assume the last measurement period has ended:
+			MCCStatus.mrsSensorPacket.BME280Temp = (float)temp / 100.0f;	// Convert from centidegrees
+			MCCStatus.mrsSensorPacket.BME280RH = (float)rh / 1000.0f;		// Convert from milli-%
+			MCCStatus.mrsSensorPacket.BME280Pbaro = (float)pbaro / 100.0f;	// Convert from Pa to hPa
+			MCCStatus.mrsSensorPacket.BME280Gas = (float)gas / 100.0f;		// Convert from milliohms (?)
+			MCCStatus.mrsSensorPacket.BME280Alt = BME680Altitude(pbaro);	// m
+			BME680->getSensorData(temp, rh, pbaro, gas, false);				// Setting waitSwitch = false to read asynchronously
+		}
 	}
 
 	// Update at main task frequency:
@@ -111,11 +138,14 @@ void MCCSensors::Update()
 	//_PL(calibratedReading)
 	VMCU.AddReading(newReading);
 
-	MCCStatus.mrsSensorPacket.INA219VBus = WSUPS3SINA219->getBusVoltage_V();
-	MCCStatus.mrsSensorPacket.INA219VShunt = WSUPS3SINA219->getShuntVoltage_mV();
-	MCCStatus.mrsSensorPacket.INA219Current = WSUPS3SINA219->getCurrent_mA();
-	MCCStatus.mrsSensorPacket.INA219Power = WSUPS3SINA219->getPower_mW();
-	MCCStatus.mrsSensorPacket.INA219VLoad = MCCStatus.mrsSensorPacket.INA219VBus + (MCCStatus.mrsSensorPacket.INA219VShunt / 1000.0f);
+	if (MCCStatus.WSUPS3SINA219Status)
+	{
+		MCCStatus.mrsSensorPacket.INA219VBus = WSUPS3SINA219->getBusVoltage_V();
+		MCCStatus.mrsSensorPacket.INA219VShunt = WSUPS3SINA219->getShuntVoltage_mV();
+		MCCStatus.mrsSensorPacket.INA219Current = WSUPS3SINA219->getCurrent_mA();
+		MCCStatus.mrsSensorPacket.INA219Power = WSUPS3SINA219->getPower_mW();
+		MCCStatus.mrsSensorPacket.INA219VLoad = MCCStatus.mrsSensorPacket.INA219VBus + (MCCStatus.mrsSensorPacket.INA219VShunt / 1000.0f);
+	}
 
 
 

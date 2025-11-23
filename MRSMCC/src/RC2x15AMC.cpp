@@ -8,6 +8,7 @@
 #include "DEBUG Macros.h"
 #include "RC2x15AMC.h"
 #include "MCCStatus.h"
+#include "MCCSensors.h"
 #include <math.h>
 
 bool RC2x15AMCClass::TestInProgress()
@@ -87,6 +88,10 @@ bool RC2x15AMCClass::Init()
 		//RC2x15A->
 	}
 
+	//RC2x15A->ReadM1VelocityPID(PSAddress, MCCStatus.mcStatus.M1VelocityKp, MCCStatus.mcStatus.M1VelocityKi, MCCStatus.mcStatus.M1VelocityKd, MCCStatus.mcStatus.M1VelocityQpps);
+	//RC2x15A->ReadM1VelocityPID(PSAddress, MCCStatus.mcStatus.M2VelocityKp, MCCStatus.mcStatus.M2VelocityKi, MCCStatus.mcStatus.M2VelocityKd, MCCStatus.mcStatus.M2VelocityQpps);
+
+	// Initialize odometry parameters:
 	KLTrack = defaultKLTrack;
 	KRTrack = defaultKRTrack;
 	TrackSpan = defaulTrackSpan;
@@ -291,12 +296,22 @@ void RC2x15AMCClass::Update()
 {
 	bool success = false;
 
-	if (!MCCStatus.RC2x15AMCStatus)	// Is the motor controller connected and responding over the serial connection?
+	if (digitalRead(TS3MCSupplySensePin) == LOW)	// Is the motor controller power supply present?
 	{
-		// If not try once reconnecting the serial link:
-		MCCStatus.RC2x15AMCStatus = ResetUARTLink();
+		MCCStatus.RC2x15AMCStatus = true;
+	}
+	else
+	{
+		MCCStatus.RC2x15AMCStatus = false;
 		return;
 	}
+
+	//if (!MCCStatus.RC2x15AMCStatus)	// Is the motor controller connected and responding over the serial connection?
+	//{
+	//	// If not try once reconnecting the serial link:
+	//	//MCCStatus.RC2x15AMCStatus = ResetUARTLink();
+	//	return;
+	//}
 	
 	if (calibratingDrive)
 	{

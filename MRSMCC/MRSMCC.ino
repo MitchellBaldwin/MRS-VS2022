@@ -215,10 +215,21 @@ void setup()
 	}
 	else
 	{
-		_PL("mccSensors initialization FAILED")
+		UpdateSensorsTask.disable();
+		if (MCCStatus.WSUPS3SINA219Status || MCCStatus.BME680Status)
+		{
+			UpdateSensorsTask.enable();
+			_PL("mccSensors initialization incomplete")
+		}
+		else
+		{
+			_PL("mccSensors initialization FAILED")
+		}
 	}
 
 	UpdateMotorControllerTask.enable();
+	//TODO: Check whether it is necessary to call UpdateMotorControllerCallback() multiple times here to cycle through
+	//reading all of the MC status registers before proceeding:
 	if (MCCStatus.RC2x15AUARTStatus)
 	{
 		UpdateMotorControllerCallback();
