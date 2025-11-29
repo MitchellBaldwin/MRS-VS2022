@@ -23,10 +23,10 @@
 #include <HardwareSerial.h>
 #include <RoboClaw.h>
 
-constexpr uint8_t RC2x15AAddress = 0x80;
+constexpr uint8_t defaultRC2x15AAddress = 0x80;
 constexpr float GAMMA = 0.10f;
-constexpr uint32_t lMotorFullSpeedQPPS = 7500;			// Motor 2
-constexpr uint32_t rMotorFullSpeedQPPS = 7500;			// Motor 1
+constexpr uint32_t defaultLMotorFullSpeedQPPS = 7500;			// Motor 2
+constexpr uint32_t defaultRMotorFullSpeedQPPS = 7500;			// Motor 1
 
 constexpr float defaultKLTrack = 13.0103;				// qp/mm; encoder quadrature pulse count per mm of track movement
 constexpr float defaultKRTrack = 13.0103;				// qp/mm
@@ -50,12 +50,21 @@ public:
 	};
 	MCParamTypes CurrentMCParam = MCParamTypes::VBAT;
 
+	float M1kp = 0.0f;
+	float M1ki = 0.0f;
+	float M1kd = 0.0f;
+	uint32_t M1qpps = defaultLMotorFullSpeedQPPS;
+	float M2kp = 0.0f;
+	float M2ki = 0.0f;
+	float M2kd = 0.0f;
+	uint32_t M2qpps = defaultRMotorFullSpeedQPPS;
+	
 	bool TestInProgress();
 
 protected:
 	HardwareSerial* RC2x15AUART;					// Packet serial link to RoboClaw 2x15A Motor Controller
 	RoboClaw* RC2x15A;
-	uint8_t PSAddress = RC2x15AAddress;				// RoboClaw MC address for Packet Serial communications
+	uint8_t PSAddress = defaultRC2x15AAddress;				// RoboClaw MC address for Packet Serial communications
 
 	bool calibratingDrive = false;					// Development testing, such as calibrating odometry parameters
 	uint64_t CalibrateDriveStartTime = 0;
@@ -76,6 +85,8 @@ public:
 	bool Init();
 	bool ReadStatus();
 	bool ResetUARTLink();
+	RoboClaw* GetRC2x15A();
+	uint8_t GetPSAddress();
 
 	static void ResetOdometer();
 	static void ResetTrip1();

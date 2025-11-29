@@ -34,6 +34,7 @@ public:
 		SYS,
 		POW,
 		COM,
+		MOT,
 		DBG,
 		SEN,
 
@@ -54,6 +55,7 @@ protected:
 		"  System",
 		"   Power",
 		"   Comms",
+		"  Motors",
 		"   Debug",
 		" Sensors",
 
@@ -85,6 +87,7 @@ protected:
 	void DrawSYSPage();
 	void DrawPOWPage();
 	void DrawCOMPage();
+	void DrawMOTPage();
 	void DrawDBGPage();
 	void DrawSENPage();
 
@@ -98,6 +101,7 @@ public:
 		SYSPage,
 		POWPage,
 		COMPage,
+		MOTPage,
 		DBGPage,
 		SENPage,
 		I2CScan,

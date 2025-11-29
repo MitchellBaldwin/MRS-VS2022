@@ -68,9 +68,8 @@ public:
 	int ESPNOWPacketSentCount = 0;				// Running count of command packets successfully sent to the MRS MCC
 	uint16_t SendRetries = 0;					// Count of contiguous retries sending command packets to the MRS MCC
 
-	//uint8_t MRSMCCMAC[] = { 0xF0, 0xF5, 0xBD, 0x42, 0xB7, 0x78 };		// MRS Dev1
-	//uint8_t MRSMCCMAC[] = { 0x48, 0x27, 0xE2, 0xEA, 0xCA, 0x4C };		// Breadboard prototype
-	uint8_t MRSMCCMAC[6] = { 0xF0, 0xF5, 0xBD, 0x42, 0xB7, 0x78 };
+	//uint8_t MRSMCCMAC[6] = { 0xF0, 0xF5, 0xBD, 0x42, 0xB7, 0x78 };		// MRS Dev1 MCC
+	uint8_t MRSMCCMAC[6] = { 0x80, 0x65, 0x99, 0xA1, 0xDE, 0x98 };		// Breadboard prototype MCC
 
 	uint32_t MRSMCCPacketReceivedCount = 0;		// Running count of telemetry packets received from the MRS MCC (not used?)
 	uint32_t SaveMRSMCCPacketReceivedCount = 0;	// (not used?)

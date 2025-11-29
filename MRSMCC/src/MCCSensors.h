@@ -31,6 +31,8 @@ constexpr byte defaultINA219Address = 0x41;			// I2C address of INA219 sensor on
 #include "esp_adc_cal.h"
 constexpr uint32_t defaultVRef = 1100;
 
+// OpAmp conditioning circuit scales battery voltage through a 33k / 47k voltage divider (measured voltage = 0.5875 * raw LiPo voltage)
+constexpr byte defaultVBBAKPin = GPIO_NUM_1;		// ADC1 channel 0; analog voltage measured from backup 1S LiPo battery conditioning circuit
 // Circuit internal to Lilygo T-Display S3 AMOLED: Battery positive terminal -> 100k resistor -> VMCU pin -> 100k resistor -> Battery negative terminal (GND)
 constexpr byte defaultVMCUPin = GPIO_NUM_4;			// ADC1 channel 3; analog voltage measured at the MCU battery JST connector
 
@@ -45,6 +47,7 @@ protected:
 	float BME680Altitude(const int32_t press, const float seaLevel = 1013.25);
 
 	MeasurementClass VMCU;							// Analog voltage measured at the MCU battery JST connector
+	MeasurementClass VBBAK;							// ANalog voltage measured from backup 1S LiPo battery conditioning circuit
 
 	esp_adc_cal_characteristics_t ADC1Chars;
 	uint32_t VRef = defaultVRef;
@@ -63,6 +66,11 @@ public:
 	float GetMCUVoltageReal();
 	String GetMCUVoltageString();
 	String GetMCUVoltageString(String format);
+
+	uint16_t GetBBAKRawADC();
+	float GetBBAKVoltageReal();
+	String GetBBAKVoltageString();
+	String GetBBAKVoltageString(String format);
 
 };
 

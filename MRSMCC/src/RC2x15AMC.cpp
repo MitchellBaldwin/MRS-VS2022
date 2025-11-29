@@ -22,7 +22,7 @@ bool RC2x15AMCClass::CalibrateDriveSystem(uint64_t testPeriod)
 	{
 		calibratingDrive = true;
 		CalibrateDriveStartTime = millis();
-		RC2x15A->ResetEncoders(RC2x15AAddress);
+		RC2x15A->ResetEncoders(defaultRC2x15AAddress);
 
 		return DriveThrottleTurnRate(25.0f, 0.0f);
 	}
@@ -81,8 +81,44 @@ bool RC2x15AMCClass::Init()
 
 		// Test UART link to motor controller:
 		success = RC2x15A->ReadVersion(PSAddress, buf);
-		_PL(buf)
+		if (success)
+		{
+			MCCStatus.RC2x15AMCStatus = true;
+			MCCStatus.RC2x15AMCVersionString = String(buf);
+			_PP("RC2x15A Motor Controller connected, version: ")
+			_PL(buf)
+		}
+		else
+		{
+			MCCStatus.RC2x15AMCStatus = false;
+			_PP("Failed to communicate with RC2x15A Motor Controller at address ")
+			sprintf(buf, "0x%02X", PSAddress);
+			_PL(buf)
+		}
 
+		success = RC2x15A->ReadM1VelocityPID(PSAddress, M1kp, M1ki, M1kd, M1qpps);
+		if (success)
+		{
+			_PP("M1 Velocity PID:  Kp=");
+			sprintf(buf, "%.2f  Ki=%.2f  Kd=%.2f  QPPS=%d", M1kp, M1ki, M1kd, M1qpps);
+			_PL(buf)
+		}
+		else
+		{
+			_PL("Failed to read M1 Velocity PID parameters")
+		}
+		success = RC2x15A->ReadM2VelocityPID(PSAddress, M2kp, M2ki, M2kd, M2qpps);
+		if (success)
+		{
+			_PP("M2 Velocity PID:  Kp=");
+			sprintf(buf, "%.2f  Ki=%.2f  Kd=%.2f  QPPS=%d", M2kp, M2ki, M2kd, M2qpps);
+			_PL(buf)
+		}
+		else
+		{
+			_PL("Failed to read M2 Velocity PID parameters")
+		}
+		
 		// Test code:
 		//RC2x15AUART.println("Hello from the RC2x15AUART port...");
 		//RC2x15A->
@@ -244,9 +280,19 @@ bool RC2x15AMCClass::ResetUARTLink()
 	return success;
 }
 
+RoboClaw* RC2x15AMCClass::GetRC2x15A()
+{
+	return RC2x15A;
+}
+
+uint8_t RC2x15AMCClass::GetPSAddress()
+{
+	return PSAddress;
+}
+
 void RC2x15AMCClass::ResetOdometer()
 {
-	RC2x15AMC.RC2x15A->ResetEncoders(RC2x15AAddress);
+	RC2x15AMC.RC2x15A->ResetEncoders(defaultRC2x15AAddress);
 
 	uint64_t timeNow = millis();
 	RC2x15AMC.OdometerStartTime = timeNow;
@@ -295,6 +341,7 @@ bool RC2x15AMCClass::DriveSettingsChanged()
 void RC2x15AMCClass::Update()
 {
 	bool success = false;
+	int16_t data1 = 0, data2 = 0;
 
 	if (digitalRead(TS3MCSupplySensePin) == LOW)	// Is the motor controller power supply present?
 	{
@@ -313,6 +360,19 @@ void RC2x15AMCClass::Update()
 	//	return;
 	//}
 	
+	success = RC2x15A->ReadPWMs(PS, data1, data2);
+	if (success)
+	{
+		MCCStatus.mcStatus.M1PWM = data1;
+		MCCStatus.mcStatus.M2PWM = data2;
+	}
+	else
+	{
+		MCCStatus.mcStatus.M1PWM = 0;
+		MCCStatus.mcStatus.M2PWM = 0;
+	}
+
+	// If a drive system calibration test is in progress, continue it:
 	if (calibratingDrive)
 	{
 		success = CalibrateDriveSystem(defaultTestDrivePeriod);
@@ -470,8 +530,8 @@ bool RC2x15AMCClass::DriveThrottleTurnRate(float throttle, float turnRate)
 	bool success = false;
 
 	// Convert commanded speed and turn rate into motor speeds (qpps - quadrature pulses per second)
-	int32_t lMotorSpeed = throttle / 100.0f * lMotorFullSpeedQPPS;
-	int32_t rMotorSpeed = throttle / 100.0f * rMotorFullSpeedQPPS;
+	int32_t lMotorSpeed = throttle / 100.0f * M2qpps;
+	int32_t rMotorSpeed = throttle / 100.0f * M1qpps;
 	
 	int32_t turnDifferentialQPPS = 0;
 	if (abs(throttle) > GAMMA)
@@ -484,7 +544,7 @@ bool RC2x15AMCClass::DriveThrottleTurnRate(float throttle, float turnRate)
 	{
 		// Forward / backward commanded speed is nil so use commanded turn rate to spin in place
 		//at a rate proportional to the commanded turn rate:
-		uint32_t avgMotorFullSpeedQPPS = (lMotorFullSpeedQPPS + rMotorFullSpeedQPPS) / 2;
+		uint32_t avgMotorFullSpeedQPPS = (M2qpps + M1qpps) / 2;
 		turnDifferentialQPPS = avgMotorFullSpeedQPPS * (turnRate / 100.0f);
 	}
 	
@@ -526,8 +586,8 @@ bool RC2x15AMCClass::DriveLRThrottle(float lThrottle, float rThrottle)
 	bool success = false;
 
 	// Convert provided throttle settings into motor speeds (qpps - quadrature pulses per second)
-	int32_t lMotorSpeed = lThrottle / 100.0f * lMotorFullSpeedQPPS;
-	int32_t rMotorSpeed = rThrottle / 100.0f * rMotorFullSpeedQPPS;
+	int32_t lMotorSpeed = lThrottle / 100.0f * M2qpps;
+	int32_t rMotorSpeed = rThrottle / 100.0f * M1qpps;
 
 	if (abs(lMotorSpeed) < 1 && abs(rMotorSpeed) < 1)
 	{

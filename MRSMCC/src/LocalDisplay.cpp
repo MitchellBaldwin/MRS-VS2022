@@ -9,6 +9,7 @@
 #include "MCCStatus.h"
 #include "MCCControls.h"
 #include "MCCSensors.h"
+#include "RC2x15AMC.h"
 #include "DEBUG Macros.h"
 
 #include <WiFi.h>
@@ -282,6 +283,14 @@ void LocalDisplayClass::DrawPOWPage()
 		tft.setTextSize(1);
 		tft.drawString("Bus", cursorX, cursorY);	// Subscript
 
+		tft.setTextSize(2);
+		cursorX = halfScreenWidth + 2;
+		cursorY -= 20;
+		tft.drawString("V", cursorX, cursorY);
+		cursorX += tft.textWidth("V", 2) + 1;
+		tft.setTextSize(1);
+		tft.drawString("BBat", cursorX, cursorY);	// Subscript
+
 		lastPage = currentPage;
 	}
 
@@ -312,6 +321,11 @@ void LocalDisplayClass::DrawPOWPage()
 	cursorY -= 20;
 	tft.setTextDatum(BR_DATUM);
 	sprintf(buf, "%5.2F  V", MCCStatus.mrsSensorPacket.INA219VBus);
+	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
+
+	cursorY -= 20;
+	tft.setTextDatum(BR_DATUM);
+	sprintf(buf, "%5.2F  V", mccSensors.GetBBAKVoltageReal());
 	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
 
 }
@@ -387,6 +401,152 @@ void LocalDisplayClass::DrawCOMPage()
 	tft.drawString(buf, tft.width() / 2, 80);
 
 	//_PL(MCCStatus.CSSMPacketReceiptInterval)
+}
+
+void LocalDisplayClass::DrawMOTPage()
+{
+	int16_t cursorX, cursorY;
+	int16_t saveCursorY;
+	int16_t halfScreenWidth = tft.width() / 2;
+	int16_t halfScreenHeight = tft.height() / 2;
+	int16_t thirdScreenWidth = tft.width() / 3;
+
+	uint16_t minBat, maxBat = 0;
+	float kp, ki, kd = 0.0f;
+	uint32_t qpps = 0;
+
+	bool success = false;
+	//char MCInfoBuf[64];
+
+	uint8_t psAddress = RC2x15AMC.GetPSAddress();
+
+	currentPage = MOT;
+
+	if (lastPage != currentPage)	// Clear display and redraw static elements of the page format:
+	{
+		DrawPageHeaderAndFooter();
+
+		cursorX = 2;
+		cursorY = 20;
+		tft.setTextDatum(TL_DATUM);
+		tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);
+		if (MCCStatus.RC2x15AMCStatus)
+		{
+			sprintf(buf, "Version: %s", MCCStatus.RC2x15AMCVersionString.c_str());
+			tft.drawString(buf, cursorX, cursorY);
+		}
+		else
+		{
+			tft.setTextColor(TFT_RED, TFT_BLACK, true);
+			sprintf(buf, "MC UART comm FAILED");
+			tft.drawString(buf, cursorX, cursorY);
+		}
+
+		cursorY = 30;
+		tft.setTextColor(TFT_CYAN, TFT_BLACK, true);
+		//TODO: Move to RC2x15AMC.Init function
+		success = RC2x15AMC.GetRC2x15A()->ReadMinMaxMainVoltages(psAddress, minBat, maxBat);
+		sprintf(buf, "Main BAT: (%4.1f - %4.1f )", (float)minBat / 10.0f, (float)maxBat / 10.0f);
+		tft.drawString(buf, cursorX, cursorY);
+
+		cursorY += 10;
+		//TODO: Display logic battery parameters:
+
+		saveCursorY = cursorY;
+		cursorY += 10;
+		tft.setTextDatum(TL_DATUM);
+		tft.setTextColor(TFT_GOLD, TFT_BLACK, true);
+		tft.drawString("kp", cursorX, cursorY);
+		cursorY += 10;
+		tft.drawString("ki", cursorX, cursorY);
+		cursorY += 10;
+		tft.drawString("kd", cursorX, cursorY);
+		cursorY += 10;
+		tft.drawString("qpps", cursorX, cursorY);
+
+		cursorY += 10;
+		tft.drawString("PWM", cursorX, cursorY);
+
+		cursorY = saveCursorY;
+
+		cursorX = 40;
+		if (MCCStatus.RC2x15AMCStatus)
+		{
+			cursorY += 10;
+			tft.setTextColor(TFT_RED, TFT_BLACK, true);
+			sprintf(buf, "%8.5f", RC2x15AMC.M2kp);
+			tft.drawString(buf, cursorX, cursorY);
+			cursorY += 10;
+			sprintf(buf, "%8.5f", RC2x15AMC.M2ki);
+			tft.drawString(buf, cursorX, cursorY);
+			cursorY += 10;
+			sprintf(buf, "%8.5f", RC2x15AMC.M2kd);
+			tft.drawString(buf, cursorX, cursorY);
+			cursorY += 10;
+			sprintf(buf, "%8d", RC2x15AMC.M2qpps);
+			tft.drawString(buf, cursorX, cursorY);
+			cursorY = saveCursorY;
+			cursorX = halfScreenWidth + 2;
+			cursorY += 10;
+			tft.setTextColor(TFT_GREEN, TFT_BLACK, true);
+			sprintf(buf, "%8.5f", RC2x15AMC.M1kp);
+			tft.drawString(buf, cursorX, cursorY);
+			cursorY += 10;
+			sprintf(buf, "%8.5f", RC2x15AMC.M1ki);
+			tft.drawString(buf, cursorX, cursorY);
+			cursorY += 10;
+			sprintf(buf, "%8.5f", RC2x15AMC.M1kd);
+			tft.drawString(buf, cursorX, cursorY);
+			cursorY += 10;
+			sprintf(buf, "%8d", RC2x15AMC.M1qpps);
+			tft.drawString(buf, cursorX, cursorY);
+		}
+
+		lastPage = currentPage;
+	}
+
+	// Update dynamic displays:
+
+	//cursorX = 40;
+	//RC2x15AMC.GetRC2x15A()->ReadM2VelocityPID(psAddress, kp, ki, kd, qpps);
+	//cursorY = 100;
+	//tft.setTextColor(TFT_RED, TFT_BLACK, true);
+	//sprintf(buf, "%8.5f", kp);
+	//tft.drawString(buf, cursorX, cursorY);
+	//cursorY += 10;
+	//sprintf(buf, "%8.5f", ki);
+	//tft.drawString(buf, cursorX, cursorY);
+	//cursorY += 10;
+	//sprintf(buf, "%8.5f", kd);
+	//tft.drawString(buf, cursorX, cursorY);
+	//cursorY += 10;
+	//sprintf(buf, "%8d", qpps);
+	//tft.drawString(buf, cursorX, cursorY);
+	//RC2x15AMC.GetRC2x15A()->ReadM1VelocityPID(psAddress, kp, ki, kd, qpps);
+	
+	cursorX = halfScreenWidth;
+	cursorY = 30;
+	tft.setTextDatum(TL_DATUM);
+	tft.setTextColor(TFT_GREENYELLOW, TFT_BLACK, true);
+	sprintf(buf, "%4.1f V", MCCStatus.mcStatus.SupBatV);
+	tft.drawString(buf, cursorX, cursorY);
+
+	cursorY += 10;
+
+	saveCursorY = cursorY;
+
+	//cursorY += 10;
+	cursorX = 40;
+	cursorY = 90;
+	tft.setTextDatum(TL_DATUM);
+	tft.setTextColor(TFT_RED, TFT_BLACK, true);
+	sprintf(buf, "%8d", MCCStatus.mcStatus.M2PWM);
+	tft.drawString(buf, cursorX, cursorY);
+	tft.setTextColor(TFT_GREEN, TFT_BLACK, true);
+	cursorX = halfScreenWidth + 2;
+	sprintf(buf, "%8d", MCCStatus.mcStatus.M1PWM);
+	tft.drawString(buf, cursorX, cursorY);
+
 }
 
 void LocalDisplayClass::DrawDBGPage()
@@ -585,6 +745,9 @@ void LocalDisplayClass::Update()
 	case COM:
 		DrawCOMPage();
 		break;
+	case MOT:
+		DrawMOTPage();
+		break;
 	case DBG:
 		DrawDBGPage();
 		break;
@@ -609,6 +772,9 @@ void LocalDisplayClass::Control(uint8_t command)
 		break;
 	case COMPage:
 		DrawCOMPage();
+		break;
+	case MOTPage:
+		DrawMOTPage();
 		break;
 	case DBGPage:
 		DrawDBGPage();

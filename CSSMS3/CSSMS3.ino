@@ -67,18 +67,19 @@ Task ReadEnvSensorsTask((ReadEnvSensorsInterval * TASK_MILLISECOND), TASK_FOREVE
 #include "src/CSSMS3Status.h"
 #include <I2CBus.h>
 
-//uint8_t MRSMCCMAC[] = { 0xF0, 0xF5, 0xBD, 0x42, 0xB7, 0x78 };
-//uint8_t MRSMCCMAC[] = { 0x48, 0x27, 0xE2, 0xEA, 0xCA, 0x4C };		// Breadboard prototype
+// MRS MCC MAC addresses for reference; set in CSSMS3Status:
+//uint8_t MRSMCCMAC[6] = { 0xF0, 0xF5, 0xBD, 0x42, 0xB7, 0x78 };		// MRS Dev1 MCC
+//uint8_t MRSMCCMAC[6] = { 0x80, 0x65, 0x99, 0xA1, 0xDE, 0x98 };		// Breadboard prototype MCC
 esp_now_peer_info_t MRSMCCInfo;
 
 constexpr uint16_t MaxCSSMSendRetries = 16;
 
 //#include "src/ESP32WiFi.h"
 #include <WiFi.h>
-//#define LocalWiFiSSID "WeatherDogPacNW"
-//#define LocalWiFiPW "5TgbnhY6"
-#define LocalWiFiSSID "320"
-#define LocalWiFiPW "103187OS"
+#define LocalWiFiSSID "WeatherDogPacNW"
+#define LocalWiFiPW "5TgbnhY6"
+//#define LocalWiFiSSID "320"
+//#define LocalWiFiPW "103187OS"
 
 #include "src/CSSMS3EnvSensors.h"
 

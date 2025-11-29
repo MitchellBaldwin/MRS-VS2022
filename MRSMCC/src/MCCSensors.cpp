@@ -48,6 +48,9 @@ bool MCCSensors::Init()
 	pinMode(defaultVMCUPin, INPUT);
 	VMCU.Init(0, 66, 40960, "V");
 
+	pinMode(defaultVBBAKPin, INPUT);
+	VBBAK.Init(0, 57, 40960, "V");
+
 	// Initialize digital input to sense TS3 power supply presence:
 	pinMode(TS3MCSupplySensePin, INPUT);
 	sprintf(buf, "TS3 MC Supply Sense on GPIO%02D: %02D", TS3MCSupplySensePin, digitalRead(TS3MCSupplySensePin));
@@ -137,6 +140,8 @@ void MCCSensors::Update()
 	//int calibratedReading = ReadCalibratedADC1(newReading);			// mV
 	//_PL(calibratedReading)
 	VMCU.AddReading(newReading);
+	newReading = analogRead(defaultVBBAKPin);							// ADC counts
+	VBBAK.AddReading(newReading);
 
 	if (MCCStatus.WSUPS3SINA219Status)
 	{
@@ -146,8 +151,6 @@ void MCCSensors::Update()
 		MCCStatus.mrsSensorPacket.INA219Power = WSUPS3SINA219->getPower_mW();
 		MCCStatus.mrsSensorPacket.INA219VLoad = MCCStatus.mrsSensorPacket.INA219VBus + (MCCStatus.mrsSensorPacket.INA219VShunt / 1000.0f);
 	}
-
-
 
 }
 
@@ -169,6 +172,26 @@ String MCCSensors::GetMCUVoltageString()
 String MCCSensors::GetMCUVoltageString(String format)
 {
 	return VMCU.GetRealString(format);
+}
+
+uint16_t MCCSensors::GetBBAKRawADC()
+{
+	return VBBAK.GetAverageRawValue();
+}
+
+float MCCSensors::GetBBAKVoltageReal()
+{
+	return VBBAK.GetAverageRealValue();
+}
+
+String MCCSensors::GetBBAKVoltageString()
+{
+	return VBBAK.GetRealString();
+}
+
+String MCCSensors::GetBBAKVoltageString(String format)
+{
+	return VBBAK.GetRealString(format);
 }
 
 

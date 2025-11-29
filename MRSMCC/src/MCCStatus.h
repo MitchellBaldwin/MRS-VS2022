@@ -56,6 +56,15 @@ class MCCStatusClass
 	 bool WSUPS3SINA219Status = false;
 
 	 bool RC2x15AMCStatus = false;
+	 String RC2x15AMCVersionString;
+	 float M1kp = 0.0f;
+	 float M1ki = 0.0f;
+	 float M1kd = 0.0f;
+	 uint32_t M1qpps = 0;
+	 float M2kp = 0.0f;
+	 float M2ki = 0.0f;
+	 float M2kd = 0.0f;
+	 uint32_t M2qpps = 0;
 
 	 bool ESPNOWStatus = false;
 	 uint32_t CSSMPacketSentCount = 0;

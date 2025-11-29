@@ -34,6 +34,15 @@ protected:
 
 public:
 
+	//float M1kp = 0.0f;	// Velocity PID parameters for Motor 1
+	//float M1ki = 0.0f;
+	//float M1kd = 0.0f;
+	//uint32_t M1qpps = 0;
+	//float M2kp = 0.0f;	// Velocity PID parameters for Motor 2
+	//float M2ki = 0.0f;
+	//float M2kd = 0.0f;
+	//uint32_t M2qpps = 0;
+
 	float SupBatV;		// Supply (battery) voltage in V
 	float Temp1;		// Temperature sensor 1 measurement
 	float Temp2;		// Temperature sensor 2 measurement (if supported for this motor controller)
@@ -45,6 +54,8 @@ public:
 	int M2Speed;		// Motor 2 speed (qpps - qradrature counts / s)
 	int M1SpeedSetting;	// Motor 1 speed setting (qpps - qradrature counts / s)
 	int M2SpeedSetting;	// Motor 2 speed setting (qpps - qradrature counts / s)
+	int16_t M1PWM;		// Motor 1 PWM duty cycle setting
+	int16_t M2PWM;		// Motor 2 PWM duty cycle setting
 
 	bool VBATValid = false;
 	bool T1Valid = false;
@@ -53,17 +64,16 @@ public:
 	bool ENCPOSValid = false;
 	bool SPEEDSValid = false;
 
-	//TODO: Move the following measured motion parameters to a packet structure designed specifically 
-	//for pose and dynamics telemetry:
+	// Note: The following odometry values are calculated based on motor encoder readings and MRS kinematics parameters: 
 	uint64_t OdometerTime = 0;					// ms; time in ms since start of odometry session (or since last reset)
 	uint64_t Trip1Time = 0;						// ms; time in ms since start of odometry session or since last reset of Trip1 measurements
 	uint64_t Trip2Time = 0;						// ms; time in ms since start of odometry session or since last reset of Trip2 measurements
 	float OdometerDist = 0.0f;					// m; net distance traveled since start of odometry session (or since last reset)
 	float Trip1Dist = 0.0f;						// m; net distance traveled since start of odometry session or since last reset of Trip1 measurements
 	float Trip2Dist = 0.0f;						// m; net distance traveled since start of odometry session or since last reset of Trip2 measurements
-	float GroundSpeed = 0.0f;					// Measured ground speed (±mm/s)
-	float TurnRate = 0.0f;						// Measured turn rate (±rad/s)
-	float Heading = 0.0f;						// Indicated heading (degrees)
+	float GroundSpeed = 0.0f;					// Ground speed (±mm/s) calculated from motor odometry
+	float TurnRate = 0.0f;						// Turn rate (±rad/s) calculated from motor odometry
+	float Heading = 0.0f;						// Heading (degrees) calculated from motor odometry	
 
 };
 
