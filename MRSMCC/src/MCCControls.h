@@ -82,7 +82,7 @@ public:
 
 	TFTMenuClass* MainMenu;
 	MenuItemClass* ESPNMenuItem;
-	MenuItemClass* DriveModeMenuItem;
+	MenuItemClass* MCUARTMenuItem;
 	MenuItemClass* TBDMenuItem;
 	MenuItemClass* BRTMenuItem;
 	MenuItemClass* NextPageMenuItem;
@@ -98,6 +98,10 @@ public:
 	static void SetESPNOW(int value);
 	bool GetESPNowStatus();
 	void SetESPNOWStatus(bool newStatus);
+
+	static void SetMCUART(int value);
+	bool GetMCUARTStatus();
+	void SetMCUARTStatus(bool newStatus);
 
 };
 

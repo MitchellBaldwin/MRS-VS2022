@@ -61,71 +61,14 @@ bool RC2x15AMCClass::CalibrateDriveSystem(uint64_t testPeriod)
 
 bool RC2x15AMCClass::Init()
 {
-	char buf[64];
+	char buf[64]{};
 	bool success = false;
 
 	RC2x15AUART = new HardwareSerial(1);			// Establish a new hardware UART port using the MCC MCU UART1 device
 	RC2x15A = new RoboClaw(RC2x15AUART, 10000);
 	
 	// The following takes the place of a call to RC2x15A->begin(), which assumes use of the primary Serial port:
-	RC2x15AUART->begin(115200, SERIAL_8N1, 18, 17);
-	if (!RC2x15AUART)
-	{
-		MCCStatus.RC2x15AUARTStatus = false;
-		_PL("Failed to initialize RC2x15ASerial")
-	}
-	else
-	{
-		MCCStatus.RC2x15AUARTStatus = true;
-		_PL("RC2x15AUART initialized")
-
-		// Test UART link to motor controller:
-		success = RC2x15A->ReadVersion(PSAddress, buf);
-		if (success)
-		{
-			MCCStatus.RC2x15AMCStatus = true;
-			MCCStatus.RC2x15AMCVersionString = String(buf);
-			_PP("RC2x15A Motor Controller connected, version: ")
-			_PL(buf)
-		}
-		else
-		{
-			MCCStatus.RC2x15AMCStatus = false;
-			_PP("Failed to communicate with RC2x15A Motor Controller at address ")
-			sprintf(buf, "0x%02X", PSAddress);
-			_PL(buf)
-		}
-
-		success = RC2x15A->ReadM1VelocityPID(PSAddress, M1kp, M1ki, M1kd, M1qpps);
-		if (success)
-		{
-			_PP("M1 Velocity PID:  Kp=");
-			sprintf(buf, "%.2f  Ki=%.2f  Kd=%.2f  QPPS=%d", M1kp, M1ki, M1kd, M1qpps);
-			_PL(buf)
-		}
-		else
-		{
-			_PL("Failed to read M1 Velocity PID parameters")
-		}
-		success = RC2x15A->ReadM2VelocityPID(PSAddress, M2kp, M2ki, M2kd, M2qpps);
-		if (success)
-		{
-			_PP("M2 Velocity PID:  Kp=");
-			sprintf(buf, "%.2f  Ki=%.2f  Kd=%.2f  QPPS=%d", M2kp, M2ki, M2kd, M2qpps);
-			_PL(buf)
-		}
-		else
-		{
-			_PL("Failed to read M2 Velocity PID parameters")
-		}
-		
-		// Test code:
-		//RC2x15AUART.println("Hello from the RC2x15AUART port...");
-		//RC2x15A->
-	}
-
-	//RC2x15A->ReadM1VelocityPID(PSAddress, MCCStatus.mcStatus.M1VelocityKp, MCCStatus.mcStatus.M1VelocityKi, MCCStatus.mcStatus.M1VelocityKd, MCCStatus.mcStatus.M1VelocityQpps);
-	//RC2x15A->ReadM1VelocityPID(PSAddress, MCCStatus.mcStatus.M2VelocityKp, MCCStatus.mcStatus.M2VelocityKi, MCCStatus.mcStatus.M2VelocityKd, MCCStatus.mcStatus.M2VelocityQpps);
+	MCCStatus.RC2x15AUARTStatus = StartUARTLink();
 
 	// Initialize odometry parameters:
 	KLTrack = defaultKLTrack;
@@ -239,10 +182,74 @@ bool RC2x15AMCClass::ReadStatus()
 	return success;
 }
 
+bool RC2x15AMCClass::StartUARTLink()
+{
+	char buf[64]{};
+	bool success = false;
+
+	RC2x15AUART->begin(115200, SERIAL_8N1, 18, 17);
+	if (!RC2x15AUART)
+	{
+		MCCStatus.RC2x15AUARTStatus = false;
+		_PL("Failed to initialize RC2x15ASerial")
+	}
+	else
+	{
+		MCCStatus.RC2x15AUARTStatus = true;
+		_PL("RC2x15AUART initialized")
+
+			// Test UART link to motor controller:
+			success = RC2x15A->ReadVersion(PSAddress, buf);
+		if (success)
+		{
+			MCCStatus.RC2x15AMCStatus = true;
+			MCCStatus.RC2x15AMCVersionString = String(buf);
+			_PP("RC2x15A Motor Controller connected, version: ")
+				_PL(buf)
+		}
+		else
+		{
+			MCCStatus.RC2x15AMCStatus = false;
+			_PP("Failed to communicate with RC2x15A Motor Controller at address ")
+				sprintf(buf, "0x%02X", PSAddress);
+			_PL(buf)
+		}
+
+		success = RC2x15A->ReadM1VelocityPID(PSAddress, M1kp, M1ki, M1kd, M1qpps);
+		if (success)
+		{
+			_PP("M1 Velocity PID:  Kp=");
+			sprintf(buf, "%.2f  Ki=%.2f  Kd=%.2f  QPPS=%d", M1kp, M1ki, M1kd, M1qpps);
+			_PL(buf)
+		}
+		else
+		{
+			_PL("Failed to read M1 Velocity PID parameters")
+		}
+		success = RC2x15A->ReadM2VelocityPID(PSAddress, M2kp, M2ki, M2kd, M2qpps);
+		if (success)
+		{
+			_PP("M2 Velocity PID:  Kp=");
+			sprintf(buf, "%.2f  Ki=%.2f  Kd=%.2f  QPPS=%d", M2kp, M2ki, M2kd, M2qpps);
+			_PL(buf)
+		}
+		else
+		{
+			_PL("Failed to read M2 Velocity PID parameters")
+		}
+
+		// Test code:
+		//RC2x15AUART.println("Hello from the RC2x15AUART port...");
+
+	}
+
+	return success;
+}
+
 bool RC2x15AMCClass::ResetUARTLink()
 {
 	//DONE: Re-establich / re-synch UART communication with the motor controller; simply ending and re-beginning
-	//the UART does not see to work.  
+	//the UART does not seem to work.  
 	// Clearing the incomming buffer by reading all available data and then attempting to read the RC2x15A version info causes a guru meditation error (MCU reset),
 	//but folowing the MCU reset everything seems to work OK...
 
@@ -250,32 +257,20 @@ bool RC2x15AMCClass::ResetUARTLink()
 	bool success = false;
 	
 	// Clear any incomming data:
-	while (RC2x15AUART->available())
+	if (RC2x15AUART != nullptr)
 	{
-		RC2x15AUART->read();
+		_PL("Clearing RC2x15AUART input buffer");
+		while (RC2x15AUART->available())
+		{
+			RC2x15AUART->read();
+		}
 	}
 
-	//_PL("RC2x15AUART re-initializing")
+	_PL("RC2x15AUART re-initializing")
 
 	// Test UART link to motor controller:
-	RC2x15AUART->flush(true);
-	success = RC2x15A->ReadVersion(PSAddress, buf);
-	//_PL(buf)
-
-	//RC2x15AUART->end();
-	//delay(100);
-	//RC2x15AUART->begin(115200, SERIAL_8N1, 18, 17);
-	//if (!RC2x15AUART)
-	//{
-	//	MCCStatus.RC2x15AUARTStatus = false;
-	//	_PL("Failed to initialize RC2x15ASerial")
-	//}
-	//else
-	//{
-	//	MCCStatus.RC2x15AUARTStatus = true;
-	//	// Test UART link to motor controller:
-	//	success = RC2x15A->ReadVersion(PSAddress, buf);
-	//}
+	RC2x15AUART->end();
+	success = StartUARTLink();
 
 	return success;
 }
@@ -458,13 +453,13 @@ void RC2x15AMCClass::Update()
 	// Save drive settings to test for changes next cycle:
 	MCCStatus.lastCSSMDrivePacket = MCCStatus.cssmDrivePacket;	// Using default C++ copy mechanism
 
-	if (!success)	// Failure communicating with motor controller?
-	{
-		// If so try once reconnecting the serial link:
-		success = ResetUARTLink();
-	}
+	//if (!success)	// Failure communicating with motor controller?
+	//{
+	//	// If so try once reconnecting the serial link:
+	//	success = ResetUARTLink();
+	//}
 
-	MCCStatus.RC2x15AUARTStatus = success;
+	//MCCStatus.RC2x15AUARTStatus = success;
 }
 
 /// <summary>

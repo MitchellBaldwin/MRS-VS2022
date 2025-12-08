@@ -150,18 +150,35 @@ void LocalDisplayClass::DrawSYSPage()
 
 	// Display status of motor controller
 	cursorY += 10;
-	if (MCCStatus.RC2x15AUARTStatus)
+	tft.setTextColor(TFT_GOLD, TFT_BLACK, true);
+	tft.drawString("RC2x15AMC", 2, cursorY);
+	int16_t cursorX = tft.textWidth("RC2x15AMC") + 20;
+	if (MCCStatus.RC2x15AMCStatus)
 	{
 		tft.setTextColor(TFT_GREEN, TFT_BLACK, true);
-		sprintf(buf, "RC2x15A connected   ");
-		tft.drawString(buf, 2, cursorY);
+		sprintf(buf, "Power ON    ");
+		tft.drawString(buf, cursorX, cursorY);
 		
 	}
 	else
 	{
 		tft.setTextColor(TFT_RED, TFT_BLACK, true);
-		sprintf(buf, "RC2x15A disconnected");
-		tft.drawString(buf, 2, cursorY);
+		sprintf(buf, "Power OFF   ");
+		tft.drawString(buf, cursorX, cursorY);
+	}
+	cursorX = tft.width() / 2;
+	if (MCCStatus.RC2x15AUARTStatus)
+	{
+		tft.setTextColor(TFT_GREEN, TFT_BLACK, true);
+		sprintf(buf, "Connected   ");
+		tft.drawString(buf, cursorX, cursorY);
+		
+	}
+	else
+	{
+		tft.setTextColor(TFT_RED, TFT_BLACK, true);
+		sprintf(buf, "Disconnected");
+		tft.drawString(buf, cursorX, cursorY);
 	}
 
 	// Two ways to display the ° character: as a string (%s) or as a char (%c)
@@ -463,13 +480,20 @@ void LocalDisplayClass::DrawMOTPage()
 		tft.drawString("kd", cursorX, cursorY);
 		cursorY += 10;
 		tft.drawString("qpps", cursorX, cursorY);
+		cursorY += 10;
 
 		cursorY += 10;
 		tft.drawString("PWM", cursorX, cursorY);
+		cursorY += 10;
+		tft.drawString("Imot", cursorX, cursorY);
+		cursorY += 10;
+		tft.drawString("Temp", cursorX, cursorY);
+		cursorY += 10;
+		tft.drawString("Speed", cursorX, cursorY);
 
 		cursorY = saveCursorY;
 
-		cursorX = 40;
+		cursorX = 30;
 		if (MCCStatus.RC2x15AMCStatus)
 		{
 			cursorY += 10;
@@ -486,8 +510,9 @@ void LocalDisplayClass::DrawMOTPage()
 			sprintf(buf, "%8d", RC2x15AMC.M2qpps);
 			tft.drawString(buf, cursorX, cursorY);
 			cursorY = saveCursorY;
-			cursorX = halfScreenWidth + 2;
+			cursorX = halfScreenWidth - 30;
 			cursorY += 10;
+			tft.setTextDatum(TR_DATUM);
 			tft.setTextColor(TFT_GREEN, TFT_BLACK, true);
 			sprintf(buf, "%8.5f", RC2x15AMC.M1kp);
 			tft.drawString(buf, cursorX, cursorY);
@@ -502,28 +527,55 @@ void LocalDisplayClass::DrawMOTPage()
 			tft.drawString(buf, cursorX, cursorY);
 		}
 
+		cursorX = halfScreenWidth;
+		cursorY = 110;
+		tft.setTextDatum(TR_DATUM);
+		tft.setTextColor(TFT_GREENYELLOW, TFT_BLACK, true);
+		tft.drawString("A", cursorX, cursorY);
+		cursorY += 10;
+		sprintf(buf, "%cC", 0xF7);
+		tft.drawString(buf, cursorX, cursorY);
+		cursorY += 10;
+		tft.drawString("qpps", cursorX, cursorY);
+
+		cursorX = halfScreenWidth + 10;
+		cursorY = 50;
+		tft.setTextDatum(TL_DATUM);
+		tft.setTextColor(TFT_GOLD, TFT_BLACK, true);
+		tft.drawString("kLTrk", cursorX, cursorY);
+		cursorY += 10;
+		tft.drawString("kRTrk", cursorX, cursorY);
+		cursorY += 10;
+		tft.drawString("kTSpn", cursorX, cursorY);
+		
+		cursorX = tft.width() - 35;
+		cursorY = 50;
+		tft.setTextDatum(TR_DATUM);
+		tft.setTextColor(TFT_CYAN, TFT_BLACK, true);
+		sprintf(buf, "%8.5f", RC2x15AMC.KLTrack);
+		tft.drawString(buf, cursorX, cursorY);
+		cursorY += 10;
+		sprintf(buf, "%8.5f", RC2x15AMC.KRTrack);
+		tft.drawString(buf, cursorX, cursorY);
+		cursorY += 10;
+		sprintf(buf, "%8.1f", RC2x15AMC.TrackSpan);
+		tft.drawString(buf, cursorX, cursorY);
+
+		cursorX = tft.width() - 2;
+		cursorY = 50;
+		tft.setTextDatum(TR_DATUM);
+		tft.setTextColor(TFT_GREENYELLOW, TFT_BLACK, true);
+		tft.drawString("qp/mm", cursorX, cursorY);
+		cursorY += 10;
+		tft.drawString("qp/mm", cursorX, cursorY);
+		cursorY += 10;
+		tft.drawString("mm", cursorX, cursorY);
+
 		lastPage = currentPage;
 	}
 
 	// Update dynamic displays:
 
-	//cursorX = 40;
-	//RC2x15AMC.GetRC2x15A()->ReadM2VelocityPID(psAddress, kp, ki, kd, qpps);
-	//cursorY = 100;
-	//tft.setTextColor(TFT_RED, TFT_BLACK, true);
-	//sprintf(buf, "%8.5f", kp);
-	//tft.drawString(buf, cursorX, cursorY);
-	//cursorY += 10;
-	//sprintf(buf, "%8.5f", ki);
-	//tft.drawString(buf, cursorX, cursorY);
-	//cursorY += 10;
-	//sprintf(buf, "%8.5f", kd);
-	//tft.drawString(buf, cursorX, cursorY);
-	//cursorY += 10;
-	//sprintf(buf, "%8d", qpps);
-	//tft.drawString(buf, cursorX, cursorY);
-	//RC2x15AMC.GetRC2x15A()->ReadM1VelocityPID(psAddress, kp, ki, kd, qpps);
-	
 	cursorX = halfScreenWidth;
 	cursorY = 30;
 	tft.setTextDatum(TL_DATUM);
@@ -531,20 +583,36 @@ void LocalDisplayClass::DrawMOTPage()
 	sprintf(buf, "%4.1f V", MCCStatus.mcStatus.SupBatV);
 	tft.drawString(buf, cursorX, cursorY);
 
-	cursorY += 10;
-
+	cursorX = 75;
+	cursorY = 100;				// Dynamic parameters
 	saveCursorY = cursorY;
-
-	//cursorY += 10;
-	cursorX = 40;
-	cursorY = 90;
-	tft.setTextDatum(TL_DATUM);
+	tft.setTextDatum(TR_DATUM);
 	tft.setTextColor(TFT_RED, TFT_BLACK, true);
 	sprintf(buf, "%8d", MCCStatus.mcStatus.M2PWM);
 	tft.drawString(buf, cursorX, cursorY);
+	cursorY += 10;
+	sprintf(buf, "%5.2f", MCCStatus.mcStatus.M2Current);
+	tft.drawString(buf, cursorX, cursorY);
+	cursorY += 10;
+	sprintf(buf, "%4.1f", MCCStatus.mcStatus.Temp2);
+	tft.drawString(buf, cursorX, cursorY);
+	cursorY += 10;
+	sprintf(buf, "%4d", MCCStatus.mcStatus.M2Speed);
+	tft.drawString(buf, cursorX, cursorY);
+
+	cursorY = saveCursorY;
 	tft.setTextColor(TFT_GREEN, TFT_BLACK, true);
-	cursorX = halfScreenWidth + 2;
+	cursorX = halfScreenWidth - 30;
 	sprintf(buf, "%8d", MCCStatus.mcStatus.M1PWM);
+	tft.drawString(buf, cursorX, cursorY);
+	cursorY += 10;
+	sprintf(buf, "%5.2f", MCCStatus.mcStatus.M1Current);
+	tft.drawString(buf, cursorX, cursorY);
+	cursorY += 10;
+	sprintf(buf, "%4.1f", MCCStatus.mcStatus.Temp1);
+	tft.drawString(buf, cursorX, cursorY);
+	cursorY += 10;
+	sprintf(buf, "%4d", MCCStatus.mcStatus.M1Speed);
 	tft.drawString(buf, cursorX, cursorY);
 
 }

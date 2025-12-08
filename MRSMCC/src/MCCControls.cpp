@@ -6,6 +6,7 @@
 #include "MCCControls.h"
 #include "MCCStatus.h"
 #include "LocalDisplay.h"
+#include "RC2x15AMC.h"
 
 void MCCControls::HandleNavButtonEvents(ace_button::AceButton* b, uint8_t eventType, uint8_t buttonState)
 {
@@ -97,15 +98,14 @@ bool MCCControls::Init(TFT_eSPI* parentTFT)
 	ESPNMenuItem->Init(tft);
 	MainMenu->AddItem(ESPNMenuItem);
 	ESPNMenuItem->SetOnExecuteHandler(SetESPNOW);
-	ESPNMenuItem->SetValue(1);					// Enable telemetry by default
+	ESPNMenuItem->SetValue(1);	// Enable telemetry by default
 
-	DriveModeMenuItem = new MenuItemClass("TBD", 60, 157, 56, 12, MenuItemClass::MenuItemTypes::OffOn);
-	DriveModeMenuItem->Init(tft);
-	MainMenu->AddItem(DriveModeMenuItem);
-	DriveModeMenuItem->SetOnExecuteHandler(nullptr);
-	//DriveModeMenuItem->SetMinValue(CSSMDrivePacket::DriveModes::DRV);
-	//DriveModeMenuItem->SetMaxValue(CSSMDrivePacket::DriveModes::DRVTw);
-	//DriveModeMenuItem->SetValue(CSSMDrivePacket::DriveModes::DRV);
+	MCUARTMenuItem = new MenuItemClass("MCSer", 60, 157, 56, 12, MenuItemClass::MenuItemTypes::OffOn);
+	MCUARTMenuItem->Init(tft);
+	MainMenu->AddItem(MCUARTMenuItem);
+	MCUARTMenuItem->SetOnExecuteHandler(SetMCUART);
+	MCUARTMenuItem->SetValue(1);	// Enable MC UART link by default
+	MCUARTMenuItem->InvokeOnExecuteHandler();
 
 	TBDMenuItem = new MenuItemClass("TBD", 118, 157, 56, 12, MenuItemClass::MenuItemTypes::OffOn);
 	TBDMenuItem->Init(tft);
@@ -248,9 +248,12 @@ void MCCControls::Update()
 		}
 	}
 
-
+	if (!MCCStatus.RC2x15AUARTStatus)
+	{
+		//bool success = RC2x15AMC.ResetUARTLink();
+		//SetMCUARTStatus(true);
+	}
 }
-
 
 void MCCControls::CheckButtons()
 {
@@ -296,6 +299,29 @@ void MCCControls::SetESPNOWStatus(bool newStatus)
 {
 	ESPNMenuItem->SetValue((int)newStatus);
 	SetESPNOW(ESPNMenuItem->GetValue());
+}
+
+void MCCControls::SetMCUART(int value)
+{
+	if (mccControls.MCUARTMenuItem->GetValue())
+	{
+		MCCStatus.RC2x15AUARTStatus = true;
+	}
+	else
+	{
+		MCCStatus.RC2x15AUARTStatus = false;
+	}
+}
+
+bool MCCControls::GetMCUARTStatus()
+{
+	return (bool)MCUARTMenuItem->GetValue();
+}
+
+void MCCControls::SetMCUARTStatus(bool newStatus)
+{
+	MCUARTMenuItem->SetValue((int)newStatus);
+	SetMCUART(MCUARTMenuItem->GetValue());
 }
 
 MCCControls mccControls;

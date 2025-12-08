@@ -227,7 +227,6 @@ void setup()
 		}
 	}
 
-	UpdateMotorControllerTask.enable();
 	//TODO: Check whether it is necessary to call UpdateMotorControllerCallback() multiple times here to cycle through
 	//reading all of the MC status registers before proceeding:
 	if (MCCStatus.RC2x15AUARTStatus)
@@ -241,6 +240,7 @@ void setup()
 		UpdateMotorControllerCallback();
 		UpdateMotorControllerCallback();
 	}
+	UpdateMotorControllerTask.enable();
 
 	sprintf(buf, "CSSMDrivePacket: %d b", sizeof(CSSMDrivePacket));
 	MCCStatus.AddDebugTextLine(buf);

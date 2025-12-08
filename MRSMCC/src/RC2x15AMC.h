@@ -59,21 +59,22 @@ public:
 	float M2kd = 0.0f;
 	uint32_t M2qpps = defaultRMotorFullSpeedQPPS;
 	
+	float KLTrack = defaultKLTrack;					// qp/mm; encoder quadrature pulse count per mm of track movement
+	float KRTrack = defaultKRTrack;					// qp/mm
+	float TrackSpan = defaulTrackSpan;				// mm; horizontal distance between left and right track center lines
+
 	bool TestInProgress();
 
 protected:
 	HardwareSerial* RC2x15AUART;					// Packet serial link to RoboClaw 2x15A Motor Controller
 	RoboClaw* RC2x15A;
-	uint8_t PSAddress = defaultRC2x15AAddress;				// RoboClaw MC address for Packet Serial communications
+	uint8_t PSAddress = defaultRC2x15AAddress;		// RoboClaw MC address for Packet Serial communications
 
 	bool calibratingDrive = false;					// Development testing, such as calibrating odometry parameters
 	uint64_t CalibrateDriveStartTime = 0;
 
 	bool CalibrateDriveSystem(uint64_t testPeriod);
 
-	float KLTrack = defaultKLTrack;
-	float KRTrack = defaultKRTrack;
-	float TrackSpan = defaulTrackSpan;
 	uint64_t OdometerStartTime = 0;					// ms; used to calculate odometer time
 	uint64_t LastOdometryUpdateTime = 0;			// ms; used to integrate dynamic measurements to obtain position and pose estimates
 	uint64_t Trip1StartTime = 0;					// ms;
@@ -84,6 +85,7 @@ protected:
 public:
 	bool Init();
 	bool ReadStatus();
+	bool StartUARTLink();
 	bool ResetUARTLink();
 	RoboClaw* GetRC2x15A();
 	uint8_t GetPSAddress();
