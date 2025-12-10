@@ -22,11 +22,13 @@
 
 #include "Measurement.h"
 #include <Zanshin_BME680.h>
-constexpr byte defaultBME680Address = 0x77;
+constexpr byte defaultBME680Address = 0x77;			// Default (factory) I2C address of BME680 sensor
 
 //#include <Adafruit_INA219.h>
 #include "INA219.h"
 constexpr byte defaultINA219Address = 0x41;			// I2C address of INA219 sensor on WaveShare UPS 3S module
+
+constexpr byte defaultMRSSENAddress = 0x08;			// I2C address of MRS Sensors module on MCC I2C bus
 
 #include "esp_adc_cal.h"
 constexpr uint32_t defaultVRef = 1100;
@@ -61,6 +63,7 @@ public:
 	
 	bool Init();
 	void Update();
+	bool TestMRSSENCommunication();
 
 	uint16_t GetMCURawADC();
 	float GetMCUVoltageReal();

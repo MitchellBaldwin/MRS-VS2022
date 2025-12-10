@@ -33,12 +33,15 @@ public:
 		
 		StartMSOdometerCalibration = 0x18,
 
+		SetTurretPosition = 0x20,
+
 	};
 protected:
 	uint8_t PacketType = 0x24;								// Identifies packet type; fixed for all CSSMCommandPackets
 
 public:
 	CSSMCommandCodes command = CSSMCommandCodes::NoCommand;
+	int16_t turretPosition = 0;								// Target turret position in steps; used only for SetTurretPosition command
 
 };
 

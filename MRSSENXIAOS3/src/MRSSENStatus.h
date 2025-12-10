@@ -19,6 +19,7 @@
 	#include "WProgram.h"
 #endif
 
+#include "C:\Repos\MRS-VS2022\MRSCommon\src\CSSMCommandPacket.h"
 #include "C:\Repos\MRS-VS2022\MRSCommon\src\MRSSensorPacket.h"
 #include <PCF8563.h>
 
@@ -40,6 +41,7 @@ public:
 	bool RTCStatus = false;
 	Time RTCtime;
 	
+	CSSMCommandPacket cssmCommandPacket;
 	MRSSensorPacket mrsSensorPacket;
 
 	bool Init();

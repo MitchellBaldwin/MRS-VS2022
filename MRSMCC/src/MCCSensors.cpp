@@ -105,6 +105,9 @@ bool MCCSensors::Init()
 
 	// Initialoze Odometry sensor:
 
+	// Test MRS SEN I2C communication:
+	TestMRSSENCommunication();
+
 	bool success = MCCStatus.WSUPS3SINA219Status && MCCStatus.BME680Status;
 	return success;
 }
@@ -152,6 +155,32 @@ void MCCSensors::Update()
 		MCCStatus.mrsSensorPacket.INA219VLoad = MCCStatus.mrsSensorPacket.INA219VBus + (MCCStatus.mrsSensorPacket.INA219VShunt / 1000.0f);
 	}
 
+}
+
+bool MCCSensors::TestMRSSENCommunication()
+{
+	bool success = false;
+
+	CSSMCommandPacket testPacket;
+	testPacket.command = CSSMCommandPacket::CSSMCommandCodes::SetTurretPosition;
+	testPacket.turretPosition = 800;
+
+	Wire.beginTransmission(defaultMRSSENAddress);
+	size_t bytesWritten = Wire.write((uint8_t*)&testPacket, sizeof(CSSMCommandPacket));
+	Wire.endTransmission();
+
+	if (bytesWritten != sizeof(CSSMCommandPacket))
+	{
+		_PL("MRS Sensors I2C write FAILED")
+		success = false;
+	}
+	else
+	{
+		success = true;
+		_PL("MRS Sensors I2C write test successful")
+	}
+	
+	return success;
 }
 
 uint16_t MCCSensors::GetMCURawADC()
