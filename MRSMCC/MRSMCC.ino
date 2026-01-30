@@ -17,10 +17,10 @@
 #include "src/RC2x15AMC.h"
 
 #include <WiFi.h>
-#define LocalWiFiSSID "WeatherDogPacNW"
-#define LocalWiFiPW "5TgbnhY6"
-//#define LocalWiFiSSID "320"
-//#define LocalWiFiPW "103187OS"
+//#define LocalWiFiSSID "WeatherDogPacNW"
+//#define LocalWiFiPW "5TgbnhY6"
+#define LocalWiFiSSID "320"
+#define LocalWiFiPW "103187OS"
 
 #include <esp_now.h>
 
@@ -379,6 +379,7 @@ void OnMRSRCCSSMDataReceived(const uint8_t* mac, const uint8_t* data, int lenght
 {
 	char buf[32];
 	CSSMCommandPacket cp;
+	bool success = false;
 	
 	switch (data[0])
 	{
@@ -395,6 +396,29 @@ void OnMRSRCCSSMDataReceived(const uint8_t* mac, const uint8_t* data, int lenght
 		else if (cp.command == CSSMCommandPacket::ResetMCTrip2)
 		{
 			RC2x15AMC.ResetTrip2();
+		}
+		else if (cp.command == CSSMCommandPacket::SetTurretPosition)
+		{
+
+			cp.command = CSSMCommandPacket::CSSMCommandCodes::SetTurretPosition;
+			cp.turretPosition = 800;
+
+			Wire.beginTransmission(defaultMRSSENAddress);
+			size_t bytesWritten = Wire.write((uint8_t*)&cp, sizeof(CSSMCommandPacket));
+			Wire.endTransmission();
+
+			if (bytesWritten != sizeof(CSSMCommandPacket))
+			{
+				//_PL("MRS Sensors I2C write FAILED")
+				success = false;
+			}
+			else
+			{
+				_PL("SetTurretPosition command received")
+				success = true;
+			}
+
+			//return success;
 		}
 		break;
 	default:

@@ -69,7 +69,8 @@ public:
 	uint16_t SendRetries = 0;					// Count of contiguous retries sending command packets to the MRS MCC
 
 	//uint8_t MRSMCCMAC[6] = { 0xF0, 0xF5, 0xBD, 0x42, 0xB7, 0x78 };		// MRS Dev1 MCC
-	uint8_t MRSMCCMAC[6] = { 0x80, 0x65, 0x99, 0xA1, 0xDE, 0x98 };		// Breadboard prototype MCC
+	//uint8_t MRSMCCMAC[6] = { 0x80, 0x65, 0x99, 0xA1, 0xDE, 0x98 };		// Breadboard prototype MCC
+	uint8_t MRSMCCMAC[6] = { 0xF0, 0xF5, 0xBD, 0x44, 0x25, 0x48 };		// MRS Dev2 MCC
 
 	uint32_t MRSMCCPacketReceivedCount = 0;		// Running count of telemetry packets received from the MRS MCC (not used?)
 	uint32_t SaveMRSMCCPacketReceivedCount = 0;	// (not used?)

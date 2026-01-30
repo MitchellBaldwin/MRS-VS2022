@@ -85,6 +85,10 @@ void MCCI2CRequestEvent();
 FastAccelStepperEngine fasEngine = FastAccelStepperEngine();
 FastAccelStepper* SensorTurretMotor = NULL;
 
+#include <Adafruit_NeoPixel.h>
+constexpr uint8_t FwdNeoPixelCount = 8;
+Adafruit_NeoPixel FwdNeoPixelStrip(FwdNeoPixelCount, DefaultFwdNeoPixelPin, NEO_GRB + NEO_KHZ800);
+
 void setup()
 {
 	char buf[32];
@@ -174,6 +178,18 @@ void setup()
 		SensorTurretMotor->moveTo(0, true);
 		_PL("Sensor turret motor test complete");
 	}
+
+	// Initialize forward NeoPixel strip:
+	FwdNeoPixelStrip.begin();
+	FwdNeoPixelStrip.show(); // Initialize all pixels to 'off'
+	_PL("Forward NeoPixel strip initialized successfully");
+	// Set forward NeoPixel strip to blue:
+	for (uint8_t i = 0; i < FwdNeoPixelCount; i++)
+	{
+		FwdNeoPixelStrip.setPixelColor(i, FwdNeoPixelStrip.Color(0, 0, 255)); // Blue
+	}
+	FwdNeoPixelStrip.show();
+
 
 	//// Test code:
 	//SensorTurretMotor.connectToPins(IN1, IN2, IN3, IN4);	// ccw reverse, cw forward

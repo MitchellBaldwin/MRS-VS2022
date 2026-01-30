@@ -454,6 +454,15 @@ bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 	DRVPageMenu->AddItem(T2ResetMenuItem);
 	T2ResetMenuItem->SetOnExecuteHandler(T2Reset);
 
+	STPositionMenuItem = new MenuItemClass("STPos", 220, 157, 56, 12, MenuItemClass::Numeric);
+	STPositionMenuItem->Init(tft);
+	DRVPageMenu->AddItem(STPositionMenuItem);
+	STPositionMenuItem->SetOnExecuteHandler(SetTurretPosition);
+	STPositionMenuItem->SetMinValue(0);
+	STPositionMenuItem->SetMaxValue(359);
+	STPositionMenuItem->SetNumericStepSize(1);
+	STPositionMenuItem->SetValue(0);
+
 	// Set up ADC:
 	SetupADC();
 
@@ -772,6 +781,28 @@ void CSSMS3Controls::T2Reset(int value)
 
 	if (CSSMS3Status.ESPNOWStatus)
 	{
+		result = esp_now_send(CSSMS3Status.MRSMCCMAC, (uint8_t*)&cp, sizeof(cp));
+		if (result != ESP_NOW_SEND_SUCCESS)
+		{
+			sprintf(buf2, "ESP-NOW send error: %S", esp_err_to_name(result));
+			_PL(buf2)
+		}
+	}
+}
+
+void CSSMS3Controls::SetTurretPosition(int value)
+{
+	char buf2[64];
+
+	CSSMCommandPacket cp;
+	cp.command = CSSMCommandPacket::SetTurretPosition;
+	cp.turretPosition = value;
+
+	esp_err_t result = ESP_OK;
+
+	if (CSSMS3Status.ESPNOWStatus)
+	{
+		//_PL("Sending ResetMCTrip1 command...")
 		result = esp_now_send(CSSMS3Status.MRSMCCMAC, (uint8_t*)&cp, sizeof(cp));
 		if (result != ESP_NOW_SEND_SUCCESS)
 		{

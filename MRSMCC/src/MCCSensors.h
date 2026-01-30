@@ -22,7 +22,7 @@
 
 #include "Measurement.h"
 #include <Zanshin_BME680.h>
-constexpr byte defaultBME680Address = 0x77;			// Default (factory) I2C address of BME680 sensor
+constexpr byte defaultBME680Address = 0x76;			// Default (factory) I2C address of BME680 sensor
 
 //#include <Adafruit_INA219.h>
 #include "INA219.h"

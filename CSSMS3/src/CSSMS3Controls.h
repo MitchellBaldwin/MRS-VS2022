@@ -131,6 +131,7 @@ protected:
 	static void SetSPD(int value);				// Set the Speed from the value field of the SPDSetMenuItem object
 	static void T1Reset(int value);				// Send command to MRS resetting Trip 1 odometer measurements
 	static void T2Reset(int value);				// Send command to MRS resetting Trip 1 odometer measurements
+	static void SetTurretPosition(int value);	// Send command to set new Sensor Turret position
 
 public:
 	enum NavEncoderModes
@@ -180,6 +181,7 @@ public:
 	MenuItemClass* CaptureHDGMenuItem;
 	MenuItemClass* T1ResetMenuItem;
 	MenuItemClass* T2ResetMenuItem;
+	MenuItemClass* STPositionMenuItem;
 
 	TFTMenuClass* WPTPageMenu;			// WPT page menu
 	MenuItemClass* DirectToMenuItem;

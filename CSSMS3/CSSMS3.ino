@@ -76,10 +76,10 @@ constexpr uint16_t MaxCSSMSendRetries = 16;
 
 //#include "src/ESP32WiFi.h"
 #include <WiFi.h>
-#define LocalWiFiSSID "WeatherDogPacNW"
-#define LocalWiFiPW "5TgbnhY6"
-//#define LocalWiFiSSID "320"
-//#define LocalWiFiPW "103187OS"
+//#define LocalWiFiSSID "WeatherDogPacNW"
+//#define LocalWiFiPW "5TgbnhY6"
+#define LocalWiFiSSID "320"
+#define LocalWiFiPW "103187OS"
 
 #include "src/CSSMS3EnvSensors.h"
 
