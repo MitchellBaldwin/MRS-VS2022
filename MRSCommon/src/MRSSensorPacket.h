@@ -32,17 +32,19 @@ public:
 	float INA219Current = 0.0f;		// mA
 	float INA219Power = 0.0f;		// mW
 
-	float BME280Temp = 0.0f;		// °C
-	float BME280Pbaro = 0.0f;		// hPa
-	float BME280RH = 0.0f;			// %
-	float BME280Gas = 0.0f;			// ohm
-	float BME280Alt = 0.0f;			// m
+	float BME680Temp = 0.0f;		// °C
+	float BME680Pbaro = 0.0f;		// hPa
+	float BME680RH = 0.0f;			// %
+	float BME680Gas = 0.0f;			// ohm
+	float BME680Alt = 0.0f;			// m
 
 	int FWDVL53L1XRange = 0;		// mm
 
 	float ODOSPosX = 0.0f;			// m
 	float ODOSPosY = 0.0f;			// m
 	float ODOSHdg = 0.0f;			// °
+
+	int TurretPosition = 0;			// °
 
 };
 

@@ -285,6 +285,7 @@ void MCCI2CReceiveEvent(int numBytes)
 			_PP("Moving sensor turret to target position: ");
 			_PL(mrsSENStatus.cssmCommandPacket.turretPosition);
 			SensorTurretMotor->moveTo(mrsSENStatus.cssmCommandPacket.turretPosition, true);
+			mrsSENStatus.mrsSensorPacket.TurretPosition = mrsSENStatus.cssmCommandPacket.turretPosition;
 		}
 		else
 		{
@@ -295,5 +296,19 @@ void MCCI2CReceiveEvent(int numBytes)
 
 void MCCI2CRequestEvent()
 {
-	MCCI2CBus.slaveWrite((uint8_t*)&mrsSENStatus.mrsSensorPacket, sizeof(MRSSENStatus::mrsSensorPacket));
+	char buf[64];
+
+	size_t bytesWritten = 0;
+	//if (MCCI2CBus.availableForWrite() < sizeof(MRSSENStatus::mrsSensorPacket))
+	//{
+	//	_PL("MCCI2CRequestEvent: Not enough buffer space to write sensor packet");
+	//	return;
+	//}
+	bytesWritten = MCCI2CBus.slaveWrite((uint8_t*)&mrsSENStatus.mrsSensorPacket, sizeof(MRSSensorPacket));
+
+	//sprintf(buf, "Read ST Position %d (%db)", mrsSENStatus.mrsSensorPacket.TurretPosition, bytesWritten);
+	//_PL(buf)
+	//sprintf(buf, "Read VL53L1X Range %d mm (%db)", mrsSENStatus.mrsSensorPacket.FWDVL53L1XRange, bytesWritten);
+	//_PL(buf)
+
 }

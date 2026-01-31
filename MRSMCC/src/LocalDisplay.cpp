@@ -743,35 +743,66 @@ void LocalDisplayClass::DrawSENPage()
 	cursorY = 30;
 	tft.setTextDatum(CL_DATUM);
 	tft.setTextColor(TFT_GREENYELLOW, TFT_BLACK, true);
-	sprintf(buf, "Tatm %7.2f %cC", MCCStatus.mrsSensorPacket.BME280Temp, 0xF7);
+	//sprintf(buf, "Tatm %7.2f %cC", MCCStatus.mrsSensorPacket.BME680Temp, 0xF7);
 	tft.drawString("Local BME680:", cursorX, cursorY);
 
 	cursorX = 12;
 	cursorY += 10;
 	tft.setTextColor(TFT_GREEN, TFT_BLACK, true);
-	sprintf(buf, "Tatm %7.2f %cC", MCCStatus.mrsSensorPacket.BME280Temp, 0xF7);
+	sprintf(buf, "Tatm %7.2f %cC", MCCStatus.mrsSensorPacket.BME680Temp, 0xF7);
 	tft.drawString(buf, cursorX, cursorY);
 
 	cursorY += 10;
-	sprintf(buf, "RH   %7.2f %%", MCCStatus.mrsSensorPacket.BME280RH);
+	sprintf(buf, "RH   %7.2f %%", MCCStatus.mrsSensorPacket.BME680RH);
 	tft.drawString(buf, cursorX, cursorY);
 
 	cursorY += 10;
-	sprintf(buf, "Pbar %7.2f hPa", MCCStatus.mrsSensorPacket.BME280Pbaro);
+	sprintf(buf, "Pbar %7.2f hPa", MCCStatus.mrsSensorPacket.BME680Pbaro);
 	tft.drawString(buf, cursorX, cursorY);
 
 	cursorY += 10;
-	sprintf(buf, "Alt  %7.0f m", MCCStatus.mrsSensorPacket.BME280Alt);
+	sprintf(buf, "Alt  %7.0f m", MCCStatus.mrsSensorPacket.BME680Alt);
 	tft.drawString(buf, cursorX, cursorY);
 
 	cursorY += 10;
-	sprintf(buf, "Gas  %7.2f ohm", MCCStatus.mrsSensorPacket.BME280Gas);
+	sprintf(buf, "Gas  %7.2f ohm", MCCStatus.mrsSensorPacket.BME680Gas);
 	tft.drawString(buf, cursorX, cursorY);
 
 	cursorX = 2;
 	cursorY += 20;
 	tft.setTextColor(TFT_SILVER, TFT_BLACK, true);
 	sprintf(buf, "VMCU %s", mccSensors.GetMCUVoltageString());
+	tft.drawString(buf, cursorX, cursorY);
+
+	// Display MRS SEN pose data:
+
+	cursorX = halfScreenWidth + 2;
+	cursorY = 30;
+	tft.setTextDatum(CL_DATUM);
+	tft.setTextColor(TFT_GREENYELLOW, TFT_BLACK, true);
+	sprintf(buf, "SF ODO Pose:");
+	tft.drawString(buf, cursorX, cursorY);
+
+	cursorX = halfScreenWidth + 12;
+	cursorY += 10;
+	tft.setTextColor(TFT_GREEN, TFT_BLACK, true);
+	sprintf(buf, "X %8.3f m", MCCStatus.mrsSensorPacket.ODOSPosX, 0xF7);
+	tft.drawString(buf, cursorX, cursorY);
+
+	cursorY += 10;
+	sprintf(buf, "X %8.3f m", MCCStatus.mrsSensorPacket.ODOSPosY, 0xF7);
+	tft.drawString(buf, cursorX, cursorY);
+
+	cursorY += 10;
+	sprintf(buf, "HDG %6.1f %c", MCCStatus.mrsSensorPacket.ODOSHdg, 0xF7);
+	tft.drawString(buf, cursorX, cursorY);
+
+	cursorY += 10;
+	sprintf(buf, "ST BRG %6.1f %c", MCCStatus.mrsSensorPacket.TurretPosition, 0xF7);
+	tft.drawString(buf, cursorX, cursorY);
+
+	cursorY += 10;
+	sprintf(buf, "VL53L1 %6.1f mm", MCCStatus.mrsSensorPacket.FWDVL53L1XRange);
 	tft.drawString(buf, cursorX, cursorY);
 
 }

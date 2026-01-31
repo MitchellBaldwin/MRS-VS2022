@@ -377,7 +377,7 @@ void OnMRSRCCSSMDataSent(const uint8_t* mac_addr, esp_now_send_status_t status)
 
 void OnMRSRCCSSMDataReceived(const uint8_t* mac, const uint8_t* data, int lenght)
 {
-	char buf[32];
+	char buf[64];
 	CSSMCommandPacket cp;
 	bool success = false;
 	
@@ -401,7 +401,7 @@ void OnMRSRCCSSMDataReceived(const uint8_t* mac, const uint8_t* data, int lenght
 		{
 
 			cp.command = CSSMCommandPacket::CSSMCommandCodes::SetTurretPosition;
-			cp.turretPosition = 800;
+			//cp.turretPosition = 800;
 
 			Wire.beginTransmission(defaultMRSSENAddress);
 			size_t bytesWritten = Wire.write((uint8_t*)&cp, sizeof(CSSMCommandPacket));
@@ -414,7 +414,8 @@ void OnMRSRCCSSMDataReceived(const uint8_t* mac, const uint8_t* data, int lenght
 			}
 			else
 			{
-				_PL("SetTurretPosition command received")
+				sprintf(buf, "Sent SetTurretPosition %d (%db)", cp.turretPosition, bytesWritten);
+				_PL(buf)
 				success = true;
 			}
 

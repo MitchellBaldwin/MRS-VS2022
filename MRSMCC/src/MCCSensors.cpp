@@ -105,8 +105,8 @@ bool MCCSensors::Init()
 
 	// Initialoze Odometry sensor:
 
-	// Test MRS SEN I2C communication:
-	TestMRSSENCommunication();
+	//// Test MRS SEN I2C communication:
+	//TestMRSSENCommunication();
 
 	bool success = MCCStatus.WSUPS3SINA219Status && MCCStatus.BME680Status;
 	return success;
@@ -114,7 +114,9 @@ bool MCCSensors::Init()
 
 void MCCSensors::Update()
 {
-	char buf[32];
+	char buf[64];
+	uint8_t data[sizeof(MRSSensorPacket)];
+
 	static int32_t temp, rh, pbaro, gas;
 	static uint32_t loopCounter = 0;
 
@@ -129,11 +131,11 @@ void MCCSensors::Update()
 		if (loopCounter++ % 10 == 0)
 		{
 			// If not measuring then assume the last measurement period has ended:
-			MCCStatus.mrsSensorPacket.BME280Temp = (float)temp / 100.0f;	// Convert from centidegrees
-			MCCStatus.mrsSensorPacket.BME280RH = (float)rh / 1000.0f;		// Convert from milli-%
-			MCCStatus.mrsSensorPacket.BME280Pbaro = (float)pbaro / 100.0f;	// Convert from Pa to hPa
-			MCCStatus.mrsSensorPacket.BME280Gas = (float)gas / 100.0f;		// Convert from milliohms (?)
-			MCCStatus.mrsSensorPacket.BME280Alt = BME680Altitude(pbaro);	// m
+			MCCStatus.mrsSensorPacket.BME680Temp = (float)temp / 100.0f;	// Convert from centidegrees
+			MCCStatus.mrsSensorPacket.BME680RH = (float)rh / 1000.0f;		// Convert from milli-%
+			MCCStatus.mrsSensorPacket.BME680Pbaro = (float)pbaro / 100.0f;	// Convert from Pa to hPa
+			MCCStatus.mrsSensorPacket.BME680Gas = (float)gas / 100.0f;		// Convert from milliohms (?)
+			MCCStatus.mrsSensorPacket.BME680Alt = BME680Altitude(pbaro);	// m
 			BME680->getSensorData(temp, rh, pbaro, gas, false);				// Setting waitSwitch = false to read asynchronously
 		}
 	}
@@ -153,6 +155,45 @@ void MCCSensors::Update()
 		MCCStatus.mrsSensorPacket.INA219Current = WSUPS3SINA219->getCurrent_mA();
 		MCCStatus.mrsSensorPacket.INA219Power = WSUPS3SINA219->getPower_mW();
 		MCCStatus.mrsSensorPacket.INA219VLoad = MCCStatus.mrsSensorPacket.INA219VBus + (MCCStatus.mrsSensorPacket.INA219VShunt / 1000.0f);
+	}
+
+	// Get sensor packet from MRS SEN module over I2C:
+	
+	if (Wire.availableForWrite() < sizeof(MRSSensorPacket))
+	{
+		MRSSensorPacket senPacket;
+		Wire.requestFrom((uint8_t)defaultMRSSENAddress, (uint8_t)sizeof(MRSSensorPacket));
+		size_t bytesRead = sizeof(MRSSensorPacket);
+		Wire.readBytes(data, sizeof(MRSSensorPacket));
+		memcpy(&senPacket, data, sizeof(MRSSensorPacket));
+
+		MCCStatus.mrsSensorPacket.FWDVL53L1XRange = senPacket.FWDVL53L1XRange;
+		MCCStatus.mrsSensorPacket.ODOSPosX = senPacket.ODOSPosX;
+		MCCStatus.mrsSensorPacket.ODOSPosY = senPacket.ODOSPosY;
+		MCCStatus.mrsSensorPacket.ODOSHdg = senPacket.ODOSHdg;
+		MCCStatus.mrsSensorPacket.TurretPosition = senPacket.TurretPosition;
+		
+		//while (Wire.available())
+		//{
+		//	((uint8_t*)&senPacket)[bytesRead++] = Wire.read();
+		//}
+		//if (bytesRead == sizeof(MRSSensorPacket))
+		//{
+		//	MCCStatus.mrsSensorPacket.FWDVL53L1XRange = senPacket.FWDVL53L1XRange;
+		//	MCCStatus.mrsSensorPacket.ODOSPosX = senPacket.ODOSPosX;
+		//	MCCStatus.mrsSensorPacket.ODOSPosY = senPacket.ODOSPosY;
+		//	MCCStatus.mrsSensorPacket.ODOSHdg = senPacket.ODOSHdg;
+		//	MCCStatus.mrsSensorPacket.TurretPosition = senPacket.TurretPosition;
+		//}
+		//else
+		//{
+		//	sprintf(buf, "MRS SEN I2C read FAILED (%db)", bytesRead);
+		//	_PL(buf)
+		//}
+	}
+	else
+	{
+		_PL("MRS SEN I2C bus not available for read")
 	}
 
 }

@@ -412,17 +412,17 @@ void CSSMS3Display::DrawSENPage()
 
 	cursorY += 10;
 	sprintf(buf, "MRS  BME680 %7.2f %cC  %6.2f %%RH  %6.2f hPa",
-			CSSMS3Status.mrsSensorPacket.BME280Temp, 0xF7,
-			CSSMS3Status.mrsSensorPacket.BME280RH,
-			CSSMS3Status.mrsSensorPacket.BME280Pbaro);
+			CSSMS3Status.mrsSensorPacket.BME680Temp, 0xF7,
+			CSSMS3Status.mrsSensorPacket.BME680RH,
+			CSSMS3Status.mrsSensorPacket.BME680Pbaro);
 	tft.drawString(buf, cursorX, cursorY, 1);
 
 	cursorX += 80;
 	cursorY += 10;
 	tft.setTextColor(TFT_GREENYELLOW, TFT_BLACK, true);
 	sprintf(buf, "Alt:%7.0f m  Gas:%7.2f ohm",
-			CSSMS3Status.mrsSensorPacket.BME280Alt,
-			CSSMS3Status.mrsSensorPacket.BME280Gas);
+			CSSMS3Status.mrsSensorPacket.BME680Alt,
+			CSSMS3Status.mrsSensorPacket.BME680Gas);
 	tft.drawString(buf, cursorX, cursorY, 1);
 
 }
