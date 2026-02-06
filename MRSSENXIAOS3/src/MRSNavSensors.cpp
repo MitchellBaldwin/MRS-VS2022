@@ -108,8 +108,6 @@ void MRSNavSensors::Update()
 	// Update the RTC time:
 	mrsSENStatus.RTCtime = RTC->getTime();
 
-	//mrsSENStatus.mrsSensorPacket.TurretPosition = SensorTurretMotor->getCurrentPosition();
-
 }
 
 

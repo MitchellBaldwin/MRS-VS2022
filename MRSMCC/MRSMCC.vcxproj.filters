@@ -303,6 +303,9 @@
     <ClCompile Include="src\INA219.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\MRSSENsors.CPP">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="__vm\.MRSMCC.vsarduino.h">
@@ -570,6 +573,9 @@
       <Filter>src\_micro-api-readonly\libraries\BME680</Filter>
     </ClInclude>
     <ClInclude Include="src\INA219.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MRSSENsors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -34,6 +34,7 @@ public:
 		StartMSOdometerCalibration = 0x18,
 
 		SetTurretPosition = 0x20,
+		GetTurretPosition = 0x21,
 
 	};
 protected:

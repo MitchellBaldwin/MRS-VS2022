@@ -40,6 +40,8 @@ public:
 	String FwdVL53L1XSWVersion;
 	bool RTCStatus = false;
 	Time RTCtime;
+	bool SensorTurretMotorStatus = false;
+	bool INA219Status = false;				// I2C link to Right UPS INA219 power sensor status
 	
 	CSSMCommandPacket cssmCommandPacket;
 	MRSSensorPacket mrsSensorPacket;

@@ -101,12 +101,8 @@ bool MCCSensors::Init()
 		//MCCStatus.BME680Status = true;
 	}
 
-	// Initialize VL53L1X distance sensor:
-
-	// Initialoze Odometry sensor:
-
-	//// Test MRS SEN I2C communication:
-	//TestMRSSENCommunication();
+	MRSSENsors = new MRSSENsorsClass();
+	MCCStatus.MRSSENModuleStatus = MRSSENsors->Init();
 
 	bool success = MCCStatus.WSUPS3SINA219Status && MCCStatus.BME680Status;
 	return success;
@@ -158,9 +154,15 @@ void MCCSensors::Update()
 	}
 
 	// Get sensor packet from MRS SEN module over I2C:
-	
-	if (Wire.availableForWrite() < sizeof(MRSSensorPacket))
+	MCCStatus.MRSSENModuleStatus = MRSSENsors->TestI2CConnection();
+	if (MCCStatus.MRSSENModuleStatus)
 	{
+		CSSMCommandPacket commandPacket;
+		commandPacket.command = CSSMCommandPacket::CSSMCommandCodes::NoCommand;
+		Wire.beginTransmission(defaultMRSSENAddress);
+		size_t bytesWritten = Wire.write((uint8_t*)&commandPacket, sizeof(CSSMCommandPacket));
+		Wire.endTransmission();
+
 		MRSSensorPacket senPacket;
 		Wire.requestFrom((uint8_t)defaultMRSSENAddress, (uint8_t)sizeof(MRSSensorPacket));
 		size_t bytesRead = sizeof(MRSSensorPacket);
@@ -172,29 +174,15 @@ void MCCSensors::Update()
 		MCCStatus.mrsSensorPacket.ODOSPosY = senPacket.ODOSPosY;
 		MCCStatus.mrsSensorPacket.ODOSHdg = senPacket.ODOSHdg;
 		MCCStatus.mrsSensorPacket.TurretPosition = senPacket.TurretPosition;
-		
-		//while (Wire.available())
-		//{
-		//	((uint8_t*)&senPacket)[bytesRead++] = Wire.read();
-		//}
-		//if (bytesRead == sizeof(MRSSensorPacket))
-		//{
-		//	MCCStatus.mrsSensorPacket.FWDVL53L1XRange = senPacket.FWDVL53L1XRange;
-		//	MCCStatus.mrsSensorPacket.ODOSPosX = senPacket.ODOSPosX;
-		//	MCCStatus.mrsSensorPacket.ODOSPosY = senPacket.ODOSPosY;
-		//	MCCStatus.mrsSensorPacket.ODOSHdg = senPacket.ODOSHdg;
-		//	MCCStatus.mrsSensorPacket.TurretPosition = senPacket.TurretPosition;
-		//}
-		//else
-		//{
-		//	sprintf(buf, "MRS SEN I2C read FAILED (%db)", bytesRead);
-		//	_PL(buf)
-		//}
+	
+		//MCCStatus.mrsSensorPacket.FWDVL53L1XRange = MRSSENsors->GetFWDLIDARRangeMM();
 	}
 	else
 	{
-		_PL("MRS SEN I2C bus not available for read")
+		_PL("MRS SEN I2C connection FAILED")
+		//return;
 	}
+
 
 }
 

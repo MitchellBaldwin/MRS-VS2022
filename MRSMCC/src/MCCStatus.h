@@ -86,6 +86,8 @@ class MCCStatusClass
 	 bool FuncEncoderStatus = false;
 
 	 bool BME680Status = false;
+	 bool MRSSENModuleStatus = false;
+
 	 bool IMUStatus = false;
 
 	 String debugTextLines[MAX_TEXT_LINES];

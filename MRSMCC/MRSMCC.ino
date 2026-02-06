@@ -14,6 +14,7 @@
 
 */
 
+#include "src/MRSSENsors.h"
 #include "src/RC2x15AMC.h"
 
 #include <WiFi.h>

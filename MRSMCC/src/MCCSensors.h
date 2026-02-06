@@ -28,7 +28,7 @@ constexpr byte defaultBME680Address = 0x76;			// Default (factory) I2C address o
 #include "INA219.h"
 constexpr byte defaultINA219Address = 0x41;			// I2C address of INA219 sensor on WaveShare UPS 3S module
 
-constexpr byte defaultMRSSENAddress = 0x08;			// I2C address of MRS Sensors module on MCC I2C bus
+//constexpr byte defaultMRSSENAddress = 0x08;			// I2C address of MRS Sensors module on MCC I2C bus
 
 #include "esp_adc_cal.h"
 constexpr uint32_t defaultVRef = 1100;
@@ -39,6 +39,8 @@ constexpr byte defaultVBBAKPin = GPIO_NUM_1;		// ADC1 channel 0; analog voltage 
 constexpr byte defaultVMCUPin = GPIO_NUM_4;			// ADC1 channel 3; analog voltage measured at the MCU battery JST connector
 
 constexpr byte TS3MCSupplySensePin = GPIO_NUM_21;	// Digital input; low when battery power is connected through TS3
+
+#include "MRSSENsors.h"
 
 class MCCSensors
 {
@@ -58,6 +60,8 @@ protected:
 
 	//Adafruit_INA219* WSUPS3SINA219 = new Adafruit_INA219(defaultINA219Address);
 	INA219* WSUPS3SINA219 = new INA219(defaultINA219Address);
+
+	MRSSENsorsClass* MRSSENsors;
 
 public:
 	

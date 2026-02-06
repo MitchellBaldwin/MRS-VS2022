@@ -89,6 +89,8 @@ FastAccelStepper* SensorTurretMotor = NULL;
 constexpr uint8_t FwdNeoPixelCount = 8;
 Adafruit_NeoPixel FwdNeoPixelStrip(FwdNeoPixelCount, DefaultFwdNeoPixelPin, NEO_GRB + NEO_KHZ800);
 
+#include "C:\Repos\MRS-VS2022\MRSMCC\src\MRSSENsors.h"
+
 void setup()
 {
 	char buf[32];
@@ -169,14 +171,7 @@ void setup()
 		SensorTurretMotor->setAutoEnable(true);
 		_PL("Sensor turret motor initialized successfully");
 
-		SensorTurretMotor->setSpeedInHz(500);
-		SensorTurretMotor->setAcceleration(100);
-		//SensorTurretMotor->runForward();
-		_PL("Rotating sensor turret motor 1 revolution clockwise");
-		SensorTurretMotor->moveTo(1600, true);	// MS1 & MS2 set for 1/8 microstepping => 1600 steps/rev
-		_PL("Rotating sensor turret motor 1 revolution counter-clockwise");
-		SensorTurretMotor->moveTo(0, true);
-		_PL("Sensor turret motor test complete");
+		TestSTMotor();
 	}
 
 	// Initialize forward NeoPixel strip:
@@ -266,34 +261,68 @@ void UpdateNavSensorsCallback()
 	mrsNavSensors.Update();
 }
 
+/// <summary>
+/// Handles an I2C receive event from the MCC: validates and reads an incoming CSSMCommandPacket, updates internal status, 
+/// and processes SetTurretPosition commands by moving the sensor turret if initialized.
+/// </summary>
+/// <param name="numBytes">The number of bytes received from the I2C bus.</param>
 void MCCI2CReceiveEvent(int numBytes)
 {
+	char buf[64];
 	uint8_t data[numBytes];
+
 	// Currently only CSSMCommandPacket messages are expected from the MCC:
 	if (numBytes != sizeof(mrsSENStatus.cssmCommandPacket))
 	{
-		_PL("MCCI2CReceiveEvent: Unexpected command packet size");
+		sprintf(buf, "MCCI2CReceiveEvent: Unexpected command packet size: %d bytes", numBytes);
+		_PL(buf);
 		return;
 	}
 	MCCI2CBus.readBytes(data, numBytes);	// Read incomming command packet
 	memcpy(&mrsSENStatus.cssmCommandPacket, data, sizeof(mrsSENStatus.cssmCommandPacket));
 	if (mrsSENStatus.cssmCommandPacket.command == mrsSENStatus.cssmCommandPacket.SetTurretPosition)
 	{
-		_PL("MCCI2CReceiveEvent: Received SetTurretPosition command from MCC");
 		if (SensorTurretMotor != NULL)
 		{
-			_PP("Moving sensor turret to target position: ");
-			_PL(mrsSENStatus.cssmCommandPacket.turretPosition);
-			SensorTurretMotor->moveTo(mrsSENStatus.cssmCommandPacket.turretPosition, true);
+			TestSTMotor(mrsSENStatus.cssmCommandPacket.turretPosition, false);
 			mrsSENStatus.mrsSensorPacket.TurretPosition = mrsSENStatus.cssmCommandPacket.turretPosition;
+			//mrsSENStatus.mrsSensorPacket.TurretPosition = SensorTurretMotor->getPositionAfterCommandsCompleted();
+			sprintf(buf, "New ST Position: %d %c", mrsSENStatus.mrsSensorPacket.TurretPosition, 0xF7);
+			_PL(buf);
 		}
 		else
 		{
 			_PL("Error: SensorTurretMotor not initialized");
 		}
 	}
+	else if (mrsSENStatus.cssmCommandPacket.command == mrsSENStatus.cssmCommandPacket.GetTurretPosition)
+	{
+		size_t bytesWritten = 0;
+		// Cannot write data here; must be done in MCCI2CRequestEvent:
+		//bytesWritten = MCCI2CBus.slaveWrite((uint8_t*)&mrsSENStatus.mrsSensorPacket.TurretPosition, sizeof(int));
+	}
+	else if (mrsSENStatus.cssmCommandPacket.command == mrsSENStatus.cssmCommandPacket.NoCommand)
+	{
+		size_t bytesWritten = 0;
+		// Cannot write data here; must be done in MCCI2CRequestEvent:
+		//bytesWritten = MCCI2CBus.slaveWrite((uint8_t*)&mrsSENStatus.mrsSensorPacket.TurretPosition, sizeof(int));
+	}
+	else
+	{
+		_PL("MCCI2CReceiveEvent: Unknown command received from MCC");
+	}
 }
 
+/// <summary>
+/// Writes the global MRSSensorPacket (mrsSENStatus.mrsSensorPacket) to the MCC I2C bus using MCCI2CBus.slaveWrite. 
+/// The function performs a raw byte write as an I2C slave and does not return a status.
+/// This function is called in response to an I2C request event from the MCC.
+/// 
+/// TODO: Consider adding error handling for write failures or incomplete writes.
+/// TODO: Develop individual functions to return specific sensor data on demand.
+/// 
+/// Note: Ensure that the MCC I2C master is prepared to read the exact size of MRSSensorPacket to avoid data corruption.
+/// </summary>
 void MCCI2CRequestEvent()
 {
 	char buf[64];
@@ -304,11 +333,134 @@ void MCCI2CRequestEvent()
 	//	_PL("MCCI2CRequestEvent: Not enough buffer space to write sensor packet");
 	//	return;
 	//}
-	bytesWritten = MCCI2CBus.slaveWrite((uint8_t*)&mrsSENStatus.mrsSensorPacket, sizeof(MRSSensorPacket));
+
+	//sprintf(buf, "MCCI2CRequestEvent: Received data request from MCC; command = %d", mrsSENStatus.cssmCommandPacket.command);
+	//_PL(buf)
+
+	if (mrsSENStatus.cssmCommandPacket.command == CSSMCommandPacket::NoCommand)
+	{
+		bytesWritten = MCCI2CBus.slaveWrite((uint8_t*)&mrsSENStatus.mrsSensorPacket, sizeof(MRSSensorPacket));
+	}
+	//SendSTPosition();
 
 	//sprintf(buf, "Read ST Position %d (%db)", mrsSENStatus.mrsSensorPacket.TurretPosition, bytesWritten);
 	//_PL(buf)
 	//sprintf(buf, "Read VL53L1X Range %d mm (%db)", mrsSENStatus.mrsSensorPacket.FWDVL53L1XRange, bytesWritten);
 	//_PL(buf)
 
+}
+
+void SendSTPosition()
+{
+	char buf[64];
+	size_t bytesWritten = 0;
+	//if (MCCI2CBus.availableForWrite() < sizeof(int))
+	//{
+	//	_PL("MCCI2CRequestEvent: Not enough buffer space to write ST position");
+	//	return;
+	//}
+	bytesWritten = MCCI2CBus.slaveWrite((uint8_t*)&mrsSENStatus.mrsSensorPacket.TurretPosition, sizeof(int));
+	//sprintf(buf, "Sent ST Position %d (%db) to MRS MCC", mrsSENStatus.mrsSensorPacket.TurretPosition, bytesWritten);
+	//_PL(buf)
+}
+
+void SendFWDVL53L1XRange()
+{
+	char buf[64];
+	size_t bytesWritten = 0;
+	//if (MCCI2CBus.availableForWrite() < sizeof(int))
+	//{
+	//	_PL("MCCI2CRequestEvent: Not enough buffer space to write VL53L1X range");
+	//	return;
+	//}
+	bytesWritten = MCCI2CBus.slaveWrite((uint8_t*)&mrsSENStatus.mrsSensorPacket.FWDVL53L1XRange, sizeof(int));
+	//sprintf(buf, "Read VL53L1X Range %d mm (%db)", mrsSENStatus.mrsSensorPacket.FWDVL53L1XRange, bytesWritten);
+	//_PL(buf)
+}
+
+/// <summary>
+/// Tests the SensorTurretMotor by configuring it and performing one clockwise and one counter-clockwise revolution while logging progress. 
+/// The moves are performed synchronously (blocking).
+/// </summary>
+/// <returns>true if the motor was initialized and the test moves completed; false if SensorTurretMotor was not initialized.</returns>
+bool TestSTMotor()
+{
+	bool success = false;
+	if (SensorTurretMotor != NULL)
+	{
+		SensorTurretMotor->setSpeedInHz(500);
+		SensorTurretMotor->setAcceleration(100);
+		//SensorTurretMotor->runForward();
+		_PL("Rotating sensor turret motor 1 revolution clockwise");
+		SensorTurretMotor->moveTo(1600, true);	// MS1 & MS2 set for 1/8 microstepping => 1600 steps/rev
+		_PL("Rotating sensor turret motor 1 revolution counter-clockwise");
+		SensorTurretMotor->moveTo(0, true);
+		_PL("Sensor turret motor test complete");
+		success = true;
+	}
+	else
+	{
+		_PL("Error: SensorTurretMotor not initialized");
+	}
+	return success;
+}
+
+/// <summary>
+/// Checks that the sensor turret motor is initialized, configures its speed and acceleration, logs the action, 
+/// and commands the motor to move to a given position.
+/// </summary>
+/// <param name="targetPosition">
+/// Target position (in motor/encoder units) to move the sensor turret to.
+/// </param>
+/// <param name="blocking">
+/// If true, request a blocking move (wait until the move completes); if false, return immediately after issuing the move command.
+/// </param>
+/// <returns>
+/// True if the SensorTurretMotor was initialized and the move command was issued; 
+/// false if the SensorTurretMotor is not initialized.
+/// </returns>
+bool TestSTMotor(int32_t targetPosition, bool blocking)
+{
+	char buf[64];
+
+	bool success = false;
+	if (SensorTurretMotor != NULL)
+	{
+		SensorTurretMotor->setSpeedInHz(500);
+		SensorTurretMotor->setAcceleration(100);
+		sprintf(buf, "Testing sensor turret motor move to position %d", targetPosition);
+		_PL(buf)
+		SensorTurretMotor->moveTo(targetPosition, blocking);
+		success = true;
+	}
+	else
+	{
+		_PL("Error: SensorTurretMotor not initialized");
+	}
+	return success;
+}
+
+/// <summary>
+/// Moves the sensor turret to the specified target position if the turret motor is initialized.
+/// </summary>
+/// <param name="targetPosition">
+/// The desired position for the sensor turret (int32_t).
+/// </param>
+/// <returns>
+/// true if the move command was dispatched (SensorTurretMotor was initialized); 
+/// false if the motor was not initialized and no command was issued.
+/// </returns>
+bool MoveST(int32_t targetPosition, bool blocking = false)
+{
+	bool success = false;
+	if (SensorTurretMotor != NULL)
+	{
+		SensorTurretMotor->moveTo(targetPosition, blocking);
+		success = true;
+	}
+	else
+	{
+		_PL("Error: SensorTurretMotor not initialized");
+	}
+	return success;
 }

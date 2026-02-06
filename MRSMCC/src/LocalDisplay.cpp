@@ -786,23 +786,25 @@ void LocalDisplayClass::DrawSENPage()
 	cursorX = halfScreenWidth + 12;
 	cursorY += 10;
 	tft.setTextColor(TFT_GREEN, TFT_BLACK, true);
-	sprintf(buf, "X %8.3f m", MCCStatus.mrsSensorPacket.ODOSPosX, 0xF7);
+	sprintf(buf, "X %8.3f m", MCCStatus.mrsSensorPacket.ODOSPosX);
 	tft.drawString(buf, cursorX, cursorY);
 
 	cursorY += 10;
-	sprintf(buf, "X %8.3f m", MCCStatus.mrsSensorPacket.ODOSPosY, 0xF7);
+	sprintf(buf, "X %8.3f m", MCCStatus.mrsSensorPacket.ODOSPosY);
 	tft.drawString(buf, cursorX, cursorY);
 
 	cursorY += 10;
 	sprintf(buf, "HDG %6.1f %c", MCCStatus.mrsSensorPacket.ODOSHdg, 0xF7);
 	tft.drawString(buf, cursorX, cursorY);
 
+	cursorX = halfScreenWidth + 2;
+	tft.setTextColor(TFT_GREENYELLOW, TFT_BLACK, true);
 	cursorY += 10;
-	sprintf(buf, "ST BRG %6.1f %c", MCCStatus.mrsSensorPacket.TurretPosition, 0xF7);
+	sprintf(buf, "ST BRG %6d %c", MCCStatus.mrsSensorPacket.TurretPosition, 0xF7);
 	tft.drawString(buf, cursorX, cursorY);
 
 	cursorY += 10;
-	sprintf(buf, "VL53L1 %6.1f mm", MCCStatus.mrsSensorPacket.FWDVL53L1XRange);
+	sprintf(buf, "VL53L1 %6d mm", MCCStatus.mrsSensorPacket.FWDVL53L1XRange);
 	tft.drawString(buf, cursorX, cursorY);
 
 }
