@@ -25,13 +25,17 @@ constexpr uint8_t MRSSEN_FWDLIDARRangeAddress = 0x0D;	// FWDLIDAR range address
 constexpr uint8_t MRSSEN_TurretPositionAddress = 0x11;	// Sensor turret position address
 
 #include <Wire.h>
+#include "C:\Repos\MRS-VS2022\MRSCommon\src\CSSMCommandPacket.h"
+#include "C:\Repos\MRS-VS2022\MRSCommon\src\MRSSensorPacket.h"
 
 class MRSSENsorsClass
 {
 protected:
 	char buf[64];
 	uint8_t _i2caddress = defaultMRSSENAddress;
-	int STPosition = 0;									// Current sensor turret position in steps
+	//int STPosition = 0;									// Current sensor turret position in steps
+	MRSSensorPacket mrsSensorPacket;                    // Sensor data packet from MRS Sensors module
+	CSSMCommandPacket cssmCommandPacket;                // Command packet to MRS Sensors module
 
     template <typename T>
     uint8_t& getData(const uint8_t addr, T& value) const {
@@ -74,6 +78,7 @@ public:
             return false;
         }
 	}
+    bool Update();
 
     uint8_t getByte(const uint8_t addr) const {
         /*!
@@ -123,6 +128,7 @@ public:
         return value;
     }
 
+    bool getMRSSensorPacket(MRSSensorPacket& /*packet*/);
 	int GetFWDLIDARRangeMM();
 };
 

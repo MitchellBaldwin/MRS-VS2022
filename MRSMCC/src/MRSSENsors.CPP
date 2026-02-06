@@ -30,19 +30,28 @@ bool MRSSENsorsClass::Init(uint8_t i2cAddress)
 	}
 }
 
+bool MRSSENsorsClass::Update()
+{
+	/*!
+	  @brief     Read entire MRSSensorPacket structure from I2C
+	  @details   Wrapper for getData to read the full MRSSensorPacket structure
+	  @param[in] packet Reference to MRSSensorPacket structure to fill
+	  @return    True if read successful, false otherwise
+	*/
+	cssmCommandPacket.command = CSSMCommandPacket::NoCommand;
+	Wire.beginTransmission(_i2caddress);
+	Wire.write((uint8_t*)&cssmCommandPacket, sizeof(CSSMCommandPacket));
+	Wire.endTransmission();
+	uint8_t bytesRead = getData<MRSSensorPacket>(0x00, mrsSensorPacket);
+	return (bytesRead == sizeof(MRSSensorPacket));
+}
+
+bool MRSSENsorsClass::getMRSSensorPacket(MRSSensorPacket& packet) {
+	packet = mrsSensorPacket;
+	return true;
+}
+
 int MRSSENsorsClass::GetFWDLIDARRangeMM()
 {
-	int fwdLIDARRangeMM = 0;
-	uint8_t bytesToRead = sizeof(fwdLIDARRangeMM);
-	uint8_t data[bytesToRead];
-
-	Wire.beginTransmission(_i2caddress);						// Address the I2C device
-	Wire.write(MRSSEN_FWDLIDARRangeAddress);                    // Send register address to read
-	Wire.endTransmission();										// Close transmission
-	Wire.requestFrom(_i2caddress, sizeof(fwdLIDARRangeMM));		// Request 4 bytes of data
-	Wire.readBytes(data, sizeof(fwdLIDARRangeMM));
-	memcpy(&fwdLIDARRangeMM, data, sizeof(fwdLIDARRangeMM));
-	return fwdLIDARRangeMM;
-	
-	//return getInt(MRSSEN_FWDLIDARRangeAddress);
+	return mrsSensorPacket.FWDVL53L1XRange;
 }

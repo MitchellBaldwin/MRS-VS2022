@@ -157,17 +157,9 @@ void MCCSensors::Update()
 	MCCStatus.MRSSENModuleStatus = MRSSENsors->TestI2CConnection();
 	if (MCCStatus.MRSSENModuleStatus)
 	{
-		CSSMCommandPacket commandPacket;
-		commandPacket.command = CSSMCommandPacket::CSSMCommandCodes::NoCommand;
-		Wire.beginTransmission(defaultMRSSENAddress);
-		size_t bytesWritten = Wire.write((uint8_t*)&commandPacket, sizeof(CSSMCommandPacket));
-		Wire.endTransmission();
-
+		MRSSENsors->Update();
 		MRSSensorPacket senPacket;
-		Wire.requestFrom((uint8_t)defaultMRSSENAddress, (uint8_t)sizeof(MRSSensorPacket));
-		size_t bytesRead = sizeof(MRSSensorPacket);
-		Wire.readBytes(data, sizeof(MRSSensorPacket));
-		memcpy(&senPacket, data, sizeof(MRSSensorPacket));
+		MRSSENsors->getMRSSensorPacket(senPacket);
 
 		MCCStatus.mrsSensorPacket.FWDVL53L1XRange = senPacket.FWDVL53L1XRange;
 		MCCStatus.mrsSensorPacket.ODOSPosX = senPacket.ODOSPosX;
@@ -175,7 +167,8 @@ void MCCSensors::Update()
 		MCCStatus.mrsSensorPacket.ODOSHdg = senPacket.ODOSHdg;
 		MCCStatus.mrsSensorPacket.TurretPosition = senPacket.TurretPosition;
 	
-		//MCCStatus.mrsSensorPacket.FWDVL53L1XRange = MRSSENsors->GetFWDLIDARRangeMM();
+		// Test code:
+		MCCStatus.mrsSensorPacket.FWDVL53L1XRange = MRSSENsors->GetFWDLIDARRangeMM();
 	}
 	else
 	{

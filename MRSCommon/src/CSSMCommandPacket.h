@@ -35,6 +35,7 @@ public:
 
 		SetTurretPosition = 0x20,
 		GetTurretPosition = 0x21,
+		GetFwdLIDARRange = 0x22,
 
 	};
 protected:

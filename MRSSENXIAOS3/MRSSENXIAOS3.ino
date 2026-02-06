@@ -59,6 +59,10 @@ long UpdateNavSensorsPeriod = 100;	// ms
 void UpdateNavSensorsCallback();
 Task UpdateNavSensorsTask((UpdateNavSensorsPeriod * TASK_MILLISECOND), TASK_FOREVER, &UpdateNavSensorsCallback, &MainScheduler, false);
 
+long UpdateChassisSensorsPeriod = 100;	// ms
+void UpdateChassisSensorsCallback();
+Task UpdateChassisSensorsTask((UpdateChassisSensorsPeriod * TASK_MILLISECOND), TASK_FOREVER, &UpdateChassisSensorsCallback, &MainScheduler, false);
+
 #include "src/DEBUG Macros.h"
 
 #include <I2CBus.h>
@@ -71,6 +75,7 @@ void MCCI2CRequestEvent();
 #include "src/MRSSENStatus.h"
 #include "src/MRSSENLocDisplay.h"
 #include "src/MRSNavSensors.h"
+#include "src/MRSChassisSensors.h"
 
 //#include <AVRStepperPins.h>
 //#include <common.h>
@@ -134,6 +139,17 @@ void setup()
 	{
 		// Enable nagigation sensor updates:
 		UpdateNavSensorsTask.enable();
+	}
+	else
+	{
+		HeartbeatLEDTogglePeriod = ErrorHeartbeatLEDToggleInterval;
+		_PL("Error initializing sensors...");
+	}
+
+	if (MRSChassisSensors.Init())
+	{
+		// Enable chassis sensor updates:
+		UpdateChassisSensorsTask.enable();
 	}
 	else
 	{
@@ -261,6 +277,11 @@ void UpdateNavSensorsCallback()
 	mrsNavSensors.Update();
 }
 
+void UpdateChassisSensorsCallback()
+{
+	MRSChassisSensors.Update();
+}
+
 /// <summary>
 /// Handles an I2C receive event from the MCC: validates and reads an incoming CSSMCommandPacket, updates internal status, 
 /// and processes SetTurretPosition commands by moving the sensor turret if initialized.
@@ -328,25 +349,10 @@ void MCCI2CRequestEvent()
 	char buf[64];
 
 	size_t bytesWritten = 0;
-	//if (MCCI2CBus.availableForWrite() < sizeof(MRSSENStatus::mrsSensorPacket))
-	//{
-	//	_PL("MCCI2CRequestEvent: Not enough buffer space to write sensor packet");
-	//	return;
-	//}
-
-	//sprintf(buf, "MCCI2CRequestEvent: Received data request from MCC; command = %d", mrsSENStatus.cssmCommandPacket.command);
-	//_PL(buf)
-
 	if (mrsSENStatus.cssmCommandPacket.command == CSSMCommandPacket::NoCommand)
 	{
 		bytesWritten = MCCI2CBus.slaveWrite((uint8_t*)&mrsSENStatus.mrsSensorPacket, sizeof(MRSSensorPacket));
 	}
-	//SendSTPosition();
-
-	//sprintf(buf, "Read ST Position %d (%db)", mrsSENStatus.mrsSensorPacket.TurretPosition, bytesWritten);
-	//_PL(buf)
-	//sprintf(buf, "Read VL53L1X Range %d mm (%db)", mrsSENStatus.mrsSensorPacket.FWDVL53L1XRange, bytesWritten);
-	//_PL(buf)
 
 }
 
@@ -354,11 +360,6 @@ void SendSTPosition()
 {
 	char buf[64];
 	size_t bytesWritten = 0;
-	//if (MCCI2CBus.availableForWrite() < sizeof(int))
-	//{
-	//	_PL("MCCI2CRequestEvent: Not enough buffer space to write ST position");
-	//	return;
-	//}
 	bytesWritten = MCCI2CBus.slaveWrite((uint8_t*)&mrsSENStatus.mrsSensorPacket.TurretPosition, sizeof(int));
 	//sprintf(buf, "Sent ST Position %d (%db) to MRS MCC", mrsSENStatus.mrsSensorPacket.TurretPosition, bytesWritten);
 	//_PL(buf)
@@ -368,11 +369,6 @@ void SendFWDVL53L1XRange()
 {
 	char buf[64];
 	size_t bytesWritten = 0;
-	//if (MCCI2CBus.availableForWrite() < sizeof(int))
-	//{
-	//	_PL("MCCI2CRequestEvent: Not enough buffer space to write VL53L1X range");
-	//	return;
-	//}
 	bytesWritten = MCCI2CBus.slaveWrite((uint8_t*)&mrsSENStatus.mrsSensorPacket.FWDVL53L1XRange, sizeof(int));
 	//sprintf(buf, "Read VL53L1X Range %d mm (%db)", mrsSENStatus.mrsSensorPacket.FWDVL53L1XRange, bytesWritten);
 	//_PL(buf)
