@@ -27,14 +27,12 @@
 #endif
 
 #include <SparkFun_Qwiic_OTOS_Arduino_Library.h>
-#include <SparkFun_VL53L1X.h>
 #include <PCF8563.h>
 
 class MRSNavSensors
 {
 protected:
 	QwiicOTOS* OTOS;
-	SFEVL53L1X* FwdVL53L1X;
 	PCF8563* RTC;
 
 public:

@@ -35,9 +35,9 @@ constexpr int DefaultI2C1SCL = GPIO_NUM_3;			// Slave SCL pin
 constexpr int DefaultFwdNeoPixelPin = GPIO_NUM_4;
 //constexpr int DefaultSDA = SDA;					// GPIO_NUM_5; default SDA pin declared in I2CBus.h
 //constexpr int DefaultSCL = SCL;					// GPIO_NUM_6; default SCL pin declared in I2CBus.h
-constexpr int DefaultTurretStepPin = GPIO_NUM_7;	// TMC2209 Step pin
-constexpr int DefaultTurretDirPin = GPIO_NUM_8;		// TMC2209 Direction pin
-constexpr int DefaultTurretEnablePin = GPIO_NUM_9;	// TMC2209 Enable pin (Low active); optionally can be connected to GND for always enabled
+//constexpr int DefaultTurretStepPin = GPIO_NUM_7;	// TMC2209 Step pin
+//constexpr int DefaultTurretDirPin = GPIO_NUM_8;		// TMC2209 Direction pin
+//constexpr int DefaultTurretEnablePin = GPIO_NUM_9;	// TMC2209 Enable pin (Low active); optionally can be connected to GND for always enabled
 
 constexpr int HeartbeatLEDPin = BUILTIN_LED;
 constexpr auto NormalHeartbeatLEDToggleInterval = 1000;		// 1 s on, 1 s off; indicates successful initialization of all subsystems
@@ -63,6 +63,10 @@ long UpdateChassisSensorsPeriod = 100;	// ms
 void UpdateChassisSensorsCallback();
 Task UpdateChassisSensorsTask((UpdateChassisSensorsPeriod * TASK_MILLISECOND), TASK_FOREVER, &UpdateChassisSensorsCallback, &MainScheduler, false);
 
+long UpdateSTControlPeriod = 100;	// ms
+void UpdateSTControlCallback();
+Task UpdateSTControlTask((UpdateSTControlPeriod * TASK_MILLISECOND), TASK_FOREVER, &UpdateSTControlCallback, &MainScheduler, false);
+
 #include "src/DEBUG Macros.h"
 
 #include <I2CBus.h>
@@ -76,19 +80,7 @@ void MCCI2CRequestEvent();
 #include "src/MRSSENLocDisplay.h"
 #include "src/MRSNavSensors.h"
 #include "src/MRSChassisSensors.h"
-
-//#include <AVRStepperPins.h>
-//#include <common.h>
-#include <FastAccelStepper.h>
-//#include <PoorManFloat.h>
-//#include <RampCalculator.h>
-//#include <RampConstAcceleration.h>
-//#include <RampGenerator.h>
-//#include <StepperISR.h>
-//#include <test_probe.h>
-
-FastAccelStepperEngine fasEngine = FastAccelStepperEngine();
-FastAccelStepper* SensorTurretMotor = NULL;
+#include "src/STControl.h"
 
 #include <Adafruit_NeoPixel.h>
 constexpr uint8_t FwdNeoPixelCount = 8;
@@ -143,7 +135,7 @@ void setup()
 	else
 	{
 		HeartbeatLEDTogglePeriod = ErrorHeartbeatLEDToggleInterval;
-		_PL("Error initializing sensors...");
+		_PL("Error initializing navigation sensors...");
 	}
 
 	if (MRSChassisSensors.Init())
@@ -154,7 +146,7 @@ void setup()
 	else
 	{
 		HeartbeatLEDTogglePeriod = ErrorHeartbeatLEDToggleInterval;
-		_PL("Error initializing sensors...");
+		_PL("Error initializing chassis sensors...");
 	}
 	
 	mrsSENStatus.LocDispStatus = mrsSENLocDisplay.Init();
@@ -174,21 +166,12 @@ void setup()
 	ToggleHeartbeatLEDTask.setInterval(HeartbeatLEDTogglePeriod * TASK_MILLISECOND);
 	ToggleHeartbeatLEDTask.enable();
 
-	fasEngine.init();
-	SensorTurretMotor = fasEngine.stepperConnectToPin(DefaultTurretStepPin);
-	if (SensorTurretMotor == NULL)
-	{
-		_PL("Error initializing sensor turret motor...");
-	}
-	else
-	{
-		SensorTurretMotor->setDirectionPin(DefaultTurretDirPin, true, 0);	// true: High counts up (clockwise)
-		SensorTurretMotor->setEnablePin(DefaultTurretEnablePin, true);		// Low active enables TMC2209
-		SensorTurretMotor->setAutoEnable(true);
-		_PL("Sensor turret motor initialized successfully");
-
-		TestSTMotor();
-	}
+	STControl.Init();
+	UpdateSTControlTask.enable();
+	// Test code for STControl:
+	STControl.SetSTSpeedAndAccel(400, 50);
+	STControl.SetSTScanRange(-30, 30);
+	STControl.StartSTScan();
 
 	// Initialize forward NeoPixel strip:
 	FwdNeoPixelStrip.begin();
@@ -282,6 +265,11 @@ void UpdateChassisSensorsCallback()
 	MRSChassisSensors.Update();
 }
 
+void UpdateSTControlCallback()
+{
+	STControl.Update();
+}
+
 /// <summary>
 /// Handles an I2C receive event from the MCC: validates and reads an incoming CSSMCommandPacket, updates internal status, 
 /// and processes SetTurretPosition commands by moving the sensor turret if initialized.
@@ -303,12 +291,12 @@ void MCCI2CReceiveEvent(int numBytes)
 	memcpy(&mrsSENStatus.cssmCommandPacket, data, sizeof(mrsSENStatus.cssmCommandPacket));
 	if (mrsSENStatus.cssmCommandPacket.command == mrsSENStatus.cssmCommandPacket.SetTurretPosition)
 	{
-		if (SensorTurretMotor != NULL)
+		if (mrsSENStatus.SensorTurretMotorStatus)
 		{
-			TestSTMotor(mrsSENStatus.cssmCommandPacket.turretPosition, false);
-			mrsSENStatus.mrsSensorPacket.TurretPosition = mrsSENStatus.cssmCommandPacket.turretPosition;
+			STControl.MoveST(mrsSENStatus.cssmCommandPacket.turretPosition, false);
+			//mrsSENStatus.mrsSensorPacket.TurretPosition = mrsSENStatus.cssmCommandPacket.turretPosition;
 			//mrsSENStatus.mrsSensorPacket.TurretPosition = SensorTurretMotor->getPositionAfterCommandsCompleted();
-			sprintf(buf, "New ST Position: %d %c", mrsSENStatus.mrsSensorPacket.TurretPosition, 0xF7);
+			sprintf(buf, "Moving Sensor Turret to: %d steps", mrsSENStatus.cssmCommandPacket.turretPosition);
 			_PL(buf);
 		}
 		else
@@ -372,91 +360,4 @@ void SendFWDVL53L1XRange()
 	bytesWritten = MCCI2CBus.slaveWrite((uint8_t*)&mrsSENStatus.mrsSensorPacket.FWDVL53L1XRange, sizeof(int));
 	//sprintf(buf, "Read VL53L1X Range %d mm (%db)", mrsSENStatus.mrsSensorPacket.FWDVL53L1XRange, bytesWritten);
 	//_PL(buf)
-}
-
-/// <summary>
-/// Tests the SensorTurretMotor by configuring it and performing one clockwise and one counter-clockwise revolution while logging progress. 
-/// The moves are performed synchronously (blocking).
-/// </summary>
-/// <returns>true if the motor was initialized and the test moves completed; false if SensorTurretMotor was not initialized.</returns>
-bool TestSTMotor()
-{
-	bool success = false;
-	if (SensorTurretMotor != NULL)
-	{
-		SensorTurretMotor->setSpeedInHz(500);
-		SensorTurretMotor->setAcceleration(100);
-		//SensorTurretMotor->runForward();
-		_PL("Rotating sensor turret motor 1 revolution clockwise");
-		SensorTurretMotor->moveTo(1600, true);	// MS1 & MS2 set for 1/8 microstepping => 1600 steps/rev
-		_PL("Rotating sensor turret motor 1 revolution counter-clockwise");
-		SensorTurretMotor->moveTo(0, true);
-		_PL("Sensor turret motor test complete");
-		success = true;
-	}
-	else
-	{
-		_PL("Error: SensorTurretMotor not initialized");
-	}
-	return success;
-}
-
-/// <summary>
-/// Checks that the sensor turret motor is initialized, configures its speed and acceleration, logs the action, 
-/// and commands the motor to move to a given position.
-/// </summary>
-/// <param name="targetPosition">
-/// Target position (in motor/encoder units) to move the sensor turret to.
-/// </param>
-/// <param name="blocking">
-/// If true, request a blocking move (wait until the move completes); if false, return immediately after issuing the move command.
-/// </param>
-/// <returns>
-/// True if the SensorTurretMotor was initialized and the move command was issued; 
-/// false if the SensorTurretMotor is not initialized.
-/// </returns>
-bool TestSTMotor(int32_t targetPosition, bool blocking)
-{
-	char buf[64];
-
-	bool success = false;
-	if (SensorTurretMotor != NULL)
-	{
-		SensorTurretMotor->setSpeedInHz(500);
-		SensorTurretMotor->setAcceleration(100);
-		sprintf(buf, "Testing sensor turret motor move to position %d", targetPosition);
-		_PL(buf)
-		SensorTurretMotor->moveTo(targetPosition, blocking);
-		success = true;
-	}
-	else
-	{
-		_PL("Error: SensorTurretMotor not initialized");
-	}
-	return success;
-}
-
-/// <summary>
-/// Moves the sensor turret to the specified target position if the turret motor is initialized.
-/// </summary>
-/// <param name="targetPosition">
-/// The desired position for the sensor turret (int32_t).
-/// </param>
-/// <returns>
-/// true if the move command was dispatched (SensorTurretMotor was initialized); 
-/// false if the motor was not initialized and no command was issued.
-/// </returns>
-bool MoveST(int32_t targetPosition, bool blocking = false)
-{
-	bool success = false;
-	if (SensorTurretMotor != NULL)
-	{
-		SensorTurretMotor->moveTo(targetPosition, blocking);
-		success = true;
-	}
-	else
-	{
-		_PL("Error: SensorTurretMotor not initialized");
-	}
-	return success;
 }

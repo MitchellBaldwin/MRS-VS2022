@@ -50,9 +50,9 @@ protected:
         static uint8_t structSize = sizeof(T);          // Number of bytes in structure
         if (_i2caddress)                                // Using I2C if address is non-zero
         {                                               //
-            Wire.beginTransmission(_i2caddress);        // Address the I2C device
-            Wire.write(addr);                           // Send register address to read
-            Wire.endTransmission();                     // Close transmission
+            //Wire.beginTransmission(_i2caddress);        // Address the I2C device
+            //Wire.write(addr);                           // Send register address to read
+            //Wire.endTransmission();                     // Close transmission
             Wire.requestFrom(_i2caddress, sizeof(T));   // Request 1 byte of data
             structSize = Wire.available();              // Use the actual number of bytes
             for (uint8_t i = 0; i < structSize; i++)

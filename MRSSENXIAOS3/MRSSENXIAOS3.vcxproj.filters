@@ -33,6 +33,12 @@
     <ClCompile Include="src\MRSChassisSensors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\INA219.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\STControl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="__vm\.MRSSENXIAOS3.vsarduino.h">
@@ -51,6 +57,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\MRSChassisSensors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\INA219.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\STControl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

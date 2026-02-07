@@ -262,38 +262,30 @@ void LocalDisplayClass::DrawPOWPage()
 
 		tft.setTextDatum(BL_DATUM);
 		tft.setTextSize(2);
-		cursorX = halfScreenWidth + 2;
+		cursorX = 2;
 		tft.drawString("V", cursorX, cursorY);
 		cursorX += tft.textWidth("V", 2) + 1;
 		tft.setTextSize(1);
 		tft.drawString("MCU", cursorX, cursorY);	// Subscript
 
 		tft.setTextSize(2);
-		cursorX = halfScreenWidth + 2;
+		cursorX = 2;
 		cursorY -= 20;
 		tft.drawString("P", cursorX, cursorY);
-		cursorX += tft.textWidth("V", 2) + 1;
+		cursorX += tft.textWidth("P", 2) + 1;
 		tft.setTextSize(1);
 		tft.drawString("Bus", cursorX, cursorY);	// Subscript
 
 		tft.setTextSize(2);
-		cursorX = halfScreenWidth + 2;
+		cursorX = 2;
 		cursorY -= 20;
 		tft.drawString("I", cursorX, cursorY);
-		cursorX += tft.textWidth("V", 2) + 1;
+		cursorX += tft.textWidth("I", 2) + 1;
 		tft.setTextSize(1);
 		tft.drawString("Bus", cursorX, cursorY);	// Subscript
 
 		tft.setTextSize(2);
-		cursorX = halfScreenWidth + 2;
-		cursorY -= 20;
-		tft.drawString("V", cursorX, cursorY);
-		cursorX += tft.textWidth("V", 2) + 1;
-		tft.setTextSize(1);
-		tft.drawString("Load", cursorX, cursorY);	// Subscript
-
-		tft.setTextSize(2);
-		cursorX = halfScreenWidth + 2;
+		cursorX = 2;
 		cursorY -= 20;
 		tft.drawString("V", cursorX, cursorY);
 		cursorX += tft.textWidth("V", 2) + 1;
@@ -301,7 +293,7 @@ void LocalDisplayClass::DrawPOWPage()
 		tft.drawString("Bus", cursorX, cursorY);	// Subscript
 
 		tft.setTextSize(2);
-		cursorX = halfScreenWidth + 2;
+		cursorX = 2;
 		cursorY -= 20;
 		tft.drawString("V", cursorX, cursorY);
 		cursorX += tft.textWidth("V", 2) + 1;
@@ -313,37 +305,43 @@ void LocalDisplayClass::DrawPOWPage()
 
 	// Update dynamic displays:
 
+	cursorX = halfScreenWidth;
 	cursorY = tft.height() - 20;
-	tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);	//DONE: Does bgfill = true work with the print() method? -> Yes, newly printed text clears the background
+	tft.setTextColor(TFT_PINK, TFT_BLACK, true);
 	tft.setTextSize(2);
 	tft.setTextDatum(BR_DATUM);
 	sprintf(buf, "%5.2F  V", mccSensors.GetMCUVoltageReal());
-	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
+	tft.drawString(buf, cursorX, cursorY);	// Right justified
 
 	cursorY -= 20;
-	tft.setTextDatum(BR_DATUM);
 	sprintf(buf, "%5.0F mW", MCCStatus.mrsSensorPacket.INA219Power);
-	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
+	tft.drawString(buf, cursorX, cursorY);	// Right justified
 
 	cursorY -= 20;
-	tft.setTextDatum(BR_DATUM);
 	sprintf(buf, "%5.1F mA", MCCStatus.mrsSensorPacket.INA219Current);
-	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
+	tft.drawString(buf, cursorX, cursorY);	// Right justified
 
 	cursorY -= 20;
-	tft.setTextDatum(BR_DATUM);
-	sprintf(buf, "%5.2F  V", MCCStatus.mrsSensorPacket.INA219VLoad);
-	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
-
-	cursorY -= 20;
-	tft.setTextDatum(BR_DATUM);
 	sprintf(buf, "%5.2F  V", MCCStatus.mrsSensorPacket.INA219VBus);
-	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
+	tft.drawString(buf, cursorX, cursorY);	// Right justified
 
 	cursorY -= 20;
-	tft.setTextDatum(BR_DATUM);
 	sprintf(buf, "%5.2F  V", mccSensors.GetBBAKVoltageReal());
-	tft.drawString(buf, tft.width() - 2, cursorY);	// Right justified
+	tft.drawString(buf, cursorX, cursorY);	// Right justified
+
+	cursorX = tft.width() - 2;
+	cursorY = tft.height() - 40;
+	tft.setTextColor(TFT_GREENYELLOW, TFT_BLACK, true);
+	sprintf(buf, "%5.0F mW", MCCStatus.mrsSensorPacket.RINA219Power);
+	tft.drawString(buf, cursorX, cursorY);	// Right justified
+
+	cursorY -= 20;
+	sprintf(buf, "%5.1F mA", MCCStatus.mrsSensorPacket.RINA219Current);
+	tft.drawString(buf, cursorX, cursorY);	// Right justified
+
+	cursorY -= 20;
+	sprintf(buf, "%5.2F  V", MCCStatus.mrsSensorPacket.RINA219VBus);
+	tft.drawString(buf, cursorX - 2, cursorY);	// Right justified
 
 }
 

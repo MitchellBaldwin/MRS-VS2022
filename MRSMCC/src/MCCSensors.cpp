@@ -72,12 +72,12 @@ bool MCCSensors::Init()
 	if (WSUPS3SINA219->getBusVoltage_V() > 0.0)
 	{
 		MCCStatus.WSUPS3SINA219Status = true;
-		_PL("WS UPS 3S INA219 initialized")
+		_PL("Left WS UPS 3S INA219 initialized")
 	}
 	else
 	{
 		MCCStatus.WSUPS3SINA219Status = false;
-		_PL("WS UPS 3S INA219 initialization FAILED")
+		_PL("Left WS UPS 3S INA219 initialization FAILED")
 	}
 
 	//TODO: Check integrity of INA219 initialization so we can avoid delays in Update() if it failed
@@ -150,7 +150,6 @@ void MCCSensors::Update()
 		MCCStatus.mrsSensorPacket.INA219VShunt = WSUPS3SINA219->getShuntVoltage_mV();
 		MCCStatus.mrsSensorPacket.INA219Current = WSUPS3SINA219->getCurrent_mA();
 		MCCStatus.mrsSensorPacket.INA219Power = WSUPS3SINA219->getPower_mW();
-		MCCStatus.mrsSensorPacket.INA219VLoad = MCCStatus.mrsSensorPacket.INA219VBus + (MCCStatus.mrsSensorPacket.INA219VShunt / 1000.0f);
 	}
 
 	// Get sensor packet from MRS SEN module over I2C:
@@ -166,9 +165,15 @@ void MCCSensors::Update()
 		MCCStatus.mrsSensorPacket.ODOSPosY = senPacket.ODOSPosY;
 		MCCStatus.mrsSensorPacket.ODOSHdg = senPacket.ODOSHdg;
 		MCCStatus.mrsSensorPacket.TurretPosition = senPacket.TurretPosition;
+
+		MCCStatus.mrsSensorPacket.RINA219VBus = senPacket.RINA219VBus;
+		MCCStatus.mrsSensorPacket.RINA219VShunt = senPacket.RINA219VShunt;
+		MCCStatus.mrsSensorPacket.RINA219Current = senPacket.RINA219Current;
+		MCCStatus.mrsSensorPacket.RINA219Power = senPacket.RINA219Power;
+
 	
 		// Test code:
-		MCCStatus.mrsSensorPacket.FWDVL53L1XRange = MRSSENsors->GetFWDLIDARRangeMM();
+		//MCCStatus.mrsSensorPacket.FWDVL53L1XRange = MRSSENsors->GetFWDLIDARRangeMM();
 	}
 	else
 	{
