@@ -24,7 +24,7 @@ bool STControlClass::Init()
 		STMotor->setAutoEnable(true);
 		_PL("Sensor turret motor initialized successfully");
 
-		TestSTMotor();
+		//TestSTMotor();
 	}
 	mrsSENStatus.SensorTurretMotorStatus = (STMotor != NULL);
 
@@ -134,6 +134,18 @@ bool STControlClass::MoveSTInSteps(int32_t targetPosition, bool blocking)
 	return success;
 }
 
+/// <summary>
+/// Moves the sensor turret to a specified angle by converting the angle to motor steps and commanding the motor.
+/// </summary>
+/// <param name="angleInDegrees">
+/// Target angle in degrees. Converted to motor steps using StepsPerRev and used as the absolute target position for the motor.
+/// </param>
+/// <param name="blocking">
+/// If true, request the motor move to block until completion; if false, return immediately after issuing the move command.
+/// </param>
+/// <returns>
+/// true if the motor object was initialized and the move command was issued; false if the motor was not initialized (an error is logged in that case).
+/// </returns>
 bool STControlClass::MoveST(int32_t angleInDegrees, bool blocking)
 {
 	bool success = false;
@@ -152,6 +164,18 @@ bool STControlClass::MoveST(int32_t angleInDegrees, bool blocking)
 	return success;
 }
 
+/// <summary>
+/// Moves the sensor turret by a relative angle (in degrees).
+/// </summary>
+/// <param name="angleInDegrees">
+/// Relative rotation to apply, in degrees. May be negative. Converted to motor steps using StepsPerRev and added to the motor's current target position.
+/// </param>
+/// <param name="blocking">
+/// If true, block until the motor finishes the movement; if false, return immediately after issuing the move command.
+/// </param>
+/// <returns>
+/// true if the move command was issued (STMotor was initialized); false if the motor was not initialized and no command was sent.
+/// </returns>
 bool STControlClass::MoveSTRelative(int32_t angleInDegrees, bool blocking)
 {
 	bool success = false;
@@ -170,6 +194,13 @@ bool STControlClass::MoveSTRelative(int32_t angleInDegrees, bool blocking)
 	return success;
 }
 
+/// <summary>
+/// Stops the sensor turret motor. If hardStop is true, it forces an immediate stop; otherwise it requests a normal/controlled stop. 
+/// If the motor is not initialized, an error is logged.
+/// </summary>
+/// <param name="hardStop">
+/// If true, perform an immediate/forced stop; if false, perform a normal/controlled stop.
+/// </param>
 void STControlClass::StopST(bool hardStop)
 {
 	if (STMotor != NULL)
@@ -189,6 +220,12 @@ void STControlClass::StopST(bool hardStop)
 	}
 }
 
+/// <summary>
+/// Sets the sensor turret motor speed in steps per second. If the motor (STMotor) is not initialized, logs an error and does nothing.
+/// </summary>
+/// <param name="speedInStepsPerSec">
+/// Desired motor speed in steps per second. If STMotor is initialized, this value is forwarded to STMotor->setSpeedInHz.
+/// </param>
 void STControlClass::SetSTSpeed(uint32_t speedInStepsPerSec)
 {
 	if (STMotor != NULL)
@@ -201,6 +238,12 @@ void STControlClass::SetSTSpeed(uint32_t speedInStepsPerSec)
 	}
 }
 
+/// <summary>
+/// Sets the acceleration for the Sensor Turret stepper motor.
+/// </summary>
+/// <param name="accelInStepsPerSec2">
+/// Acceleration value in steps per second squared to apply to the motor.
+/// </param>
 void STControlClass::SetSTAccel(uint32_t accelInStepsPerSec2)
 {
 	if (STMotor != NULL)
@@ -213,6 +256,15 @@ void STControlClass::SetSTAccel(uint32_t accelInStepsPerSec2)
 	}
 }
 
+/// <summary>
+/// Sets the ST motor's speed and acceleration if the motor is initialized; logs an error if the motor is not initialized.
+/// </summary>
+/// <param name="speedInStepsPerSec">
+/// Desired speed to set on STMotor, in steps per second.
+/// </param>
+/// <param name="accelInStepsPerSec2">
+/// Desired acceleration to set on STMotor, in steps per second squared.
+/// </param>
 void STControlClass::SetSTSpeedAndAccel(uint32_t speedInStepsPerSec, uint32_t accelInStepsPerSec2)
 {
 	if (STMotor != NULL)
@@ -226,6 +278,11 @@ void STControlClass::SetSTSpeedAndAccel(uint32_t speedInStepsPerSec, uint32_t ac
 	}
 }
 
+/// <summary>
+/// Sets the sensor turret's scan range in degrees and updates the corresponding step limits.
+/// </summary>
+/// <param name="minAngleInDegrees">Minimum scan angle in degrees (int32_t). Converted to a step position and stored in STScanLeftLimit.</param>
+/// <param name="maxAngleInDegrees">Maximum scan angle in degrees (int32_t). Converted to a step position and stored in STScanRightLimit.</param>
 void STControlClass::SetSTScanRange(int32_t minAngleInDegrees, int32_t maxAngleInDegrees)
 {
 	// Calculate position in steps based on target position in degrees and steps per revolution:
@@ -235,6 +292,9 @@ void STControlClass::SetSTScanRange(int32_t minAngleInDegrees, int32_t maxAngleI
 	_PL(buf);
 }
 
+/// <summary>
+/// Member function that starts the sensor-turret scan: if STMotor is initialized it sets STScanning to true; otherwise it logs an error.
+/// </summary>
 void STControlClass::StartSTScan()
 {
 	if (STMotor != NULL)
@@ -247,6 +307,9 @@ void STControlClass::StartSTScan()
 	}
 }
 
+/// <summary>
+/// Stops the sensor-turret scanning operation if the motor is initialized; logs an error if the motor is not initialized.
+/// </summary>
 void STControlClass::StopSTScan()
 {
 	if (STMotor != NULL)

@@ -171,7 +171,7 @@ void setup()
 	// Test code for STControl:
 	STControl.SetSTSpeedAndAccel(400, 50);
 	STControl.SetSTScanRange(-30, 30);
-	STControl.StartSTScan();
+	//STControl.StartSTScan();
 
 	// Initialize forward NeoPixel strip:
 	FwdNeoPixelStrip.begin();

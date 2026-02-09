@@ -77,8 +77,10 @@ protected:
 public:
 	uint32_t NavSetting = 0;
 	static bool NavSelected;
+	static bool NavWasSelected;
 	uint32_t FuncSetting = 0;
 	static bool FuncSelected;
+	static bool FuncWasSelected;
 
 	TFTMenuClass* MainMenu;
 	MenuItemClass* ESPNMenuItem;

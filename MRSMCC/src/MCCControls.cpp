@@ -12,8 +12,12 @@ void MCCControls::HandleNavButtonEvents(ace_button::AceButton* b, uint8_t eventT
 {
 	if (eventType == ace_button::AceButton::kEventPressed)
 	{
-		NavSelected = true;
-		//_PL("Navigation encoder button clicked");
+		NavSelected = !NavSelected;	// Toggle selection state on each press
+		//NavSelected = true;
+		_PP("NavSelected = ");
+		_PL(NavSelected);
+		_PP("NavWasSelected = ");
+		_PL(NavWasSelected);
 	}
 }
 
@@ -135,124 +139,106 @@ bool MCCControls::Init(TFT_eSPI* parentTFT)
 
 void MCCControls::Update()
 {
-	bool NavWasSelected = NavSelected;
-	bool FuncWasSelected = FuncSelected;
 	MenuItemClass* currentItem = MainMenu->GetCurrentItem();
 
 	if (MCCStatus.NavEncoderStatus)
 	{
 		int delta = NavEncoder.getEncoderDelta();
-		if (delta > 0)
-		{
-			currentItem = MainMenu->NextItem();
-			NavSelected = false;
-		}
-		else if (delta < 0)
-		{
-			currentItem = MainMenu->PrevItem();
-			NavSelected = false;
-		}
-	}
 
-	if (NavSelected) // Nav encoder button was pressed...
-	{
-		// Check display brightness setting; if very low or 0 then set to a dim but readable value:
-		if (LocalDisplay.GetDisplayBrightness() < 16)
+		if (currentItem != nullptr)		// Ensure we have a valid TMenuItem before trying to manipulate it with the Nav encoder
 		{
-			LocalDisplay.SetDisplayBrightness(63);
-			BRTMenuItem->SetValue(LocalDisplay.GetDisplayBrightness());
-			BRTMenuItem->Draw(tft, true);
-			NavSelected = false;
-		}
-		else if (currentItem != nullptr)
-		{
-			switch (currentItem->MenuItemType)
+			if (NavSelected)
 			{
-			case MenuItemClass::MenuItemTypes::Action:
-				currentItem->InvokeOnExecuteHandler();
-				NavSelected = false;
-				break;
-			case MenuItemClass::MenuItemTypes::OffOn:
-				currentItem->SetValue(currentItem->GetValue() ? 0 : 1);
-				currentItem->Draw(tft, true);
-				currentItem->InvokeOnExecuteHandler();
-				NavSelected = false;
-				break;
-			case MenuItemClass::MenuItemTypes::Numeric:
-				// Show the item in its Activated state:
-				currentItem->Activate(true);
-				// Item is selected for data entry, so set FuncEncoder accordingly:
-				FuncSetting = currentItem->GetValue();
-				currentItem->Draw(tft, true);
-				// Do not unselect NavSelect until control input using Func encoder is complete:
-				// (this will be reset when the Func encoder button is pressed)
-				//NavSelected = false;
-				break;
-			default:
-				break;
+				if (NavWasSelected)
+				{
+					// If Nav encoder was already selected in the previous update cycle, then we are currently manipulating a menu item with it, 
+					// so continue doing that...
+					if (currentItem->MenuItemType == MenuItemClass::MenuItemTypes::Numeric)
+					{
+						// If the current item is a numeric type and is selected for input, then manipulate its value with the Nav encoder:
+						if (delta > 0)
+						{
+							NavSetting += currentItem->GetNumericStepSize();
+						}
+						else if (delta < 0)
+						{
+							NavSetting -= currentItem->GetNumericStepSize();
+						}
+						currentItem->SetValue(NavSetting);
+						currentItem->Draw(tft, true);
+					}
+				}
+				else
+				{
+					// If Nav encoder was not already selected in the previous update cycle, then this is the first update cycle where it is selected, 
+					// so we should invoke the current item according to its type and show it as selected/activated on the display:
+
+					// Check display brightness setting; if very low or 0 then set to a dim but readable value:
+					if (LocalDisplay.GetDisplayBrightness() < 16)
+					{
+						LocalDisplay.SetDisplayBrightness(63);
+						BRTMenuItem->SetValue(LocalDisplay.GetDisplayBrightness());
+						BRTMenuItem->Draw(tft, true);
+						NavSelected = false;
+					}
+
+					// Show the current item as selected/activated and manipulate it according to its type:
+					switch (currentItem->MenuItemType)
+					{
+					case MenuItemClass::MenuItemTypes::Action:
+						currentItem->InvokeOnExecuteHandler();
+						NavSelected = false;
+						break;
+					case MenuItemClass::MenuItemTypes::OffOn:
+						currentItem->SetValue(currentItem->GetValue() ? 0 : 1);
+						currentItem->Draw(tft, true);
+						currentItem->InvokeOnExecuteHandler();
+						NavSelected = false;
+						break;
+					case MenuItemClass::MenuItemTypes::Numeric:
+						// Show the item in its Activated state:
+						currentItem->Activate(true);
+						// Item is selected for data entry, so set Nav Encoder accordingly:
+						NavSetting = currentItem->GetValue();
+						currentItem->Draw(tft, true);
+						NavSelected = true;				// Numeric menu item stays active until Nav encoder button is pressed again
+						NavWasSelected = true;			//which invokes the OnEcecuteHandler and unselects the item in the next update cycle (see code below)
+						//currentItem->InvokeOnExecuteHandler();
+						break;
+					default:
+						break;
+					}
+				}
+			}
+			else 
+			{
+				// Nav encoder is not currently selected, so if it was selected in the previous update cycle 
+				// then we should unselect the current item and invoke its handler to apply any changes made with the Nav encoder:
+				if (NavWasSelected)
+				{
+					// If Nav encoder was selected in the previous update cycle but is not currently selected, 
+					// then unselect the current item (this happens when the Nav encoder button is pressed to unselect the item after manipulation)
+					currentItem->InvokeOnExecuteHandler();	// Invoke the current item's handler when unselecting it with the Nav encoder button (this allows changes to take effect immediately after manipulation with the Nav encoder)
+					currentItem->Activate(false);
+					currentItem->Draw(tft, true);
+				}
+				
+				// If Nav encoder was not selected in the previous update cycle and is not currently selected, then we are not manipulating a menu item with it,
+				//so instead we select the next/previous item in the menu if there is a change in the Nav encoder position:
+				if (delta > 0)
+				{
+					currentItem = MainMenu->NextItem();
+				}
+				else if (delta < 0)
+				{
+					currentItem = MainMenu->PrevItem();
+				}
+
+				NavWasSelected = NavSelected;	// Update NavWasSelected for the next update cycle
 			}
 		}
 	}
 
-	if (MCCStatus.FuncEncoderStatus)
-	{
-		int delta = FuncEncoder.getEncoderDelta();
-		if (currentItem != nullptr && delta != 0 && NavSelected)
-		{
-			if (currentItem->MenuItemType == MenuItemClass::MenuItemTypes::Numeric)
-			{
-				delta > 0 ? FuncSetting += currentItem->GetNumericStepSize() : FuncSetting -= currentItem->GetNumericStepSize();
-			}
-			else
-			{
-				FuncSetting = FuncSetting + delta;
-			}
-
-			switch (currentItem->MenuItemType)
-			{
-			case MenuItemClass::MenuItemTypes::Numeric:
-				currentItem->SetValue(FuncSetting);
-				currentItem->Draw(tft, true);
-				break;
-			default:
-				break;
-			}
-		}
-		//FuncButton->check();
-	}
-
-	if (FuncSelected) // Func encoder button was pressed...
-	{
-		if (currentItem != nullptr)
-		{
-			switch (currentItem->MenuItemType)
-			{
-			case MenuItemClass::MenuItemTypes::Action:
-				currentItem->InvokeOnExecuteHandler();
-				FuncSelected = false;
-				break;
-			case MenuItemClass::MenuItemTypes::Numeric:
-				// Do something with the current Value of the current item:
-				// The OnExecute handler (of type MenuItemOnExecuteHandler) is passed the current Value when invoked
-				currentItem->InvokeOnExecuteHandler();
-				// Reset selection of this item for input:
-				currentItem->Activate(false);
-				currentItem->Draw(tft, true);
-				FuncSelected = false;
-				NavSelected = false;
-				break;
-			default:
-				FuncSelected = false;
-				break;
-			}
-		}
-	}
-
-	if (!MCCStatus.RC2x15AUARTStatus)
-	{
-		//bool success = RC2x15AMC.ResetUARTLink();
-		//SetMCUARTStatus(true);
-	}
 }
 
 void MCCControls::CheckButtons()
@@ -326,4 +312,6 @@ void MCCControls::SetMCUARTStatus(bool newStatus)
 
 MCCControls mccControls;
 bool MCCControls::NavSelected = false;
+bool MCCControls::NavWasSelected = false;
 bool MCCControls::FuncSelected = false;
+bool MCCControls::FuncWasSelected = false;
