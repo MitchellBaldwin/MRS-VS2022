@@ -45,6 +45,7 @@ public:
 	CSSMDrivePacket::DriveModes SavedDriveMode = CSSMDrivePacket::DriveModes::DRV;	// Remember Drive Mode when temporarily overridden
 
 	CSSMDrivePacket cssmDrivePacket;
+	CSSMCommandPacket cssmCommandPacket;
 	RC2x15AMCStatusPacket mcStatus;
 	MRSStatusPacket mrsStatusPacket;
 	MRSSensorPacket mrsSensorPacket;

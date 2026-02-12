@@ -40,7 +40,8 @@ void CSSMS3Controls::HandleNavButtonEvents(ace_button::AceButton* b, uint8_t eve
 {
 	if (eventType == ace_button::AceButton::kEventPressed)
 	{
-		NavSelected = true;
+		NavSelected = !NavSelected;
+		//NavSelected = true;
 		//_PL("Navigation encoder button clicked");
 	}
 }
@@ -64,7 +65,7 @@ void CSSMS3Controls::DriveOSBHandler(int value)
 		CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::STOP;
 		CSSMS3Status.cssmDrivePacket.EStop = false;
 	}
-	funcEncoderMode = FuncEncoderModes::MenuFuncEncMode;
+	funcEncoderMode = FuncEncoderModes::SteerMode;
 	switch (CSSMS3Status.cssmDrivePacket.DriveMode)
 	{
 	case CSSMDrivePacket::DriveModes::DRV:
@@ -97,7 +98,7 @@ void CSSMS3Controls::HeadingOSBHandler(int value)
 		CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::STOP;
 		CSSMS3Status.cssmDrivePacket.EStop = false;
 	}
-	funcEncoderMode = FuncEncoderModes::MenuFuncEncMode;
+	funcEncoderMode = FuncEncoderModes::STControlMode;
 	switch (CSSMS3Status.cssmDrivePacket.DriveMode)
 	{
 	case CSSMDrivePacket::DriveModes::HDG:
@@ -120,7 +121,7 @@ void CSSMS3Controls::WaypointOSBHandler(int value)
 		CSSMS3Status.cssmDrivePacket.DriveMode = CSSMDrivePacket::DriveModes::STOP;
 		CSSMS3Status.cssmDrivePacket.EStop = false;
 	}
-	funcEncoderMode = FuncEncoderModes::MenuFuncEncMode;
+	funcEncoderMode = FuncEncoderModes::NoFuncEncMode;
 	switch (CSSMS3Status.cssmDrivePacket.DriveMode)
 	{
 	case CSSMDrivePacket::DriveModes::WPT:
@@ -156,7 +157,7 @@ void CSSMS3Controls::StopOSBHandler(int value)
 	//CSSMS3Status.cssmDrivePacket.SpeedSetting = 0.0f;
 	//CSSMS3Status.cssmDrivePacket.OmegaXYSetting = 0.0f;
 
-	funcEncoderMode = FuncEncoderModes::MenuFuncEncMode;
+	funcEncoderMode = FuncEncoderModes::NoFuncEncMode;
 
 	//_PL("Stop mode handler")
 }
@@ -236,6 +237,10 @@ void CSSMS3Controls::NextDriveMode(int value)
 {
 	CSSMS3Status.cssmDrivePacket.NextDriveMode();
 	if (CSSMS3Status.cssmDrivePacket.DriveMode == CSSMDrivePacket::DriveModes::DRVTw)
+	{
+		funcEncoderMode = FuncEncoderModes::SteerMode;
+	}
+	else if (CSSMS3Status.cssmDrivePacket.DriveMode == CSSMDrivePacket::DriveModes::DRV)
 	{
 		funcEncoderMode = FuncEncoderModes::SteerMode;
 	}
@@ -430,7 +435,7 @@ bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 	SPDSetMenuItem->SetOnExecuteHandler(SetSPD);
 	SPDSetMenuItem->SetMinValue(-1000);
 	SPDSetMenuItem->SetMaxValue(1000);
-	SPDSetMenuItem->SetNumericStepSize(1);
+	SPDSetMenuItem->SetNumericStepSize(ManualSpeedDelta);
 	SPDSetMenuItem->SetValue((int)CSSMS3Status.cssmDrivePacket.SpeedSetting);
 
 	DRVPageMenu = new TFTMenuClass();
@@ -460,7 +465,7 @@ bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 	STPositionMenuItem->SetOnExecuteHandler(SetTurretPosition);
 	STPositionMenuItem->SetMinValue(0);
 	STPositionMenuItem->SetMaxValue(359);
-	STPositionMenuItem->SetNumericStepSize(1);
+	STPositionMenuItem->SetNumericStepSize(ManualSTControlDelta);
 	STPositionMenuItem->SetValue(0);
 
 	// Set up ADC:
@@ -492,8 +497,8 @@ bool CSSMS3Controls::Init(TFT_eSPI* parentTFT)
 
 void CSSMS3Controls::Update()
 {
-	bool NavWasSelected = NavSelected;
-	bool FuncWasSelected = FuncSelected;
+	//bool NavWasSelected = NavSelected;
+	//bool FuncWasSelected = FuncSelected;
 
 	TFTMenuClass* currentMenu = nullptr;
 
@@ -533,109 +538,153 @@ void CSSMS3Controls::Update()
 	if (CSSMS3Status.NavEncoderStatus)
 	{
 		int delta = NavEncoder.getEncoderDelta();
-		switch (navEncoderMode)
+
+		if (currentItem != nullptr)		// Ensure we have a valid TMenuItem before trying to manipulate it with the Nav encoder
 		{
-		case NavEncoderModes::MenuNavEncMode:
-			if (delta > 0)
+			if (NavSelected)
 			{
-				currentItem = currentMenu->NextItem();
-				NavSelected = false;
+				if (NavWasSelected)
+				{
+					// If Nav encoder was already selected in the previous update cycle, then we are currently manipulating a menu item with it, 
+					// so continue doing that...
+					if (currentItem->MenuItemType == MenuItemClass::MenuItemTypes::Numeric)
+					{
+						// If the current item is a numeric type and is selected for input, then manipulate its value with the Nav encoder:
+						if (delta > 0)
+						{
+							NavSetting += currentItem->GetNumericStepSize();
+						}
+						else if (delta < 0)
+						{
+							NavSetting -= currentItem->GetNumericStepSize();
+						}
+						currentItem->SetValue(NavSetting);
+						currentItem->Draw(tft, true);
+					}
+				}
+				else
+				{
+					// If Nav encoder was not already selected in the previous update cycle, then this is the first update cycle where it is selected, 
+					// so we should invoke the current item according to its type and show it as selected/activated on the display:
+
+					// Check display brightness setting; if very low or 0 then set to a dim but readable value:
+					if (cssmS3Display.GetDisplayBrightness() < 16)
+					{
+						cssmS3Display.SetDisplayBrightness(63);
+						BRTMenuItem->SetValue(cssmS3Display.GetDisplayBrightness());
+						BRTMenuItem->Draw(tft, true);
+						NavSelected = false;
+					}
+
+					// Show the current item as selected/activated and manipulate it according to its type:
+					switch (currentItem->MenuItemType)
+					{
+					case MenuItemClass::MenuItemTypes::Action:
+						currentItem->InvokeOnExecuteHandler();
+						NavSelected = false;
+						break;
+					case MenuItemClass::MenuItemTypes::OffOn:
+						currentItem->SetValue(currentItem->GetValue() ? 0 : 1);
+						currentItem->Draw(tft, true);
+						currentItem->InvokeOnExecuteHandler();
+						NavSelected = false;
+						break;
+					case MenuItemClass::MenuItemTypes::Numeric:
+						// Show the item in its Activated state:
+						currentItem->Activate(true);
+						// Item is selected for data entry, so set Nav Encoder accordingly:
+						NavSetting = currentItem->GetValue();
+						currentItem->Draw(tft, true);
+						NavSelected = true;				// Numeric menu item stays active until Nav encoder button is pressed again
+						NavWasSelected = true;			//which invokes the OnEcecuteHandler and unselects the item in the next update cycle (see code below)
+						//currentItem->InvokeOnExecuteHandler();
+						break;
+					default:
+						break;
+					}
+				}
 			}
-			else if (delta < 0)
+			else
 			{
-				currentItem = currentMenu->PrevItem();
-				NavSelected = false;
-			}
-			break;
-		case NavEncoderModes::HDGSetMode:
+				// Nav encoder is not currently selected, so if it was selected in the previous update cycle 
+				// then we should unselect the current item and invoke its handler to apply any changes made with the Nav encoder:
+				if (NavWasSelected)
+				{
+					// If Nav encoder was selected in the previous update cycle but is not currently selected, 
+					// then unselect the current item (this happens when the Nav encoder button is pressed to unselect the item after manipulation)
+					currentItem->InvokeOnExecuteHandler();	// Invoke the current item's handler when unselecting it with the Nav encoder button (this allows changes to take effect immediately after manipulation with the Nav encoder)
+					currentItem->Activate(false);
+					currentItem->Draw(tft, true);
+				}
 
-			break;
-		default:
-			break;
-		}
+				// If Nav encoder was not selected in the previous update cycle and is not currently selected, then we are not manipulating a menu item with it,
+				//so instead we select the next/previous item in the menu if there is a change in the Nav encoder position:
+				if (delta > 0)
+				{
+					currentItem = currentMenu->NextItem();
+				}
+				else if (delta < 0)
+				{
+					currentItem = currentMenu->PrevItem();
+				}
 
-	}
-
-	if (NavSelected) // Nav encoder button was pressed...
-	{
-		// Check display brightness setting; if very low or 0 then set to a dim but readable value:
-		if (cssmS3Display.GetDisplayBrightness() <= 32)
-		{
-			cssmS3Display.SetDisplayBrightness(64);
-			BRTMenuItem->SetValue(cssmS3Display.GetDisplayBrightness());
-			BRTMenuItem->Draw(tft, true);
-			NavSelected = false;
-		}
-		else if (currentItem != nullptr)
-		{
-			switch (currentItem->MenuItemType)
-			{
-			case MenuItemClass::MenuItemTypes::Action:
-				currentItem->InvokeOnExecuteHandler();
-				NavSelected = false;
-				break;
-			case MenuItemClass::MenuItemTypes::OffOn:
-				currentItem->SetValue(currentItem->GetValue() ? 0 : 1);
-				currentItem->Draw(tft, true);
-				currentItem->InvokeOnExecuteHandler();
-				NavSelected = false;
-				break;
-			case MenuItemClass::MenuItemTypes::Numeric:
-				// Show the item in its Activated state:
-				currentItem->Activate(true);
-				// Item is selected for data entry, so set FuncEncoder accordingly:
-				FuncSetting = currentItem->GetValue();
-				currentItem->Draw(tft, true);
-				// Do not unselect NavSelect until control input using Func encoder is complete:
-				// (this will be reset when the Func encoder button is pressed)
-				//NavSelected = false;
-				break;
-			default:
-				break;
+				NavWasSelected = NavSelected;	// Update NavWasSelected for the next update cycle
 			}
 		}
 	}
 
 	if (CSSMS3Status.FuncEncoderStatus)
 	{
+		int32_t value = CSSMS3Status.mrsSensorPacket.TurretPosition;
 		int delta = FuncEncoder.getEncoderDelta();
 		switch (funcEncoderMode)
 		{
 		case FuncEncoderModes::MenuFuncEncMode:
-			if (currentItem != nullptr && delta != 0 && NavSelected)
-			{
-				if (currentItem->MenuItemType == MenuItemClass::MenuItemTypes::Numeric)
-				{
-					delta > 0 ? FuncSetting += currentItem->GetNumericStepSize() : FuncSetting -= currentItem->GetNumericStepSize();
-				}
-				else
-				{
-					FuncSetting = FuncSetting + delta;
-				}
 
-				switch (currentItem->MenuItemType)
-				{
-				case MenuItemClass::MenuItemTypes::Numeric:
-					currentItem->SetValue(FuncSetting);
-					currentItem->Draw(tft, true);
-					break;
-				default:
-					break;
-				}
-			}
 			break;
 		case FuncEncoderModes::SteerMode:
 			if (!CSSMS3Status.cssmDrivePacket.EStop)
 			{
 				if (delta > 0)
 				{
-					CSSMS3Status.cssmDrivePacket.OmegaXYSettingPct += 5.0f;
+					CSSMS3Status.cssmDrivePacket.OmegaXYSettingPct += ManualSteeringDelta;
 				}
 				else if (delta < 0)
 				{
-					CSSMS3Status.cssmDrivePacket.OmegaXYSettingPct -= 5.0f;
+					CSSMS3Status.cssmDrivePacket.OmegaXYSettingPct -= ManualSteeringDelta;
 				}
 			}
+			break;
+		case FuncEncoderModes::STControlMode:
+			if (delta > 0)
+			{
+				value += ManualSTControlDelta;
+			}
+			else if (delta < 0)
+			{
+				value -= ManualSTControlDelta;
+			}
+			else 
+			{
+				break;	// If no change then break without sending a command
+			}
+			SetTurretPosition(value);
+			////CSSMCommandPacket cp;
+			//CSSMS3Status.cssmCommandPacket.command = CSSMCommandPacket::SetTurretPosition;
+			//CSSMS3Status.cssmCommandPacket.turretPosition = value;
+
+			//esp_err_t result = ESP_OK;
+
+			//if (CSSMS3Status.ESPNOWStatus)
+			//{
+			//	result = esp_now_send(CSSMS3Status.MRSMCCMAC, (uint8_t*)&CSSMS3Status.cssmCommandPacket, sizeof(CSSMCommandPacket));
+			//	if (result != ESP_NOW_SEND_SUCCESS)
+			//	{
+			//		//sprintf(buf2, "ESP-NOW send error: %S", esp_err_to_name(result));
+			//		//_PL(buf2)
+			//	}
+			//}
+
 			break;
 		default:
 			break;
@@ -645,29 +694,7 @@ void CSSMS3Controls::Update()
 
 	if (FuncSelected) // Func encoder button was pressed...
 	{
-		if (currentItem != nullptr)
-		{
-			switch (currentItem->MenuItemType)
-			{
-			case MenuItemClass::MenuItemTypes::Action:
-				currentItem->InvokeOnExecuteHandler();
-				FuncSelected = false;
-				break;
-			case MenuItemClass::MenuItemTypes::Numeric:
-				// Do something with the current Value of the current item:
-				// The OnExecute handler (of type MenuItemOnExecuteHandler) is passed the current Value when invoked
-				currentItem->InvokeOnExecuteHandler();
-				// Reset selection of this item for input:
-				currentItem->Activate(false);
-				currentItem->Draw(tft, true);
-				FuncSelected = false;
-				NavSelected = false;
-				break;
-			default:
-				FuncSelected = false;
-				break;
-			}
-		}
+
 	}
 	
 	byte OSBPressed = OSBs->GetOSBPress();
@@ -802,7 +829,6 @@ void CSSMS3Controls::SetTurretPosition(int value)
 
 	if (CSSMS3Status.ESPNOWStatus)
 	{
-		//_PL("Sending ResetMCTrip1 command...")
 		result = esp_now_send(CSSMS3Status.MRSMCCMAC, (uint8_t*)&cp, sizeof(cp));
 		if (result != ESP_NOW_SEND_SUCCESS)
 		{
@@ -913,6 +939,8 @@ void CSSMS3Controls::StartMCCalib(int /* value */)
 // Global and static variable declarations:
 CSSMS3Controls cssmS3Controls;
 CSSMS3Controls::NavEncoderModes CSSMS3Controls::navEncoderMode = CSSMS3Controls::NavEncoderModes::MenuNavEncMode;
-CSSMS3Controls::FuncEncoderModes CSSMS3Controls::funcEncoderMode = CSSMS3Controls::FuncEncoderModes::MenuFuncEncMode;
+CSSMS3Controls::FuncEncoderModes CSSMS3Controls::funcEncoderMode = CSSMS3Controls::FuncEncoderModes::SteerMode;
 bool CSSMS3Controls::NavSelected = false;
+bool CSSMS3Controls::NavWasSelected = false;
 bool CSSMS3Controls::FuncSelected = false;
+bool CSSMS3Controls::FuncWasSelected = false;

@@ -14,10 +14,11 @@ void MCCControls::HandleNavButtonEvents(ace_button::AceButton* b, uint8_t eventT
 	{
 		NavSelected = !NavSelected;	// Toggle selection state on each press
 		//NavSelected = true;
-		_PP("NavSelected = ");
-		_PL(NavSelected);
-		_PP("NavWasSelected = ");
-		_PL(NavWasSelected);
+		//Test code:
+		//_PP("NavSelected = ");
+		//_PL(NavSelected);
+		//_PP("NavWasSelected = ");
+		//_PL(NavWasSelected);
 	}
 }
 

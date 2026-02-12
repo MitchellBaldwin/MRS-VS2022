@@ -777,6 +777,19 @@ void LocalDisplayClass::DrawSENPage()
 	cursorX = halfScreenWidth + 2;
 	cursorY = 30;
 	tft.setTextDatum(CL_DATUM);
+
+	if (MCCStatus.MRSSENModuleStatus)
+	{
+		tft.setTextColor(TFT_GREEN, TFT_BLACK, true);
+	}
+	else
+	{
+		tft.setTextColor(TFT_RED, TFT_BLACK, true);
+	}
+	sprintf(buf, "MRSSEN %s", MCCStatus.MRSSENModuleStatus ? "OK" : "NO");
+	tft.drawString(buf, cursorX, cursorY);
+
+	cursorY += 10;
 	tft.setTextColor(TFT_GREENYELLOW, TFT_BLACK, true);
 	sprintf(buf, "SF ODO Pose:");
 	tft.drawString(buf, cursorX, cursorY);

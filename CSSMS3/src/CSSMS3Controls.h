@@ -68,8 +68,11 @@ private:
 constexpr byte OSBCount = 4;
 constexpr byte OSBLevelCount = OSBCount + 1;
 
-
 #include <TFTMenu.h>
+
+constexpr float defaultManualSteeringDelta = 5.0f;		// % change in turn rate setting per count of the FuncEncoder when in DRV or DRVTw drive mode
+constexpr float defaultManualSpeedDelta = 1.0f;			// % change in speed setting per count of the FuncEncoder
+constexpr float defaultManualSTControlDelta = 5.0f;		// Default change in Sensor Turret position setting (in degrees) per count of the FuncEncoder when in STControl mode
 
 class CSSMS3Controls
 {
@@ -118,6 +121,10 @@ protected:
 
 	TFT_eSPI* tft;
 
+	float ManualSteeringDelta = defaultManualSteeringDelta;
+	float ManualSpeedDelta = defaultManualSpeedDelta;
+	float ManualSTControlDelta = defaultManualSTControlDelta;
+
 	uint32_t ReadCalibratedADC1(int rawADC1);	// Returns calibrated ADC1 measurement in mV
 
 	float GetLThrottleActual();					// Get unmasked left throttle setting
@@ -148,6 +155,7 @@ public:
 	{
 		MenuFuncEncMode,
 		SteerMode,
+		STControlMode,
 
 		NoFuncEncMode
 	};
@@ -155,8 +163,10 @@ public:
 
 	uint32_t NavSetting = 0;
 	static bool NavSelected;
+	static bool NavWasSelected;
 	int FuncSetting = 0;
 	static bool FuncSelected;
+	static bool FuncWasSelected;
 
 	TFTMenuClass* MainMenu;				// SYS page menu
 	MenuItemClass* ESPNMenuItem;

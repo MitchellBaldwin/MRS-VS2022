@@ -482,7 +482,6 @@ void CSSMS3Display::DrawMRSPage()
 	sprintf(buf, "%5.2F  V", CSSMS3Status.mrsSensorPacket.INA219VBus);
 	tft.drawString(buf, cursorX, cursorY);	// Right justified
 	cursorY += 10;
-	cursorY += 10;
 	sprintf(buf, "%5.1F mA", CSSMS3Status.mrsSensorPacket.INA219Current);
 	tft.drawString(buf, cursorX, cursorY);	// Right justified
 	cursorY += 10;
